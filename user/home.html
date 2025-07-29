@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <!-- Thiết lập ngôn ngữ trang web là tiếng Việt -->
+
+  <head>
+    <!-- Thiết lập mã hóa ký tự UTF-8 để hiển thị tiếng Việt -->
+    <meta charset="utf-8" />
+    <!-- Đảm bảo tương thích với Internet Explorer -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <!-- Thiết lập responsive design cho mobile và tablet -->
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <!-- Mô tả trang web cho SEO -->
+    <meta name="description" content="" />
+    <!-- Tác giả của trang web -->
+    <meta name="author" content="" />
+
+    <!-- Tiêu đề hiển thị trên tab trình duyệt -->
+    <title>NHAFLOWER - Trang Chủ</title>
+
+    <!-- Liên kết tới thư viện FontAwesome để sử dụng icon -->
+    <link
+      href="../assets/vendor/fontawesome-free/css/all.min.css"
+      rel="stylesheet"
+      type="text/css"
+    />
+    <!-- Liên kết tới font Nunito từ Google Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+      rel="stylesheet"
+    />
+
+    <!-- Liên kết tới file CSS của template SB Admin 2 (dựa trên Bootstrap) -->
+    <link href="../assets/css/admin/sb-admin-2.min.css" rel="stylesheet" />
+
+    <!-- Liên kết tới file CSS tùy chỉnh cho trang home -->
+    <link href="../assets/css/user/home.css" rel="stylesheet" />
+    <link rel="stylesheet" href="../assets/css/user/common.css" />
+  </head>
+
+  <body>
+    <!-- THANH NAVIGATION - Menu điều hướng chính -->
+    <nav class="navbar navbar-expand-lg navbar-custom fixed-top">
+      <div class="container">
+        <!-- Menu bên trái -->
+        <div class="navbar-nav mr-auto">
+          <a class="nav-link-custom" href="home.html">Home</a>
+          <a class="nav-link-custom" href="#" onclick="showCategories()"
+            >Danh sách</a
+          >
+        </div>
+
+        <!-- Logo NHAFLOWER ở giữa -->
+        <div class="navbar-brand-logo">
+          <img
+            src="../assets/img/user/logo_NHAFLOWER.png"
+            alt="NHAFLOWER"
+            class="brand-circle-logo"
+          />
+        </div>
+
+        <!-- navbar-toggler: Nút menu responsive cho mobile -->
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-toggle="collapse"
+          data-target="#navbarNav"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- Menu bên phải -->
+        <div class="navbar-nav ml-auto">
+          <!-- btn-login: Nút đăng nhập dẫn tới login.html -->
+          <a class="btn btn-login" href="login.html">Đăng nhập</a>
+          <!-- btn-register: Nút đăng ký dẫn tới register.html -->
+          <a class="btn btn-register" href="register.html">Đăng ký</a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- NỘI DUNG CHÍNH - Main content area -->
+    <div class="main-content">
+      <!-- brand-logo: Logo chính NHAFLOWER -->
+      <h1 class="brand-logo">NHAFLOWER</h1>
+
+      <!-- THANH TÌM KIẾM - Search functionality -->
+      <div class="search-container">
+        <!-- search-input: Ô nhập từ khóa tìm kiếm -->
+        <input type="text" class="search-input" placeholder="Tìm kiếm..." />
+        <!-- search-btn: Nút thực hiện tìm kiếm -->
+        <button class="search-btn">
+          <i class="fas fa-search"></i>
+        </button>
+      </div>
+
+      <!-- KHUYẾN MÃI - Promotional section -->
+      <div class="promo-section position-relative">
+        <!-- arrow-left: Nút chuyển slide trước -->
+        <button class="navigation-arrows arrow-left" onclick="previousSlide()">
+          <i class="fas fa-chevron-left"></i>
+        </button>
+
+        <!-- promo-content: Nội dung khuyến mãi -->
+        <div class="promo-content">
+          <h2 class="promo-title">Ưu đãi tháng...</h2>
+          <h3 class="promo-subtitle">Giảm đến...</h3>
+          <p class="promo-description">Đến hẹn lại...</p>
+          <!-- btn-view-more: Nút xem thêm chi tiết -->
+          <a href="#" class="btn-view-more" onclick="viewMoreDeals()"
+            >Xem thêm</a
+          >
+        </div>
+
+        <!-- arrow-right: Nút chuyển slide sau -->
+        <button class="navigation-arrows arrow-right" onclick="nextSlide()">
+          <i class="fas fa-chevron-right"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- THƯ VIỆN JAVASCRIPT -->
+    <!-- jQuery: Thư viện JavaScript cần thiết cho Bootstrap -->
+    <script src="../assets/vendor/jquery/jquery.min.js"></script>
+    <!-- Bootstrap Bundle: Chứa tất cả JavaScript của Bootstrap -->
+    <script src="../assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <!-- jQuery Easing: Plugin hiệu ứng chuyển động mượt -->
+    <script src="../assets/vendor/jquery-easing/jquery.easing.min.js"></script>
+
+    <!-- JavaScript tùy chỉnh cho trang home -->
+    <script src="../assets/js/user/home.js"></script>
+  </body>
+</html>

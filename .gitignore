@@ -1,0 +1,47 @@
+# PHP
+*.log
+*.tmp
+*.cache
+
+# Database
+*.sql
+*.db
+*.sqlite
+
+# Environment files
+.env
+.env.local
+.env.production
+
+# Dependencies
+node_modules/
+vendor/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Cache
+cache/
+tmp/
+temp/
+
+# Upload directories với dữ liệu user
+uploads/
+files/
+
+# Backup files
+*.bak
+*.backup
+*~
+
+# Compiled files
+*.min.js
+*.min.css

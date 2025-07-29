@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <meta name="description" content="Đăng ký tài khoản NHAFLOWER" />
+    <meta name="author" content="" />
+
+    <title>NHAFLOWER - Đăng Ký</title>
+
+    <!-- Custom fonts for this template-->
+    <link
+      href="../assets/vendor/fontawesome-free/css/all.min.css"
+      rel="stylesheet"
+      type="text/css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+      rel="stylesheet"
+    />
+
+    <!-- Custom styles for this template-->
+    <link href="../assets/css/admin/sb-admin-2.min.css" rel="stylesheet" />
+
+    <!-- Custom styles for home and register page -->
+    <link href="../assets/css/user/register.css" rel="stylesheet" />
+    <link href="../assets/css/user/common.css" rel="stylesheet" />
+  </head>
+
+  <body>
+    <!-- THANH NAVIGATION - Menu điều hướng chính -->
+    <nav class="navbar navbar-expand-lg navbar-custom fixed-top">
+      <div class="container">
+        <!-- Menu bên trái -->
+        <div class="navbar-nav mr-auto">
+          <a class="nav-link-custom" href="home.html">Home</a>
+          <a class="nav-link-custom" href="#" onclick="showCategories()"
+            >Danh sách</a
+          >
+        </div>
+
+        <!-- Logo NHAFLOWER ở giữa -->
+        <div class="navbar-brand-logo">
+          <img
+            src="../assets/img/user/logo_NHAFLOWER.png"
+            alt="NHAFLOWER"
+            class="brand-circle-logo"
+          />
+        </div>
+
+        <!-- Menu bên phải -->
+        <div class="navbar-nav ml-auto">
+          <a class="btn btn-login" href="login.html">Đăng nhập</a>
+          <a class="btn btn-register active" href="register.html">Đăng ký</a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- MAIN CONTENT - Nội dung chính -->
+    <div class="register-container">
+      <div class="register-card">
+        <!-- Header -->
+        <div class="register-header">
+          <h2 class="register-title">ĐĂNG KÝ</h2>
+          <p class="register-subtitle">
+            Tạo tài khoản mới để trải nghiệm dịch vụ
+          </p>
+        </div>
+
+        <!-- Register Form -->
+        <form id="registerForm" class="register-form">
+          <!-- Email Field -->
+          <div class="form-group">
+            <div class="input-group">
+              <div class="input-group-prepend">
+                <span class="input-group-text">
+                  <i class="fas fa-envelope"></i>
+                </span>
+              </div>
+              <input
+                type="email"
+                class="form-control"
+                id="email"
+                name="email"
+                placeholder="Email"
+                required
+                autocomplete="email"
+              />
+            </div>
+          </div>
+
+          <!-- Password Field -->
+          <div class="form-group">
+            <div class="input-group">
+              <div class="input-group-prepend">
+                <span class="input-group-text">
+                  <i class="fas fa-key"></i>
+                </span>
+              </div>
+              <input
+                type="password"
+                class="form-control"
+                id="password"
+                name="password"
+                placeholder="Mật khẩu"
+                required
+                autocomplete="new-password"
+              />
+              <div class="input-group-append">
+                <button
+                  class="btn btn-outline-secondary toggle-password"
+                  type="button"
+                >
+                  <i class="fas fa-eye"></i>
+                </button>
+              </div>
+            </div>
+            <div class="password-strength">
+              <div class="strength-meter">
+                <div class="strength-meter-fill"></div>
+              </div>
+              <small class="strength-text">Độ mạnh mật khẩu</small>
+            </div>
+          </div>
+
+          <!-- Confirm Password Field -->
+          <div class="form-group">
+            <div class="input-group">
+              <div class="input-group-prepend">
+                <span class="input-group-text">
+                  <i class="fas fa-lock"></i>
+                </span>
+              </div>
+              <input
+                type="password"
+                class="form-control"
+                id="confirmPassword"
+                name="confirmPassword"
+                placeholder="Nhập lại mật khẩu"
+                required
+                autocomplete="new-password"
+              />
+              <div class="input-group-append">
+                <button
+                  class="btn btn-outline-secondary toggle-password"
+                  type="button"
+                >
+                  <i class="fas fa-eye"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Terms and Conditions -->
+          <div class="form-group form-check">
+            <input
+              type="checkbox"
+              class="form-check-input"
+              id="agreeTerms"
+              name="agreeTerms"
+              required
+            />
+            <label class="form-check-label" for="agreeTerms">
+              Tôi đồng ý với
+              <a href="#" class="terms-link">điều khoản và điều kiện</a>
+            </label>
+            <div class="invalid-feedback">
+              Vui lòng đồng ý với điều khoản để tiếp tục
+            </div>
+          </div>
+
+          <!-- Newsletter Subscription -->
+          <div class="form-group form-check">
+            <input
+              type="checkbox"
+              class="form-check-input"
+              id="newsletter"
+              name="newsletter"
+            />
+            <label class="form-check-label" for="newsletter">
+              Nhận thông báo về ưu đãi và sản phẩm mới
+            </label>
+          </div>
+
+          <!-- Submit Button -->
+          <button type="submit" class="btn btn-register-submit">
+            <span class="btn-text">Đăng ký</span>
+            <span class="btn-loading d-none">
+              <i class="fas fa-spinner fa-spin"></i> Đang xử lý...
+            </span>
+          </button>
+
+          <!-- Login Link -->
+          <div class="login-link">
+            Đã có tài khoản? <a href="login.html">Đăng nhập ngay</a>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div class="modal fade" id="successModal" tabindex="-1" role="dialog">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-body text-center">
+            <div class="success-icon">
+              <i class="fas fa-check-circle"></i>
+            </div>
+            <h4>Đăng ký thành công!</h4>
+            <p>Chúng tôi đã gửi email xác nhận đến địa chỉ của bạn.</p>
+            <button type="button" class="btn btn-primary" data-dismiss="modal">
+              Đóng
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bootstrap core JavaScript-->
+    <script src="vendor/jquery/jquery.min.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Core plugin JavaScript-->
+    <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+
+    <!-- Custom scripts for register page-->
+    <script src="js/home.js"></script>
+    <script src="js/register.js"></script>
+  </body>
+</html>

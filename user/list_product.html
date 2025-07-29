@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NHAFLOWER - Danh sách sản phẩm</title>
+
+    <!-- Bootstrap CSS -->
+    <link
+      href="../assets/vendor/bootstrap/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+
+    <!-- Font Awesome -->
+    <link
+      href="../assets/vendor/fontawesome-free/css/all.min.css"
+      rel="stylesheet"
+    />
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="../assets/css/user/list_product.css" />
+    <link rel="stylesheet" href="../assets/css/user/common.css" />
+  </head>
+  <body>
+    <!-- THANH NAVIGATION - Menu điều hướng chính -->
+    <nav class="navbar navbar-expand-lg navbar-custom fixed-top">
+      <div class="container">
+        <!-- Menu bên trái -->
+        <div class="navbar-nav mr-auto">
+          <a class="nav-link-custom" href="home.html">Home</a>
+          <a class="nav-link-custom" href="#" onclick="showCategories()"
+            >Danh sách</a
+          >
+        </div>
+
+        <!-- Logo NHAFLOWER ở giữa -->
+        <div class="navbar-brand-logo">
+          <img
+            src="../assets/img/user/logo_NHAFLOWER.png"
+            alt="NHAFLOWER"
+            class="brand-circle-logo"
+          />
+        </div>
+
+        <!-- navbar-toggler: Nút menu responsive cho mobile -->
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-toggle="collapse"
+          data-target="#navbarNav"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- Menu bên phải -->
+        <div class="navbar-nav ml-auto">
+          <!-- Search icon -->
+          <div class="nav-icon-wrapper">
+            <i
+              class="fas fa-search nav-icon"
+              title="Tìm kiếm"
+              onclick="showSearchModal()"
+            ></i>
+          </div>
+
+          <!-- User avatar -->
+          <div class="nav-icon-wrapper">
+            <div
+              class="user-avatar"
+              title="Trang cá nhân"
+              onclick="showUserProfile()"
+            >
+              <i class="fas fa-user"></i>
+            </div>
+          </div>
+
+          <!-- Shopping cart -->
+          <div class="nav-icon-wrapper">
+            <i
+              class="fas fa-shopping-bag nav-icon"
+              title="Giỏ hàng"
+              onclick="showCart()"
+            ></i>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+      <!-- Filter Section -->
+      <div class="filter-section">
+        <div class="d-flex flex-wrap justify-content-center">
+          <button class="filter-btn active" data-category="all">ALL</button>
+          <button class="filter-btn" data-category="hoa-hong">Hoa hồng</button>
+          <button class="filter-btn" data-category="hoa-tulip">
+            Hoa tulip
+          </button>
+          <button class="filter-btn" data-category="hoa-lan">Hoa lan</button>
+          <button class="filter-btn" data-category="hoa-cuc">Hoa cúc</button>
+          <button class="filter-btn" data-category="hoa-huong-duong">
+            Hoa hướng dương
+          </button>
+          <button class="filter-btn" data-category="hoa-lily">Hoa lily</button>
+        </div>
+      </div>
+
+      <!-- Products Grid -->
+      <div class="products-grid" id="productsGrid">
+        <!-- Product Card 1 -->
+        <div class="product-card" data-category="hoa-hong">
+          <div class="product-image">
+            <span>Hình ảnh sản phẩm</span>
+          </div>
+          <div class="product-info">
+            <div class="product-name">Hoa hồng đỏ tươi</div>
+            <div class="product-price">250,000 VNĐ</div>
+            <div class="product-rating">
+              <div class="rating-stars">
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+              </div>
+              <span class="rating-number">4.9</span>
+            </div>
+            <button class="add-to-cart-btn">Thêm vào giỏ</button>
+          </div>
+        </div>
+
+        <!-- Product Card 2 -->
+        <div class="product-card" data-category="hoa-hong">
+          <div class="product-image">
+            <span>Hình ảnh sản phẩm</span>
+          </div>
+          <div class="product-info">
+            <div class="product-name">Hoa hồng trắng</div>
+            <div class="product-price">280,000 VNĐ</div>
+            <div class="product-rating">
+              <div class="rating-stars">
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+              </div>
+              <span class="rating-number">4.9</span>
+            </div>
+            <button class="add-to-cart-btn">Thêm vào giỏ</button>
+          </div>
+        </div>
+
+        <!-- Product Card 3 -->
+        <div class="product-card" data-category="hoa-tulip">
+          <div class="product-image">
+            <span>Hình ảnh sản phẩm</span>
+          </div>
+          <div class="product-info">
+            <div class="product-name">Hoa tulip vàng</div>
+            <div class="product-price">320,000 VNĐ</div>
+            <div class="product-rating">
+              <div class="rating-stars">
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+              </div>
+              <span class="rating-number">4.8</span>
+            </div>
+            <button class="add-to-cart-btn">Thêm vào giỏ</button>
+          </div>
+        </div>
+
+        <!-- Product Card 4 -->
+        <div class="product-card" data-category="hoa-lan">
+          <div class="product-image">
+            <span>Hình ảnh sản phẩm</span>
+          </div>
+          <div class="product-info">
+            <div class="product-name">Hoa lan tím</div>
+            <div class="product-price">450,000 VNĐ</div>
+            <div class="product-rating">
+              <div class="rating-stars">
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+              </div>
+              <span class="rating-number">4.9</span>
+            </div>
+            <button class="add-to-cart-btn">Thêm vào giỏ</button>
+          </div>
+        </div>
+
+        <!-- Product Card 5 -->
+        <div class="product-card" data-category="hoa-cuc">
+          <div class="product-image">
+            <span>Hình ảnh sản phẩm</span>
+          </div>
+          <div class="product-info">
+            <div class="product-name">Hoa cúc họa mi</div>
+            <div class="product-price">180,000 VNĐ</div>
+            <div class="product-rating">
+              <div class="rating-stars">
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="far fa-star"></i>
+              </div>
+              <span class="rating-number">4.7</span>
+            </div>
+            <button class="add-to-cart-btn">Thêm vào giỏ</button>
+          </div>
+        </div>
+
+        <!-- Product Card 6 -->
+        <div class="product-card" data-category="hoa-huong-duong">
+          <div class="product-image">
+            <span>Hình ảnh sản phẩm</span>
+          </div>
+          <div class="product-info">
+            <div class="product-name">Hoa hướng dương</div>
+            <div class="product-price">200,000 VNĐ</div>
+            <div class="product-rating">
+              <div class="rating-stars">
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+              </div>
+              <span class="rating-number">4.9</span>
+            </div>
+            <button class="add-to-cart-btn">Thêm vào giỏ</button>
+          </div>
+        </div>
+
+        <!-- Product Card 7 -->
+        <div class="product-card" data-category="hoa-lily">
+          <div class="product-image">
+            <span>Hình ảnh sản phẩm</span>
+          </div>
+          <div class="product-info">
+            <div class="product-name">Hoa lily trắng</div>
+            <div class="product-price">350,000 VNĐ</div>
+            <div class="product-rating">
+              <div class="rating-stars">
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+              </div>
+              <span class="rating-number">4.8</span>
+            </div>
+            <button class="add-to-cart-btn">Thêm vào giỏ</button>
+          </div>
+        </div>
+
+        <!-- Product Card 8 -->
+        <div class="product-card" data-category="hoa-hong">
+          <div class="product-image">
+            <span>Hình ảnh sản phẩm</span>
+          </div>
+          <div class="product-info">
+            <div class="product-name">Hoa hồng hồng</div>
+            <div class="product-price">270,000 VNĐ</div>
+            <div class="product-rating">
+              <div class="rating-stars">
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+              </div>
+              <span class="rating-number">4.9</span>
+            </div>
+            <button class="add-to-cart-btn">Thêm vào giỏ</button>
+          </div>
+        </div>
+
+        <!-- Product Card 9 -->
+        <div class="product-card" data-category="hoa-tulip">
+          <div class="product-image">
+            <span>Hình ảnh sản phẩm</span>
+          </div>
+          <div class="product-info">
+            <div class="product-name">Hoa tulip đỏ</div>
+            <div class="product-price">300,000 VNĐ</div>
+            <div class="product-rating">
+              <div class="rating-stars">
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="far fa-star"></i>
+              </div>
+              <span class="rating-number">4.6</span>
+            </div>
+            <button class="add-to-cart-btn">Thêm vào giỏ</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="../assets/vendor/jquery/jquery.min.js"></script>
+    <script src="../assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Custom JavaScript -->
+    <script src="../assets/js/user/list_product.js"></script>
+  </body>
+</html>
