@@ -7,7 +7,7 @@ $ten = $data['ten_khachhang'];
 $sdt = $data['so_dien_thoai'];
 $diachi = $data['dia_chi'];
 
-$sql = "UPDATE KhachHang SET ten_khachhang = '$ten', so_dien_thoai = '$sdt', dia_chi = '$diachi'
+$sql = "UPDATE KhachHang SET ten = '$ten', sdt = '$sdt', dia_chi = '$diachi'
         WHERE id_khachhang = $id";
 if ($conn->query($sql)) {
     echo json_encode(["success" => true]);

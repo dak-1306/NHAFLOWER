@@ -16,7 +16,28 @@ class CustomerManager {
     $(document).ready(() => {
       console.log("Customer Manager initialized");
       this.loadCustomers();
+      this.setupEventListeners();
     });
+  }
+
+  setupEventListeners() {
+    // Add customer button
+    const addBtn = document.getElementById("addCustomerBtn");
+    if (addBtn) {
+      addBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        this.addCustomer();
+      });
+    }
+
+    // Update customer button
+    const updateBtn = document.getElementById("updateCustomerBtn");
+    if (updateBtn) {
+      updateBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        this.updateCustomer();
+      });
+    }
   }
 
   // Hiển thị thông báo
@@ -147,36 +168,185 @@ class CustomerManager {
   async addCustomer() {
     const form = document.getElementById("addCustomerForm");
     const formData = new FormData(form);
+    const addBtn = document.getElementById("addCustomerBtn");
 
-    const customerData = {
-      ten_khachhang: formData.get("ten_khachhang"),
-      so_dien_thoai: formData.get("so_dien_thoai"),
-      dia_chi: formData.get("dia_chi"),
-      id_taikhoan: formData.get("id_taikhoan"),
-    };
+    // Disable button để tránh double click
+    if (addBtn) {
+      addBtn.disabled = true;
+      addBtn.innerHTML =
+        '<i class="fas fa-spinner fa-spin mr-1"></i>Đang xử lý...';
+    }
 
     try {
+      const customerData = {
+        ten_khachhang: formData.get("ten_khachhang"),
+        so_dien_thoai: formData.get("so_dien_thoai"),
+        dia_chi: formData.get("dia_chi"),
+        email_taikhoan: formData.get("email_taikhoan"),
+        mat_khau_taikhoan: formData.get("mat_khau_taikhoan"),
+      };
+
+      // Debug: Log dữ liệu trước khi gửi
+      console.log("Customer data to send:", customerData);
+      console.log("Form validation check:");
+      console.log(
+        "- ten_khachhang:",
+        customerData.ten_khachhang,
+        "Empty?",
+        !customerData.ten_khachhang
+      );
+      console.log(
+        "- so_dien_thoai:",
+        customerData.so_dien_thoai,
+        "Empty?",
+        !customerData.so_dien_thoai
+      );
+      console.log(
+        "- dia_chi:",
+        customerData.dia_chi,
+        "Empty?",
+        !customerData.dia_chi
+      );
+      console.log(
+        "- email_taikhoan:",
+        customerData.email_taikhoan,
+        "Empty?",
+        !customerData.email_taikhoan
+      );
+      console.log(
+        "- mat_khau_taikhoan:",
+        customerData.mat_khau_taikhoan,
+        "Empty?",
+        !customerData.mat_khau_taikhoan
+      );
+
+      // Validation frontend
+      if (
+        !customerData.ten_khachhang ||
+        !customerData.so_dien_thoai ||
+        !customerData.dia_chi ||
+        !customerData.email_taikhoan ||
+        !customerData.mat_khau_taikhoan
+      ) {
+        console.log("❌ Validation failed - missing required fields");
+        this.showAlert("Vui lòng điền đầy đủ thông tin", "danger");
+        return;
+      }
+
+      console.log("✅ Validation passed - proceeding with account creation");
+
+      // Bước 1: Tạo tài khoản trước
+      const accountData = {
+        email: customerData.email_taikhoan,
+        mat_khau: customerData.mat_khau_taikhoan,
+        vai_tro: "khach",
+        trang_thai: 1,
+      };
+
+      console.log("Creating account with data:", accountData);
+
+      // Add timeout to prevent hanging
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+
+      const accountResponse = await fetch("../api/tai_khoan/add_taikhoan.php", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(accountData),
+        signal: controller.signal,
+      });
+
+      clearTimeout(timeoutId);
+      console.log(
+        "Account response status:",
+        accountResponse.status,
+        accountResponse.statusText
+      );
+
+      if (!accountResponse.ok) {
+        throw new Error(`Account API error: ${accountResponse.status}`);
+      }
+
+      const accountResult = await accountResponse.json();
+      console.log("Account creation result:", accountResult);
+
+      if (!accountResult.success) {
+        this.showAlert(
+          "Lỗi tạo tài khoản: " + (accountResult.error || "Unknown error"),
+          "danger"
+        );
+        return;
+      }
+
+      // Bước 2: Tạo khách hàng với ID tài khoản vừa tạo
+      const finalCustomerData = {
+        ten_khachhang: customerData.ten_khachhang,
+        so_dien_thoai: customerData.so_dien_thoai,
+        dia_chi: customerData.dia_chi,
+        id_taikhoan: accountResult.id,
+      };
+
+      console.log("Creating customer with data:", finalCustomerData);
+
+      const controller2 = new AbortController();
+      const timeoutId2 = setTimeout(() => controller2.abort(), 10000);
+
       const response = await fetch(this.API_BASE_URL + "create_customer.php", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(customerData),
+        body: JSON.stringify(finalCustomerData),
+        signal: controller2.signal,
       });
 
+      clearTimeout(timeoutId2);
+      console.log(
+        "Customer response status:",
+        response.status,
+        response.statusText
+      );
+
+      if (!response.ok) {
+        throw new Error(`Customer API error: ${response.status}`);
+      }
+
       const result = await response.json();
+      console.log("Customer creation result:", result);
 
       if (result.success) {
-        this.showAlert("Thêm khách hàng thành công!", "success");
+        this.showAlert(
+          `Thêm khách hàng thành công! Tài khoản: ${customerData.email_taikhoan}`,
+          "success"
+        );
         $("#addCustomerModal").modal("hide");
         form.reset();
         this.loadCustomers();
       } else {
-        this.showAlert("Lỗi: " + result.error, "danger");
+        this.showAlert(
+          "Lỗi tạo khách hàng: " + (result.error || "Unknown error"),
+          "danger"
+        );
       }
     } catch (error) {
       console.error("Lỗi khi thêm khách hàng:", error);
-      this.showAlert("Lỗi khi thêm khách hàng", "danger");
+
+      let errorMessage = "Lỗi khi thêm khách hàng";
+      if (error.name === "AbortError") {
+        errorMessage = "Timeout: API phản hồi quá chậm, vui lòng thử lại";
+      } else if (error.message) {
+        errorMessage += ": " + error.message;
+      }
+
+      this.showAlert(errorMessage, "danger");
+    } finally {
+      // Restore button state
+      if (addBtn) {
+        addBtn.disabled = false;
+        addBtn.innerHTML = '<i class="fas fa-save mr-1"></i>Lưu';
+      }
     }
   }
 
@@ -270,11 +440,19 @@ let customerManager;
 
 // Global functions for onclick events
 function addCustomer() {
-  customerManager.addCustomer();
+  if (customerManager) {
+    customerManager.addCustomer();
+  } else {
+    console.error("CustomerManager not initialized");
+  }
 }
 
 function updateCustomer() {
-  customerManager.updateCustomer();
+  if (customerManager) {
+    customerManager.updateCustomer();
+  } else {
+    console.error("CustomerManager not initialized");
+  }
 }
 
 // Initialize when DOM is ready
