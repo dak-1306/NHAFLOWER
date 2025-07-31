@@ -1,5 +1,5 @@
 <?php
-include '../config.php';
+include_once("../../config/connect.php");
 
 $data = json_decode(file_get_contents("php://input"), true);
 

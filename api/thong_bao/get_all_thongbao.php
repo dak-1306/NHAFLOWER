@@ -1,5 +1,5 @@
 <?php
-include("connect.php");
+include_once("../../config/connect.php");
 $sql = "SELECT * FROM thongbao ORDER BY ngay_gui DESC";
 $result = mysqli_query($conn, $sql);
 

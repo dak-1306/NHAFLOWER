@@ -1,5 +1,5 @@
 <?php
-include '../connect.php';
+include_once("../../config/connect.php");
 $data = json_decode(file_get_contents("php://input"));
 
 $id_khachhang = $data->id_khachhang;

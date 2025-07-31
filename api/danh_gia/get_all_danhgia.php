@@ -1,5 +1,5 @@
 <?php
-include '../connect.php';
+include_once("../../config/connect.php");
 
 $sql = "SELECT dg.*, kh.ten_khachhang, sp.ten_hoa 
         FROM danhgia dg 

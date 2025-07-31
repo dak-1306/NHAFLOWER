@@ -1,5 +1,5 @@
 <?php
-include("connect.php");
+include_once("../../config/connect.php");
 $id = $_POST['id_loaihoa'];
 
 $sql = "DELETE FROM loaihoa WHERE id_loaihoa = $id";

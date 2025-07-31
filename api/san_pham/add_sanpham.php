@@ -1,5 +1,5 @@
 <?php
-include("connect.php");
+include_once("../../config/connect.php");
 
 $ten_hoa = $_POST['ten_hoa'];
 $gia = $_POST['gia'];

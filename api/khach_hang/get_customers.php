@@ -1,5 +1,5 @@
 <?php
-include '../config/connection.php';
+include_once("../../config/connect.php");
 $sql = "SELECT * FROM KhachHang";
 $result = $conn->query($sql);
 

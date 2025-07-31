@@ -1,5 +1,6 @@
 <?php
-include "db_connect.php";
+include_once("../config/connect.php");
+
 header('Content-Type: application/json');
 
 // Xác định loại thống kê thông qua GET
@@ -11,7 +12,7 @@ switch ($type) {
                     SUM(ct.so_luong * ct.don_gia) AS tong_doanh_thu,
                     COUNT(DISTINCT dh.id_donhang) AS tong_don_hang
                 FROM donhang dh
-                JOIN chitiet_donhang ct ON dh.id_donhang = ct.id_donhang
+                JOIN chitietdonhang ct ON dh.id_donhang = ct.id_donhang
                 WHERE DATE(dh.ngay_dat) = CURDATE()
                   AND dh.trang_thai = 'hoan_tat'";
         break;
@@ -21,7 +22,7 @@ switch ($type) {
                     DATE(dh.ngay_dat) AS ngay,
                     SUM(ct.so_luong * ct.don_gia) AS doanh_thu
                 FROM donhang dh
-                JOIN chitiet_donhang ct ON dh.id_donhang = ct.id_donhang
+                JOIN chitietdonhang ct ON dh.id_donhang = ct.id_donhang
                 WHERE dh.trang_thai = 'hoan_tat'
                   AND dh.ngay_dat >= CURDATE() - INTERVAL 7 DAY
                 GROUP BY DATE(dh.ngay_dat)
@@ -31,10 +32,10 @@ switch ($type) {
     case 'sanpham_ban_chay':
         $sql = "SELECT 
                     ct.id_sanpham,
-                    sp.ten_sanpham,
+                    sp.ten_hoa,
                     SUM(ct.so_luong) AS tong_so_luong_ban,
                     SUM(ct.so_luong * ct.don_gia) AS tong_doanh_thu
-                FROM chitiet_donhang ct
+                FROM chitietdonhang ct
                 JOIN donhang dh ON ct.id_donhang = dh.id_donhang
                 JOIN sanpham sp ON ct.id_sanpham = sp.id_sanpham
                 WHERE dh.trang_thai = 'hoan_tat'

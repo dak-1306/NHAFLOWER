@@ -1,5 +1,5 @@
 <?php
-include("connect.php");
+include_once("../../config/connect.php");
 
 $id = $_POST['id_sanpham'];
 $ten_hoa = $_POST['ten_hoa'];

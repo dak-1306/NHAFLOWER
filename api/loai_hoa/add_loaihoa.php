@@ -1,5 +1,5 @@
 <?php
-include("connect.php");
+include_once("../../config/connect.php");
 $ten_loai = $_POST['ten_loai'];
 
 $sql = "INSERT INTO loaihoa (ten_loai) VALUES ('$ten_loai')";

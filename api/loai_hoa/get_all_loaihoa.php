@@ -1,5 +1,5 @@
 <?php
-include("connect.php");
+include_once("../../config/connect.php");
 $sql = "SELECT * FROM loaihoa ORDER BY id_loaihoa DESC";
 $result = mysqli_query($conn, $sql);
 

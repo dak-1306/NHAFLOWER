@@ -1,5 +1,5 @@
 <?php
-include '../config.php';
+include_once("../../config/connect.php");
 $id = $_GET['id'];
 
 $sql = "DELETE FROM DonHang WHERE id_donhang = $id";
