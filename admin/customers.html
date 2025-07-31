@@ -246,6 +246,9 @@
           <div class="modal-header">
             <h5 class="modal-title">
               <i class="fas fa-user-plus mr-2"></i>Thêm khách hàng mới
+              <small class="text-muted d-block mt-1"
+                >Hệ thống sẽ tự động tạo tài khoản</small
+              >
             </h5>
             <button type="button" class="close text-white" data-dismiss="modal">
               <span>&times;</span>
@@ -281,11 +284,25 @@
                 ></textarea>
               </div>
               <div class="form-group">
-                <label>ID Tài khoản *</label>
+                <label>Email tài khoản *</label>
                 <input
-                  type="number"
+                  type="email"
                   class="form-control"
-                  name="id_taikhoan"
+                  name="email_taikhoan"
+                  placeholder="Nhập email cho tài khoản mới"
+                  required
+                />
+                <small class="form-text text-muted">
+                  Hệ thống sẽ tự động tạo tài khoản mới với email này
+                </small>
+              </div>
+              <div class="form-group">
+                <label>Mật khẩu tài khoản *</label>
+                <input
+                  type="password"
+                  class="form-control"
+                  name="mat_khau_taikhoan"
+                  placeholder="Nhập mật khẩu cho tài khoản"
                   required
                 />
               </div>
@@ -299,11 +316,7 @@
             >
               Hủy
             </button>
-            <button
-              type="button"
-              class="btn btn-gradient"
-              onclick="addCustomer()"
-            >
+            <button type="button" class="btn btn-gradient" id="addCustomerBtn">
               <i class="fas fa-save mr-1"></i>Lưu
             </button>
           </div>
@@ -369,7 +382,7 @@
             <button
               type="button"
               class="btn btn-gradient"
-              onclick="updateCustomer()"
+              id="updateCustomerBtn"
             >
               <i class="fas fa-save mr-1"></i>Cập nhật
             </button>
