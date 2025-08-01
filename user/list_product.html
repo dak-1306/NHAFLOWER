@@ -108,7 +108,11 @@
       <!-- Products Grid -->
       <div class="products-grid" id="productsGrid">
         <!-- Product Card 1 -->
-        <div class="product-card" data-category="hoa-hong">
+        <div
+          class="product-card"
+          data-category="hoa-hong"
+          onclick="goToProductDetail(1)"
+        >
           <div class="product-image">
             <span>Hình ảnh sản phẩm</span>
           </div>
@@ -125,12 +129,21 @@
               </div>
               <span class="rating-number">4.9</span>
             </div>
-            <button class="add-to-cart-btn">Thêm vào giỏ</button>
+            <button
+              class="add-to-cart-btn"
+              onclick="event.stopPropagation(); addToCartFromList(1)"
+            >
+              Thêm vào giỏ
+            </button>
           </div>
         </div>
 
         <!-- Product Card 2 -->
-        <div class="product-card" data-category="hoa-hong">
+        <div
+          class="product-card"
+          data-category="hoa-hong"
+          onclick="goToProductDetail(2)"
+        >
           <div class="product-image">
             <span>Hình ảnh sản phẩm</span>
           </div>
@@ -147,12 +160,21 @@
               </div>
               <span class="rating-number">4.9</span>
             </div>
-            <button class="add-to-cart-btn">Thêm vào giỏ</button>
+            <button
+              class="add-to-cart-btn"
+              onclick="event.stopPropagation(); addToCartFromList(2)"
+            >
+              Thêm vào giỏ
+            </button>
           </div>
         </div>
 
         <!-- Product Card 3 -->
-        <div class="product-card" data-category="hoa-tulip">
+        <div
+          class="product-card"
+          data-category="hoa-tulip"
+          onclick="goToProductDetail(3)"
+        >
           <div class="product-image">
             <span>Hình ảnh sản phẩm</span>
           </div>
@@ -169,7 +191,12 @@
               </div>
               <span class="rating-number">4.8</span>
             </div>
-            <button class="add-to-cart-btn">Thêm vào giỏ</button>
+            <button
+              class="add-to-cart-btn"
+              onclick="event.stopPropagation(); addToCartFromList(3)"
+            >
+              Thêm vào giỏ
+            </button>
           </div>
         </div>
 

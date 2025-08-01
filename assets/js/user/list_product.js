@@ -26,16 +26,85 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 
-  // Add to cart functionality
-  const addToCartBtns = document.querySelectorAll(".add-to-cart-btn");
-  addToCartBtns.forEach((btn) => {
-    btn.addEventListener("click", function () {
-      const productName =
-        this.parentElement.querySelector(".product-name").textContent;
-      alert(`Đã thêm "${productName}" vào giỏ hàng!`);
+  // Add hover effect for product cards
+  productCards.forEach((card) => {
+    card.style.cursor = "pointer";
+    card.addEventListener("mouseenter", function () {
+      this.style.transform = "translateY(-5px)";
+      this.style.boxShadow = "0 10px 25px rgba(139, 90, 150, 0.15)";
+    });
+
+    card.addEventListener("mouseleave", function () {
+      this.style.transform = "translateY(0)";
+      this.style.boxShadow = "none";
     });
   });
 });
+
+// Navigate to product detail page
+function goToProductDetail(productId) {
+  window.location.href = `detail_product.html?id=${productId}`;
+}
+
+// Add to cart from list page
+function addToCartFromList(productId) {
+  // Prevent navigation when clicking add to cart button
+  event.stopPropagation();
+
+  // Get product info
+  const productCard = event.target.closest(".product-card");
+  const productName = productCard.querySelector(".product-name").textContent;
+  const productPrice = productCard.querySelector(".product-price").textContent;
+
+  // Add to cart logic here
+  console.log(`Adding product ${productId} to cart:`, {
+    id: productId,
+    name: productName,
+    price: productPrice,
+  });
+
+  // Show success message
+  showSuccessNotification(`Đã thêm "${productName}" vào giỏ hàng!`);
+}
+
+// Show success notification
+function showSuccessNotification(message) {
+  // Create notification element
+  const notification = document.createElement("div");
+  notification.className = "alert alert-success position-fixed";
+  notification.style.cssText = `
+    top: 100px; 
+    right: 20px; 
+    z-index: 9999; 
+    min-width: 300px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  `;
+  notification.innerHTML = `
+    <i class="fas fa-check-circle"></i> ${message}
+    <button type="button" class="close" onclick="this.parentElement.remove()">
+      <span>&times;</span>
+    </button>
+  `;
+
+  // Add to page
+  document.body.appendChild(notification);
+
+  // Show with animation
+  setTimeout(() => {
+    notification.style.opacity = "1";
+  }, 100);
+
+  // Auto remove after 3 seconds
+  setTimeout(() => {
+    notification.style.opacity = "0";
+    setTimeout(() => {
+      if (notification.parentElement) {
+        notification.remove();
+      }
+    }, 300);
+  }, 3000);
+}
 
 // Header navigation functions
 function showSearchModal() {

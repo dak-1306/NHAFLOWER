@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NHAFLOWER - Chi tiết sản phẩm</title>
+
+    <!-- Bootstrap CSS -->
+    <link
+      href="../assets/vendor/bootstrap/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+
+    <!-- Font Awesome -->
+    <link
+      href="../assets/vendor/fontawesome-free/css/all.min.css"
+      rel="stylesheet"
+    />
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="../assets/css/user/detail_product.css" />
+    <link rel="stylesheet" href="../assets/css/user/common.css" />
+  </head>
+  <body>
+    <!-- THANH NAVIGATION - Menu điều hướng chính -->
+    <nav class="navbar navbar-expand-lg navbar-custom fixed-top">
+      <div class="container">
+        <!-- Menu bên trái -->
+        <div class="navbar-nav mr-auto">
+          <a class="nav-link-custom" href="home.html">Home</a>
+          <a class="nav-link-custom" href="#" onclick="showCategories()"
+            >Danh sách</a
+          >
+        </div>
+
+        <!-- Logo NHAFLOWER ở giữa -->
+        <div class="navbar-brand-logo">
+          <img
+            src="../assets/img/user/logo_NHAFLOWER.png"
+            alt="NHAFLOWER"
+            class="brand-circle-logo"
+          />
+        </div>
+
+        <!-- navbar-toggler: Nút menu responsive cho mobile -->
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-toggle="collapse"
+          data-target="#navbarNav"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- Menu bên phải -->
+        <div class="navbar-nav ml-auto">
+          <!-- Search icon -->
+          <div class="nav-icon-wrapper">
+            <i
+              class="fas fa-search nav-icon"
+              title="Tìm kiếm"
+              onclick="showSearchModal()"
+            ></i>
+          </div>
+
+          <!-- User avatar -->
+          <div class="nav-icon-wrapper">
+            <div
+              class="user-avatar"
+              title="Trang cá nhân"
+              onclick="showUserProfile()"
+            >
+              <i class="fas fa-user"></i>
+            </div>
+          </div>
+
+          <!-- Shopping cart -->
+          <div class="nav-icon-wrapper">
+            <i
+              class="fas fa-shopping-bag nav-icon"
+              title="Giỏ hàng"
+              onclick="showCart()"
+            ></i>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container product-detail-container">
+      <!-- Product Detail Section -->
+      <div class="row product-detail-row">
+        <!-- Product Images -->
+        <div class="col-lg-6 col-md-6">
+          <div class="product-images-section">
+            <!-- Main Image Only -->
+            <div class="main-image-wrapper">
+              <img
+                id="mainProductImage"
+                src="../assets/img/products/default-flower.jpg"
+                alt="Sản phẩm"
+                class="main-product-image"
+              />
+              <button class="image-zoom-btn" onclick="openImageModal()">
+                <i class="fas fa-search-plus"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Product Info -->
+        <div class="col-lg-6 col-md-6">
+          <div class="product-info-section">
+            <!-- Product Title -->
+            <h1 class="product-title" id="productName">Tên sản phẩm</h1>
+
+            <!-- Product Rating -->
+            <div class="product-rating-section">
+              <div class="rating-stars" id="productRating">
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+              </div>
+              <span class="rating-number" id="ratingNumber">4.9</span>
+              <span class="review-count"
+                >(<span id="reviewCount">156</span> đánh giá)</span
+              >
+            </div>
+
+            <!-- Product Price -->
+            <div class="price-section">
+              <span class="current-price" id="productPrice">250,000 VNĐ</span>
+              <span class="original-price" id="originalPrice">300,000 VNĐ</span>
+              <span class="discount-badge">-17%</span>
+            </div>
+
+            <!-- Product Description -->
+            <div class="description-section">
+              <h3>Mô tả sản phẩm</h3>
+              <p id="productDescription">
+                Thông tin của sản phẩm sẽ được hiển thị ở đây...
+              </p>
+            </div>
+
+            <!-- Product Options -->
+            <div class="product-options">
+              <!-- Quantity Selector -->
+              <div class="quantity-section">
+                <label>Số lượng:</label>
+                <div class="quantity-controls">
+                  <button class="qty-btn" onclick="decreaseQuantity()">
+                    -
+                  </button>
+                  <input
+                    type="number"
+                    id="quantity"
+                    value="1"
+                    min="1"
+                    max="99"
+                  />
+                  <button class="qty-btn" onclick="increaseQuantity()">
+                    +
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+              <button
+                class="btn btn-primary add-to-cart-btn"
+                onclick="addToCart()"
+              >
+                <i class="fas fa-shopping-cart"></i>
+                Thêm vào giỏ hàng
+              </button>
+              <button class="btn btn-success buy-now-btn" onclick="buyNow()">
+                <i class="fas fa-bolt"></i>
+                Mua ngay
+              </button>
+              <button
+                class="btn btn-outline-secondary favorite-btn"
+                onclick="toggleFavorite()"
+              >
+                <i class="far fa-heart"></i>
+              </button>
+            </div>
+
+            <!-- Product Features -->
+            <div class="product-features">
+              <div class="feature-item">
+                <i class="fas fa-truck"></i>
+                <span>Giao hàng miễn phí trong nội thành</span>
+              </div>
+              <div class="feature-item">
+                <i class="fas fa-undo"></i>
+                <span>Đổi trả trong 7 ngày</span>
+              </div>
+              <div class="feature-item">
+                <i class="fas fa-shield-alt"></i>
+                <span>Cam kết chất lượng</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Related Products -->
+      <div class="related-products-section">
+        <h3>Sản phẩm liên quan</h3>
+        <div class="row" id="relatedProducts">
+          <!-- Related products sẽ được load bằng JavaScript -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Image Modal -->
+    <div class="modal fade" id="imageModal" tabindex="-1" role="dialog">
+      <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">
+              <span>&times;</span>
+            </button>
+          </div>
+          <div class="modal-body text-center">
+            <img id="modalImage" src="" alt="Sản phẩm" class="img-fluid" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="../assets/vendor/jquery/jquery.min.js"></script>
+    <script src="../assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Custom JavaScript -->
+    <script src="../assets/js/user/detail_product.js"></script>
+  </body>
+</html>
