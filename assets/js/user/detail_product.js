@@ -24,20 +24,7 @@ class ProductDetailManager {
   }
 
   setupEventListeners() {
-    // Size selection
-    $(".size-btn").on("click", (e) => {
-      $(".size-btn").removeClass("active");
-      $(e.target).addClass("active");
-      this.selectedSize = $(e.target).data("size");
-    });
-
-    // Tab events
-    $('a[data-toggle="tab"]').on("shown.bs.tab", (e) => {
-      const targetTab = $(e.target).attr("href");
-      if (targetTab === "#reviews-tab") {
-        this.loadReviews();
-      }
-    });
+    // No additional event listeners needed for simplified version
   }
 
   // Lấy product ID từ URL parameters
@@ -146,7 +133,7 @@ class ProductDetailManager {
 
     // Update rating
     $("#ratingNumber").text(product.rating);
-    $("#reviewCount, #tabReviewCount").text(product.reviewCount);
+    $("#reviewCount").text(product.reviewCount);
     this.renderStars(product.rating, "#productRating");
 
     // Update description
@@ -166,25 +153,10 @@ class ProductDetailManager {
 
   // Render product images
   renderProductImages(images) {
-    // Update main image
+    // Update main image only
     $("#mainProductImage")
       .attr("src", images[0])
       .attr("alt", this.currentProduct.name);
-
-    // Update thumbnails
-    const thumbnailsHtml = images
-      .map(
-        (image, index) => `
-      <div class="thumbnail-item ${
-        index === 0 ? "active" : ""
-      }" onclick="productDetailManager.changeMainImage(this)">
-        <img src="${image}" alt="Hình ${index + 1}">
-      </div>
-    `
-      )
-      .join("");
-
-    $(".thumbnail-images").html(thumbnailsHtml);
   }
 
   // Render rating stars
@@ -328,73 +300,10 @@ class ProductDetailManager {
     window.location.href = `detail_product.html?id=${productId}`;
   }
 
-  // Load reviews
-  async loadReviews() {
-    try {
-      // Mock reviews data
-      const reviews = [
-        {
-          id: 1,
-          userName: "Nguyễn Thị Lan",
-          rating: 5,
-          comment: "Hoa rất tươi và đẹp, giao hàng nhanh. Tôi rất hài lòng!",
-          date: "2025-07-28",
-          avatar: "https://via.placeholder.com/50",
-        },
-        {
-          id: 2,
-          userName: "Trần Văn Minh",
-          rating: 4,
-          comment: "Chất lượng tốt, đóng gói cẩn thận. Sẽ mua lại.",
-          date: "2025-07-25",
-          avatar: "https://via.placeholder.com/50",
-        },
-      ];
-
-      const reviewsHtml = reviews
-        .map(
-          (review) => `
-        <div class="review-item" style="border-bottom: 1px solid #eee; padding: 20px 0;">
-          <div class="d-flex">
-            <img src="${review.avatar}" alt="${review.userName}" 
-                 style="width: 50px; height: 50px; border-radius: 50%; margin-right: 15px;">
-            <div class="flex-grow-1">
-              <div class="d-flex justify-content-between align-items-start">
-                <h6 style="margin: 0; color: #2c3e50;">${review.userName}</h6>
-                <small style="color: #6c757d;">${review.date}</small>
-              </div>
-              <div style="margin: 5px 0;">
-                ${this.getStarsHtml(review.rating)}
-              </div>
-              <p style="margin: 10px 0 0; color: #5a6c7d; line-height: 1.5;">${
-                review.comment
-              }</p>
-            </div>
-          </div>
-        </div>
-      `
-        )
-        .join("");
-
-      $("#reviewsSection").html(reviewsHtml);
-    } catch (error) {
-      console.error("Error loading reviews:", error);
-    }
   }
 }
 
 // Global functions for onclick events
-function changeMainImage(thumbnail) {
-  const newSrc = $(thumbnail).find("img").attr("src");
-  const newAlt = $(thumbnail).find("img").attr("alt");
-
-  $("#mainProductImage").attr("src", newSrc).attr("alt", newAlt);
-
-  // Update active thumbnail
-  $(".thumbnail-item").removeClass("active");
-  $(thumbnail).addClass("active");
-}
-
 function openImageModal() {
   const mainImageSrc = $("#mainProductImage").attr("src");
   $("#modalImage").attr("src", mainImageSrc);
@@ -429,7 +338,6 @@ function addToCart() {
     name: productDetailManager.currentProduct.name,
     price: productDetailManager.currentProduct.price,
     quantity: productDetailManager.quantity,
-    size: productDetailManager.selectedSize,
     image: productDetailManager.currentProduct.images
       ? productDetailManager.currentProduct.images[0]
       : "",
