@@ -7,6 +7,7 @@
 
 class CustomerManager {
   constructor() {
+    // Khôi phục relative URL
     this.API_BASE_URL = "../api/khach_hang/";
     this.customersTable = null;
     this.init();
@@ -182,6 +183,7 @@ class CustomerManager {
         ten_khachhang: formData.get("ten_khachhang"),
         so_dien_thoai: formData.get("so_dien_thoai"),
         dia_chi: formData.get("dia_chi"),
+        ngay_sinh: formData.get("ngay_sinh"), // Thêm ngày sinh
         email_taikhoan: formData.get("email_taikhoan"),
         mat_khau_taikhoan: formData.get("mat_khau_taikhoan"),
       };
@@ -285,6 +287,7 @@ class CustomerManager {
         ten_khachhang: customerData.ten_khachhang,
         so_dien_thoai: customerData.so_dien_thoai,
         dia_chi: customerData.dia_chi,
+        ngay_sinh: customerData.ngay_sinh || null, // Thêm ngày sinh (có thể null)
         id_taikhoan: accountResult.id,
       };
 
@@ -293,7 +296,11 @@ class CustomerManager {
       const controller2 = new AbortController();
       const timeoutId2 = setTimeout(() => controller2.abort(), 10000);
 
-      const response = await fetch(this.API_BASE_URL + "create_customer.php", {
+      const apiUrl = this.API_BASE_URL + "create_customer.php";
+      console.log("API URL:", apiUrl);
+      console.log("Full URL:", window.location.origin + "/" + apiUrl);
+
+      const response = await fetch(apiUrl, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -310,10 +317,30 @@ class CustomerManager {
       );
 
       if (!response.ok) {
-        throw new Error(`Customer API error: ${response.status}`);
+        const errorText = await response.text();
+        console.error("API Error Response:", errorText);
+        throw new Error(
+          `Customer API error: ${response.status} - ${errorText.substring(
+            0,
+            100
+          )}`
+        );
       }
 
-      const result = await response.json();
+      const responseText = await response.text();
+      console.log("Raw response:", responseText);
+
+      let result;
+      try {
+        result = JSON.parse(responseText);
+      } catch (e) {
+        console.error("JSON parse error:", e);
+        console.error("Response that failed to parse:", responseText);
+        throw new Error(
+          `Invalid JSON response: ${responseText.substring(0, 100)}`
+        );
+      }
+
       console.log("Customer creation result:", result);
 
       if (result.success) {
@@ -363,6 +390,8 @@ class CustomerManager {
       document.getElementById("editCustomerName").value = customer.ten;
       document.getElementById("editCustomerPhone").value = customer.sdt;
       document.getElementById("editCustomerAddress").value = customer.dia_chi;
+      document.getElementById("editCustomerBirthday").value =
+        customer.ngay_sinh || "";
 
       $("#editCustomerModal").modal("show");
     } catch (error) {
@@ -381,6 +410,7 @@ class CustomerManager {
       ten_khachhang: formData.get("ten_khachhang"),
       so_dien_thoai: formData.get("so_dien_thoai"),
       dia_chi: formData.get("dia_chi"),
+      ngay_sinh: formData.get("ngay_sinh"),
     };
 
     try {
