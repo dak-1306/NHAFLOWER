@@ -45,3 +45,6 @@ files/
 # Compiled files
 *.min.js
 *.min.css
+
+#ngoại lệ cho file nhaflower.sql
+!database/nhaflower.sql
