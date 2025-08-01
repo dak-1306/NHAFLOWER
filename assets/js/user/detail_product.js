@@ -301,7 +301,7 @@ class ProductDetailManager {
   }
 
   }
-}
+
 
 // Global functions for onclick events
 function openImageModal() {
