@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NHAFLOWER - Chi tiết sản phẩm</title>
+
+    <!-- Bootstrap CSS -->
+    <link
+      href="../assets/vendor/bootstrap/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+
+    <!-- Font Awesome -->
+    <link
+      href="../assets/vendor/fontawesome-free/css/all.min.css"
+      rel="stylesheet"
+    />
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="../assets/css/user/shopping_cart.css" />
+    <link rel="stylesheet" href="../assets/css/user/common.css" />
+  </head>
+  <body>
+    <!-- THANH NAVIGATION - Menu điều hướng chính -->
+    <nav class="navbar navbar-expand-lg navbar-custom fixed-top">
+      <div class="container">
+        <!-- Menu bên trái -->
+        <div class="navbar-nav mr-auto">
+          <a class="nav-link-custom" href="home.html">Home</a>
+          <a
+            class="nav-link-custom"
+            href="list_product.html"
+            onclick="showCategories()"
+            >Danh sách</a
+          >
+        </div>
+
+        <!-- Logo NHAFLOWER ở giữa -->
+        <div class="navbar-brand-logo">
+          <img
+            src="../assets/img/user/logo_NHAFLOWER.png"
+            alt="NHAFLOWER"
+            class="brand-circle-logo"
+          />
+        </div>
+
+        <!-- navbar-toggler: Nút menu responsive cho mobile -->
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-toggle="collapse"
+          data-target="#navbarNav"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- Menu bên phải -->
+        <div class="navbar-nav ml-auto">
+          <!-- Search icon -->
+          <div class="nav-icon-wrapper">
+            <i
+              class="fas fa-search nav-icon"
+              title="Tìm kiếm"
+              onclick="showSearchModal()"
+            ></i>
+          </div>
+
+          <!-- User avatar -->
+          <div class="nav-icon-wrapper">
+            <div
+              class="user-avatar"
+              title="Trang cá nhân"
+              onclick="showUserProfile()"
+            >
+              <i class="fas fa-user"></i>
+            </div>
+          </div>
+
+          <!-- Shopping cart -->
+          <div class="nav-icon-wrapper">
+            <i
+              class="fas fa-shopping-bag nav-icon"
+              title="Giỏ hàng"
+              onclick="window.location.href='shopping_cart.html'"
+            ></i>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="shopping-cart-container">
+      <div class="container">
+        <!-- Page Title -->
+        <div class="page-header">
+          <h1 class="page-title">Giỏ hàng của bạn</h1>
+        </div>
+
+        <!-- Cart Content -->
+        <div class="row">
+          <!-- Cart Items -->
+          <div class="col-lg-8">
+            <div class="cart-items-section">
+              <!-- Cart Header -->
+              <div class="cart-header">
+                <h3>Sản phẩm trong giỏ hàng</h3>
+                <span class="cart-count" id="cartItemCount">0 sản phẩm</span>
+              </div>
+
+              <!-- Empty Cart Message -->
+              <div class="empty-cart-message" id="emptyCartMessage">
+                <div class="empty-cart-icon">
+                  <i class="fas fa-shopping-cart"></i>
+                </div>
+                <h4>Giỏ hàng của bạn đang trống</h4>
+                <p>Hãy thêm sản phẩm yêu thích vào giỏ hàng nhé!</p>
+                <a
+                  href="list_product.html"
+                  class="btn btn-primary continue-shopping-btn"
+                >
+                  Tiếp tục mua sắm
+                </a>
+              </div>
+
+              <!-- Cart Items List -->
+              <div class="cart-items-list" id="cartItemsList">
+                <!-- Cart items will be loaded here -->
+              </div>
+
+              <!-- Continue Shopping -->
+              <div
+                class="continue-shopping"
+                id="continueShoppingSection"
+                style="display: none"
+              >
+                <a href="list_product.html" class="continue-shopping-link">
+                  <i class="fas fa-arrow-left"></i>
+                  Tiếp tục mua sắm
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Cart Summary -->
+          <div class="col-lg-4">
+            <div
+              class="cart-summary-section"
+              id="cartSummarySection"
+              style="display: none"
+            >
+              <div class="cart-summary">
+                <h4>Tóm tắt đơn hàng</h4>
+
+                <!-- Order Summary -->
+                <div class="order-summary">
+                  <div class="summary-row">
+                    <span>Tạm tính:</span>
+                    <span id="subtotalAmount">0 VNĐ</span>
+                  </div>
+                  <div class="summary-row">
+                    <span>Phí vận chuyển:</span>
+                    <span id="shippingFee">30,000 VNĐ</span>
+                  </div>
+                  <div class="summary-row discount-row">
+                    <span>Giảm giá:</span>
+                    <span id="discountAmount">-0 VNĐ</span>
+                  </div>
+                  <hr />
+                  <div class="summary-row total-row">
+                    <span><strong>Tổng cộng:</strong></span>
+                    <span id="totalAmount"><strong>0 VNĐ</strong></span>
+                  </div>
+                </div>
+
+                <!-- Checkout Button -->
+                <div class="checkout-section">
+                  <button
+                    class="btn btn-checkout"
+                    onclick="proceedToCheckout()"
+                  >
+                    Tiến hành thanh toán
+                  </button>
+
+                  <!-- Payment Methods -->
+                  <div class="payment-methods">
+                    <p>Phương thức thanh toán:</p>
+                    <div class="payment-icons">
+                      <i class="fas fa-credit-card" title="Thẻ tín dụng"></i>
+                      <i class="fas fa-money-bill-wave" title="Tiền mặt"></i>
+                      <i class="fab fa-paypal" title="PayPal"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Related Products -->
+        <div class="related-products-section" id="relatedProductsSection">
+          <h3>Có thể bạn sẽ thích</h3>
+          <div class="row" id="relatedProducts">
+            <!-- Related products will be loaded here -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="../assets/vendor/jquery/jquery.min.js"></script>
+    <script src="../assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Custom JavaScript -->
+    <script src="../assets/js/user/shopping_cart.js"></script>
+  </body>
+</html>
