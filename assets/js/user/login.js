@@ -175,46 +175,59 @@ function submitLogin() {
 
   // Collect form data
   const formData = {
-    email: $("#email").val(),
-    password: $("#password").val(),
+    email: $("#email").val().trim(),
+    mat_khau: $("#password").val(),
     rememberMe: $("#rememberMe").is(":checked"),
   };
 
-  // Simulate API call
-  setTimeout(function () {
-    // Reset button state
-    $submitBtn.prop("disabled", false);
-    $btnText.removeClass("d-none");
-    $btnLoading.addClass("d-none");
+  console.log("Submitting login with:", formData);
 
-    // Simulate successful login
-    if (formData.email && formData.password) {
-      showNotification("Đăng nhập thành công!", "success");
+  // Call login API
+  $.ajax({
+    url: "../auth/login.php",
+    method: "POST",
+    contentType: "application/json",
+    data: JSON.stringify({
+      email: formData.email,
+      mat_khau: formData.mat_khau,
+    }),
+    success: function (response) {
+      console.log("Login API response:", response);
 
-      // Redirect to home page after successful login
-      setTimeout(function () {
-        window.location.href = "home.html";
-      }, 1500);
-    } else {
-      showNotification("Thông tin đăng nhập không chính xác", "error");
-    }
+      if (response.success) {
+        // Sử dụng AuthManager để đăng nhập
+        window.authManager.login(response.data.token, response.data);
 
-    console.log("Login data:", formData);
+        showNotification("Đăng nhập thành công!", "success");
 
-    // TODO: Replace with actual API call
-    // $.ajax({
-    //     url: '/api/login',
-    //     method: 'POST',
-    //     data: formData,
-    //     success: function(response) {
-    //         localStorage.setItem('authToken', response.token);
-    //         window.location.href = 'home.html';
-    //     },
-    //     error: function(xhr) {
-    //         showNotification('Đăng nhập thất bại: ' + xhr.responseJSON.message, 'error');
-    //     }
-    // });
-  }, 2000);
+        // Sử dụng AuthManager để xử lý redirect
+        setTimeout(function () {
+          window.authManager.handlePostLoginRedirect();
+        }, 1500);
+      } else {
+        showNotification("Đăng nhập thất bại: " + response.message, "error");
+      }
+    },
+    error: function (xhr, status, error) {
+      console.error("Login API error:", { xhr, status, error });
+
+      let errorMessage = "Có lỗi xảy ra khi đăng nhập";
+
+      if (xhr.responseJSON && xhr.responseJSON.message) {
+        errorMessage = xhr.responseJSON.message;
+      } else if (xhr.responseText) {
+        errorMessage = "Lỗi server: " + xhr.responseText;
+      }
+
+      showNotification("Đăng nhập thất bại: " + errorMessage, "error");
+    },
+    complete: function () {
+      // Reset button state
+      $submitBtn.prop("disabled", false);
+      $btnText.removeClass("d-none");
+      $btnLoading.addClass("d-none");
+    },
+  });
 }
 
 /* ===========================================
@@ -284,3 +297,45 @@ $(document).ready(function () {
     }
   });
 });
+
+/* ===========================================
+   UTILITY FUNCTIONS
+   =========================================== */
+
+function showNotification(message, type = "info") {
+  // Create notification element
+  const notificationId = "notification-" + Date.now();
+  const alertClass =
+    type === "success"
+      ? "alert-success"
+      : type === "error"
+      ? "alert-danger"
+      : type === "warning"
+      ? "alert-warning"
+      : "alert-info";
+
+  const notification = $(`
+    <div id="${notificationId}" class="alert ${alertClass} alert-dismissible fade show notification-popup" role="alert" style="position: fixed; top: 20px; right: 20px; z-index: 9999; min-width: 300px;">
+      <strong>${
+        type === "success"
+          ? "Thành công!"
+          : type === "error"
+          ? "Lỗi!"
+          : "Thông báo!"
+      }</strong> ${message}
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+  `);
+
+  // Add to body
+  $("body").append(notification);
+
+  // Auto remove after 5 seconds
+  setTimeout(function () {
+    $("#" + notificationId).fadeOut(function () {
+      $(this).remove();
+    });
+  }, 5000);
+}

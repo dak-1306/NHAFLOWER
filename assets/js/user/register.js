@@ -316,46 +316,80 @@ function submitRegistration() {
 
   // Collect form data
   const formData = {
-    email: $("#email").val(),
-    password: $("#password").val(),
-    confirmPassword: $("#confirmPassword").val(),
+    email: $("#email").val().trim(),
+    mat_khau: $("#password").val(),
+    ten: $("#fullName").val().trim(),
+    sdt: $("#phone").val().trim(),
+    dia_chi: $("#address").val().trim(),
+    ngay_sinh: $("#birthDate").val(),
     agreeTerms: $("#agreeTerms").is(":checked"),
     newsletter: $("#newsletter").is(":checked"),
   };
 
-  // Simulate API call
-  setTimeout(function () {
-    // Reset button state
-    $submitBtn.prop("disabled", false);
-    $btnText.removeClass("d-none");
-    $btnLoading.addClass("d-none");
+  console.log("Submitting registration with:", formData);
 
-    // Show success modal
-    $("#successModal").modal("show");
+  // Call register API
+  $.ajax({
+    url: "../auth/register.php",
+    method: "POST",
+    contentType: "application/json",
+    data: JSON.stringify({
+      email: formData.email,
+      mat_khau: formData.mat_khau,
+      ten: formData.ten,
+      sdt: formData.sdt,
+      dia_chi: formData.dia_chi,
+      ngay_sinh: formData.ngay_sinh,
+    }),
+    success: function (response) {
+      console.log("Register API response:", response);
 
-    // Reset form
-    $form[0].reset();
-    $(".strength-meter-fill").css("width", "0%");
-    $(".strength-text").text("Độ mạnh mật khẩu").css("color", "#666");
-    $form
-      .find(".form-group")
-      .removeClass("strength-weak strength-fair strength-good strength-strong");
+      if (response.success) {
+        // Sử dụng AuthManager để đăng nhập tự động sau khi đăng ký
+        window.authManager.login(response.data.token, response.data);
 
-    console.log("Registration data:", formData);
+        // Show success modal
+        $("#successModal").modal("show");
 
-    // TODO: Replace with actual API call
-    // $.ajax({
-    //     url: '/api/register',
-    //     method: 'POST',
-    //     data: formData,
-    //     success: function(response) {
-    //         $('#successModal').modal('show');
-    //     },
-    //     error: function(xhr) {
-    //         showNotification('Đăng ký thất bại: ' + xhr.responseJSON.message, 'error');
-    //     }
-    // });
-  }, 2000);
+        // Reset form
+        $form[0].reset();
+        $(".strength-meter-fill").css("width", "0%");
+        $(".strength-text").text("Độ mạnh mật khẩu").css("color", "#666");
+        $form
+          .find(".form-group")
+          .removeClass(
+            "strength-weak strength-fair strength-good strength-strong"
+          );
+
+        // Auto redirect to home after 2 seconds
+        setTimeout(function () {
+          window.location.href = "home.html";
+        }, 2000);
+      } else {
+        // Show error message
+        alert("Lỗi đăng ký: " + response.message);
+      }
+    },
+    error: function (xhr, status, error) {
+      console.error("Register API error:", { xhr, status, error });
+
+      let errorMessage = "Có lỗi xảy ra khi đăng ký";
+
+      if (xhr.responseJSON && xhr.responseJSON.message) {
+        errorMessage = xhr.responseJSON.message;
+      } else if (xhr.responseText) {
+        errorMessage = "Lỗi server: " + xhr.responseText;
+      }
+
+      alert("Lỗi đăng ký: " + errorMessage);
+    },
+    complete: function () {
+      // Reset button state
+      $submitBtn.prop("disabled", false);
+      $btnText.removeClass("d-none");
+      $btnLoading.addClass("d-none");
+    },
+  });
 }
 
 /* ===========================================
@@ -376,9 +410,9 @@ $(document).ready(function () {
 
 // Handle modal close
 $("#successModal").on("hidden.bs.modal", function () {
-  // Redirect to login or home page
+  // Sử dụng AuthManager để xử lý redirect sau đăng ký
   setTimeout(function () {
-    window.location.href = "login.html";
+    window.authManager.handlePostLoginRedirect();
   }, 1000);
 });
 
@@ -401,3 +435,45 @@ $(document).on("click", ".terms-link", function (e) {
   // TODO: Show terms modal or redirect to terms page
   showNotification("Điều khoản và điều kiện đang được cập nhật", "info");
 });
+
+/* ===========================================
+   UTILITY FUNCTIONS
+   =========================================== */
+
+function showNotification(message, type = "info") {
+  // Create notification element
+  const notificationId = "notification-" + Date.now();
+  const alertClass =
+    type === "success"
+      ? "alert-success"
+      : type === "error"
+      ? "alert-danger"
+      : type === "warning"
+      ? "alert-warning"
+      : "alert-info";
+
+  const notification = $(`
+    <div id="${notificationId}" class="alert ${alertClass} alert-dismissible fade show notification-popup" role="alert" style="position: fixed; top: 20px; right: 20px; z-index: 9999; min-width: 300px;">
+      <strong>${
+        type === "success"
+          ? "Thành công!"
+          : type === "error"
+          ? "Lỗi!"
+          : "Thông báo!"
+      }</strong> ${message}
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+  `);
+
+  // Add to body
+  $("body").append(notification);
+
+  // Auto remove after 5 seconds
+  setTimeout(function () {
+    $("#" + notificationId).fadeOut(function () {
+      $(this).remove();
+    });
+  }, 5000);
+}

@@ -2,11 +2,78 @@
 
 // Đợi trang và jQuery load xong trước khi chạy code
 $(document).ready(function () {
+  // KIỂM TRA AUTHENTICATION TRƯỚC KHI TẢI TRANG
+  checkAuthenticationStatus();
+
   // KHỞI TẠO CÁC CHỨC NĂNG
   initializeSearchFunctionality();
   initializePromotionSlider();
   initializeMobileMenu();
+
+  // XỬ LÝ TÌM KIẾM PENDING (nếu có)
+  handlePendingSearch();
 });
+
+/* ===========================================
+   KIỂM TRA TRẠNG THÁI ĐĂNG NHẬP
+   =========================================== */
+
+function checkAuthenticationStatus() {
+  const userToken = localStorage.getItem("user_token");
+  const userData = localStorage.getItem("user_data");
+
+  // Nếu chưa đăng nhập, chuyển hướng về index
+  if (!userToken || !userData) {
+    console.log("User chưa đăng nhập, chuyển hướng về index");
+    window.location.href = "index.html";
+    return;
+  }
+
+  console.log("User đã đăng nhập, tải trang home");
+
+  // Cập nhật thông tin user trên giao diện nếu cần
+  try {
+    const user = JSON.parse(userData);
+    updateUserInterface(user);
+  } catch (error) {
+    console.error("Error parsing user data:", error);
+    // Nếu dữ liệu user bị lỗi, xóa và chuyển về index
+    localStorage.removeItem("user_token");
+    localStorage.removeItem("user_data");
+    window.location.href = "index.html";
+  }
+}
+
+function updateUserInterface(user) {
+  // Cập nhật avatar nếu có
+  if (user.avatar) {
+    $(".user-avatar").html(
+      `<img src="${user.avatar}" alt="Avatar" class="rounded-circle" width="30" height="30">`
+    );
+  }
+
+  // Có thể thêm các cập nhật UI khác ở đây
+  console.log("Updated UI for user:", user.ho_ten || user.email);
+}
+
+function handlePendingSearch() {
+  const pendingSearch = localStorage.getItem("pending_search");
+  if (pendingSearch) {
+    // Xóa pending search
+    localStorage.removeItem("pending_search");
+
+    // Thực hiện tìm kiếm
+    $(".search-input").val(pendingSearch);
+    showNotification(`Đang tìm kiếm: "${pendingSearch}"`, "info");
+
+    // Chuyển hướng tới trang danh sách với từ khóa tìm kiếm
+    setTimeout(() => {
+      window.location.href = `list_product.html?search=${encodeURIComponent(
+        pendingSearch
+      )}`;
+    }, 1500);
+  }
+}
 
 /* ===========================================
    CÁC HÀM ĐIỀU HƯỚNG (Navigation Functions)
@@ -14,9 +81,8 @@ $(document).ready(function () {
 
 // showCategories(): Hàm hiển thị danh mục sản phẩm
 function showCategories() {
-  showNotification("Tính năng danh sách đang được phát triển", "info");
-  // TODO: Implement actual categories display
-  // $('#categories-modal').modal('show'); // Example with Bootstrap modal
+  // Người dùng đã đăng nhập, cho phép xem danh sách
+  window.location.href = "list_product.html";
 }
 
 // viewMoreDeals(): Hàm xem thêm ưu đãi
@@ -24,6 +90,19 @@ function viewMoreDeals() {
   showNotification("Tính năng xem thêm ưu đãi đang được phát triển", "info");
   // TODO: Redirect to deals page or open modal
   // window.location.href = 'deals.html';
+}
+
+// Logout function
+function logout() {
+  if (confirm("Bạn có chắc chắn muốn đăng xuất?")) {
+    localStorage.removeItem("user_token");
+    localStorage.removeItem("user_data");
+    localStorage.removeItem("pending_search");
+    showNotification("Đã đăng xuất thành công!", "success");
+    setTimeout(() => {
+      window.location.href = "index.html";
+    }, 1500);
+  }
 }
 
 /* ===========================================

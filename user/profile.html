@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NHAFLOWER - Trang cá nhân</title>
+
+    <!-- Bootstrap CSS -->
+    <link
+      href="../assets/vendor/bootstrap/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+
+    <!-- Font Awesome -->
+    <link
+      href="../assets/vendor/fontawesome-free/css/all.min.css"
+      rel="stylesheet"
+    />
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="../assets/css/user/profile.css" />
+    <link rel="stylesheet" href="../assets/css/user/common.css" />
+  </head>
+  <body>
+    <!-- THANH NAVIGATION - Menu điều hướng chính -->
+    <nav class="navbar navbar-expand-lg navbar-custom fixed-top">
+      <div class="container">
+        <!-- Menu bên trái -->
+        <div class="navbar-nav mr-auto">
+          <a class="nav-link-custom" href="home.html">Home</a>
+          <a
+            class="nav-link-custom"
+            href="list_product.html"
+            onclick="showCategories()"
+            >Danh sách</a
+          >
+        </div>
+
+        <!-- Logo NHAFLOWER ở giữa -->
+        <div class="navbar-brand-logo">
+          <img
+            src="../assets/img/user/logo_NHAFLOWER.png"
+            alt="NHAFLOWER"
+            class="brand-circle-logo"
+          />
+        </div>
+
+        <!-- navbar-toggler: Nút menu responsive cho mobile -->
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-toggle="collapse"
+          data-target="#navbarNav"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- Menu bên phải -->
+        <div class="navbar-nav ml-auto">
+          <!-- Search icon -->
+          <div class="nav-icon-wrapper">
+            <i
+              class="fas fa-search nav-icon"
+              title="Tìm kiếm"
+              onclick="showSearchModal()"
+            ></i>
+          </div>
+
+          <!-- User avatar -->
+          <div class="nav-icon-wrapper">
+            <div
+              class="user-avatar"
+              title="Trang cá nhân"
+              onclick="window.location.href='profile.html'"
+            >
+              <i class="fas fa-user"></i>
+            </div>
+          </div>
+
+          <!-- Shopping cart -->
+          <div class="nav-icon-wrapper">
+            <i
+              class="fas fa-shopping-bag nav-icon"
+              title="Giỏ hàng"
+              onclick="window.location.href='shopping_cart.html'"
+            ></i>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="profile-container">
+      <div class="container">
+        <div class="row">
+          <!-- Sidebar -->
+          <div class="col-lg-3">
+            <div class="profile-sidebar">
+              <div class="profile-avatar-section">
+                <div class="profile-avatar">
+                  <img
+                    id="profileAvatar"
+                    src="../assets/img/user/default-avatar.png"
+                    alt="Avatar"
+                  />
+                  <button class="change-avatar-btn" onclick="changeAvatar()">
+                    <i class="fas fa-camera"></i>
+                  </button>
+                </div>
+                <h4 id="profileName">Tên người dùng</h4>
+                <p id="profileEmail">email@example.com</p>
+              </div>
+
+              <nav class="profile-nav">
+                <ul>
+                  <li>
+                    <a
+                      href="#"
+                      class="nav-item active"
+                      data-tab="personal-info"
+                    >
+                      <i class="fas fa-user"></i>
+                      Thông tin cá nhân
+                    </a>
+                  </li>
+                  <li>
+                    <a href="#" class="nav-item" data-tab="orders">
+                      <i class="fas fa-shopping-bag"></i>
+                      Đơn hàng của tôi
+                    </a>
+                  </li>
+                  <li>
+                    <a href="#" class="nav-item" data-tab="addresses">
+                      <i class="fas fa-map-marker-alt"></i>
+                      Địa chỉ giao hàng
+                    </a>
+                  </li>
+                  <li>
+                    <a href="#" class="nav-item" data-tab="favorites">
+                      <i class="fas fa-heart"></i>
+                      Sản phẩm yêu thích
+                    </a>
+                  </li>
+                  <li>
+                    <a href="#" class="nav-item" data-tab="notifications">
+                      <i class="fas fa-bell"></i>
+                      Thông báo
+                    </a>
+                  </li>
+                  <li>
+                    <a href="#" class="nav-item" data-tab="security">
+                      <i class="fas fa-lock"></i>
+                      Bảo mật
+                    </a>
+                  </li>
+                  <li>
+                    <a href="#" class="logout-btn" onclick="logout()">
+                      <i class="fas fa-sign-out-alt"></i>
+                      Đăng xuất
+                    </a>
+                  </li>
+                </ul>
+              </nav>
+            </div>
+          </div>
+
+          <!-- Main Content -->
+          <div class="col-lg-9">
+            <!-- Personal Info Tab -->
+            <div class="tab-content active" id="personal-info">
+              <div class="content-card">
+                <div class="card-header">
+                  <h3>Thông tin cá nhân</h3>
+                  <button class="btn btn-primary" onclick="editPersonalInfo()">
+                    <i class="fas fa-edit"></i>
+                    Chỉnh sửa
+                  </button>
+                </div>
+                <div class="card-body">
+                  <form id="personalInfoForm">
+                    <div class="row">
+                      <div class="col-md-6">
+                        <div class="form-group">
+                          <label>Họ và tên</label>
+                          <input
+                            type="text"
+                            id="fullName"
+                            class="form-control"
+                            readonly
+                          />
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="form-group">
+                          <label>Email</label>
+                          <input
+                            type="email"
+                            id="email"
+                            class="form-control"
+                            readonly
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-6">
+                        <div class="form-group">
+                          <label>Số điện thoại</label>
+                          <input
+                            type="tel"
+                            id="phone"
+                            class="form-control"
+                            readonly
+                          />
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="form-group">
+                          <label>Ngày sinh</label>
+                          <input
+                            type="date"
+                            id="birthDate"
+                            class="form-control"
+                            readonly
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-12">
+                        <div class="form-group">
+                          <label>Địa chỉ</label>
+                          <textarea
+                            id="address"
+                            class="form-control"
+                            rows="3"
+                            readonly
+                          ></textarea>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="form-actions" style="display: none">
+                      <button type="submit" class="btn btn-success">
+                        <i class="fas fa-save"></i>
+                        Lưu thay đổi
+                      </button>
+                      <button
+                        type="button"
+                        class="btn btn-secondary"
+                        onclick="cancelEdit()"
+                      >
+                        <i class="fas fa-times"></i>
+                        Hủy
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+
+            <!-- Orders Tab -->
+            <div class="tab-content" id="orders">
+              <div class="content-card">
+                <div class="card-header">
+                  <h3>Đơn hàng của tôi</h3>
+                  <div class="order-filters">
+                    <select id="orderStatusFilter" class="form-control">
+                      <option value="all">Tất cả đơn hàng</option>
+                      <option value="cho">Chờ xử lý</option>
+                      <option value="dang_giao">Đang giao</option>
+                      <option value="hoan_tat">Hoàn thành</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="card-body">
+                  <div id="ordersList">
+                    <!-- Orders will be loaded here -->
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Addresses Tab -->
+            <div class="tab-content" id="addresses">
+              <div class="content-card">
+                <div class="card-header">
+                  <h3>Địa chỉ giao hàng</h3>
+                  <button class="btn btn-primary" onclick="addNewAddress()">
+                    <i class="fas fa-plus"></i>
+                    Thêm địa chỉ mới
+                  </button>
+                </div>
+                <div class="card-body">
+                  <div id="addressesList">
+                    <!-- Addresses will be loaded here -->
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Favorites Tab -->
+            <div class="tab-content" id="favorites">
+              <div class="content-card">
+                <div class="card-header">
+                  <h3>Sản phẩm yêu thích</h3>
+                </div>
+                <div class="card-body">
+                  <div id="favoritesList" class="row">
+                    <!-- Favorite products will be loaded here -->
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Notifications Tab -->
+            <div class="tab-content" id="notifications">
+              <div class="content-card">
+                <div class="card-header">
+                  <h3>Thông báo</h3>
+                  <button
+                    class="btn btn-outline-secondary"
+                    onclick="markAllAsRead()"
+                  >
+                    <i class="fas fa-check-double"></i>
+                    Đánh dấu đã đọc tất cả
+                  </button>
+                </div>
+                <div class="card-body">
+                  <div id="notificationsList">
+                    <!-- Notifications will be loaded here -->
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Security Tab -->
+            <div class="tab-content" id="security">
+              <div class="content-card">
+                <div class="card-header">
+                  <h3>Bảo mật tài khoản</h3>
+                </div>
+                <div class="card-body">
+                  <form id="changePasswordForm">
+                    <div class="form-group">
+                      <label>Mật khẩu hiện tại</label>
+                      <input
+                        type="password"
+                        id="currentPassword"
+                        class="form-control"
+                        required
+                      />
+                    </div>
+                    <div class="form-group">
+                      <label>Mật khẩu mới</label>
+                      <input
+                        type="password"
+                        id="newPassword"
+                        class="form-control"
+                        required
+                      />
+                      <small class="form-text text-muted">
+                        Mật khẩu phải có ít nhất 8 ký tự, bao gồm chữ hoa, chữ
+                        thường và số
+                      </small>
+                    </div>
+                    <div class="form-group">
+                      <label>Xác nhận mật khẩu mới</label>
+                      <input
+                        type="password"
+                        id="confirmPassword"
+                        class="form-control"
+                        required
+                      />
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                      <i class="fas fa-key"></i>
+                      Đổi mật khẩu
+                    </button>
+                  </form>
+
+                  <hr />
+
+                  <div class="security-options">
+                    <h5>Tùy chọn bảo mật</h5>
+                    <div class="form-check">
+                      <input
+                        type="checkbox"
+                        id="emailNotifications"
+                        class="form-check-input"
+                        checked
+                      />
+                      <label class="form-check-label" for="emailNotifications">
+                        Nhận thông báo qua email
+                      </label>
+                    </div>
+                    <div class="form-check">
+                      <input
+                        type="checkbox"
+                        id="orderUpdates"
+                        class="form-check-input"
+                        checked
+                      />
+                      <label class="form-check-label" for="orderUpdates">
+                        Thông báo cập nhật đơn hàng
+                      </label>
+                    </div>
+                    <div class="form-check">
+                      <input
+                        type="checkbox"
+                        id="promotionNotifications"
+                        class="form-check-input"
+                      />
+                      <label
+                        class="form-check-label"
+                        for="promotionNotifications"
+                      >
+                        Thông báo khuyến mãi
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Address Modal -->
+    <div class="modal fade" id="addressModal" tabindex="-1" role="dialog">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Thêm địa chỉ mới</h5>
+            <button type="button" class="close" data-dismiss="modal">
+              <span>&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <form id="addressForm">
+              <div class="form-group">
+                <label>Tên người nhận</label>
+                <input
+                  type="text"
+                  id="recipientName"
+                  class="form-control"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label>Số điện thoại</label>
+                <input
+                  type="tel"
+                  id="recipientPhone"
+                  class="form-control"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label>Địa chỉ chi tiết</label>
+                <textarea
+                  id="fullAddress"
+                  class="form-control"
+                  rows="3"
+                  required
+                ></textarea>
+              </div>
+              <div class="form-check">
+                <input
+                  type="checkbox"
+                  id="isDefault"
+                  class="form-check-input"
+                />
+                <label class="form-check-label" for="isDefault">
+                  Đặt làm địa chỉ mặc định
+                </label>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-dismiss="modal"
+            >
+              Hủy
+            </button>
+            <button
+              type="button"
+              class="btn btn-primary"
+              onclick="saveAddress()"
+            >
+              Lưu địa chỉ
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="../assets/vendor/jquery/jquery.min.js"></script>
+    <script src="../assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Custom JavaScript -->
+    <script src="../assets/js/user/auth.js"></script>
+    <script src="../assets/js/user/profile.js"></script>
+  </body>
+</html>

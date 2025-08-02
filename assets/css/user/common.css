@@ -199,6 +199,105 @@ body {
   }
 }
 
+/* ====================================
+   NOTIFICATION SYSTEM
+   ==================================== */
+
+.notification-toast {
+  position: fixed;
+  top: 100px;
+  right: 20px;
+  min-width: 300px;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  z-index: 9999;
+  transform: translateX(400px);
+  opacity: 0;
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.notification-toast.show {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+.notification-toast .notification-content {
+  display: flex;
+  align-items: center;
+  padding: 15px 20px;
+  padding-right: 50px;
+}
+
+.notification-toast .notification-content i {
+  margin-right: 12px;
+  font-size: 18px;
+}
+
+.notification-toast .notification-message {
+  flex: 1;
+  font-weight: 500;
+}
+
+.notification-toast .notification-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease;
+}
+
+.notification-toast .notification-close:hover {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+/* Notification Types */
+.notification-success {
+  border-left: 4px solid #27ae60;
+}
+
+.notification-success .notification-content i {
+  color: #27ae60;
+}
+
+.notification-error {
+  border-left: 4px solid #e74c3c;
+}
+
+.notification-error .notification-content i {
+  color: #e74c3c;
+}
+
+.notification-warning {
+  border-left: 4px solid #f39c12;
+}
+
+.notification-warning .notification-content i {
+  color: #f39c12;
+}
+
+.notification-info {
+  border-left: 4px solid #3498db;
+}
+
+.notification-info .notification-content i {
+  color: #3498db;
+}
+
+/* ====================================
+   RESPONSIVE DESIGN
+   ==================================== */
+
 @media (max-width: 992px) {
   .navbar-custom .container {
     max-width: 720px;

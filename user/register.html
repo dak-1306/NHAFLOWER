@@ -73,6 +73,26 @@
 
         <!-- Register Form -->
         <form id="registerForm" class="register-form">
+          <!-- Full Name Field -->
+          <div class="form-group">
+            <div class="input-group">
+              <div class="input-group-prepend">
+                <span class="input-group-text">
+                  <i class="fas fa-user"></i>
+                </span>
+              </div>
+              <input
+                type="text"
+                class="form-control"
+                id="fullName"
+                name="fullName"
+                placeholder="Họ và tên"
+                required
+                autocomplete="name"
+              />
+            </div>
+          </div>
+
           <!-- Email Field -->
           <div class="form-group">
             <div class="input-group">
@@ -89,6 +109,66 @@
                 placeholder="Email"
                 required
                 autocomplete="email"
+              />
+            </div>
+          </div>
+
+          <!-- Phone Field -->
+          <div class="form-group">
+            <div class="input-group">
+              <div class="input-group-prepend">
+                <span class="input-group-text">
+                  <i class="fas fa-phone"></i>
+                </span>
+              </div>
+              <input
+                type="tel"
+                class="form-control"
+                id="phone"
+                name="phone"
+                placeholder="Số điện thoại"
+                required
+                autocomplete="tel"
+              />
+            </div>
+          </div>
+
+          <!-- Address Field -->
+          <div class="form-group">
+            <div class="input-group">
+              <div class="input-group-prepend">
+                <span class="input-group-text">
+                  <i class="fas fa-map-marker-alt"></i>
+                </span>
+              </div>
+              <input
+                type="text"
+                class="form-control"
+                id="address"
+                name="address"
+                placeholder="Địa chỉ"
+                required
+                autocomplete="address-line1"
+              />
+            </div>
+          </div>
+
+          <!-- Birth Date Field -->
+          <div class="form-group">
+            <div class="input-group">
+              <div class="input-group-prepend">
+                <span class="input-group-text">
+                  <i class="fas fa-calendar"></i>
+                </span>
+              </div>
+              <input
+                type="date"
+                class="form-control"
+                id="birthDate"
+                name="birthDate"
+                placeholder="Ngày sinh"
+                required
+                autocomplete="bday"
               />
             </div>
           </div>
@@ -221,14 +301,15 @@
     </div>
 
     <!-- Bootstrap core JavaScript-->
-    <script src="vendor/jquery/jquery.min.js"></script>
-    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="../assets/vendor/jquery/jquery.min.js"></script>
+    <script src="../assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 
     <!-- Core plugin JavaScript-->
-    <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+    <script src="../assets/vendor/jquery-easing/jquery.easing.min.js"></script>
 
+    <!-- Authentication Manager -->
+    <script src="../assets/js/user/auth.js"></script>
     <!-- Custom scripts for register page-->
-    <script src="js/home.js"></script>
-    <script src="js/register.js"></script>
+    <script src="../assets/js/user/register.js"></script>
   </body>
 </html>

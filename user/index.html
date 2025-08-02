@@ -76,34 +76,10 @@
 
         <!-- Menu bên phải -->
         <div class="navbar-nav ml-auto">
-          <!-- Search icon -->
-          <div class="nav-icon-wrapper">
-            <i
-              class="fas fa-search nav-icon"
-              title="Tìm kiếm"
-              onclick="showSearchModal()"
-            ></i>
-          </div>
-
-          <!-- User avatar -->
-          <div class="nav-icon-wrapper">
-            <div
-              class="user-avatar"
-              title="Trang cá nhân"
-              onclick="window.location.href='profile.html'"
-            >
-              <i class="fas fa-user"></i>
-            </div>
-          </div>
-
-          <!-- Shopping cart -->
-          <div class="nav-icon-wrapper">
-            <i
-              class="fas fa-shopping-bag nav-icon"
-              title="Giỏ hàng"
-              onclick="window.location.href='shopping_cart.html'"
-            ></i>
-          </div>
+          <!-- btn-login: Nút đăng nhập dẫn tới login.html -->
+          <a class="btn btn-login" href="login.html">Đăng nhập</a>
+          <!-- btn-register: Nút đăng ký dẫn tới register.html -->
+          <a class="btn btn-register" href="register.html">Đăng ký</a>
         </div>
       </div>
     </nav>
@@ -158,7 +134,7 @@
 
     <!-- Authentication Manager -->
     <script src="../assets/js/user/auth.js"></script>
-    <!-- JavaScript tùy chỉnh cho trang home -->
-    <script src="../assets/js/user/home.js"></script>
+    <!-- JavaScript tùy chỉnh cho trang index -->
+    <script src="../assets/js/user/index.js"></script>
   </body>
 </html>

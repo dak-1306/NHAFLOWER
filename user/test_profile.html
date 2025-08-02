@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Test Profile Integration</title>
+    <link
+      rel="stylesheet"
+      href="../assets/vendor/bootstrap/css/bootstrap.min.css"
+    />
+  </head>
+  <body>
+    <div class="container mt-5">
+      <div class="row">
+        <div class="col-md-8 offset-md-2">
+          <h2>Test Profile Integration</h2>
+
+          <div class="card mt-4">
+            <div class="card-header">
+              <h5>1. Đăng nhập Test User</h5>
+            </div>
+            <div class="card-body">
+              <button class="btn btn-primary" onclick="loginTestUser()">
+                Đăng nhập Test User
+              </button>
+              <div id="loginResult" class="mt-2"></div>
+            </div>
+          </div>
+
+          <div class="card mt-3">
+            <div class="card-header">
+              <h5>2. Load Profile Data</h5>
+            </div>
+            <div class="card-body">
+              <button class="btn btn-info" onclick="loadProfile()">
+                Load Profile
+              </button>
+              <div id="profileResult" class="mt-2"></div>
+            </div>
+          </div>
+
+          <div class="card mt-3">
+            <div class="card-header">
+              <h5>3. Update Profile</h5>
+            </div>
+            <div class="card-body">
+              <div class="form-group">
+                <label>Tên mới:</label>
+                <input
+                  type="text"
+                  id="newName"
+                  class="form-control"
+                  value="Test User Updated"
+                />
+              </div>
+              <button class="btn btn-success" onclick="updateProfile()">
+                Update Profile
+              </button>
+              <div id="updateResult" class="mt-2"></div>
+            </div>
+          </div>
+
+          <div class="card mt-3">
+            <div class="card-header">
+              <h5>4. Go to Profile Page</h5>
+            </div>
+            <div class="card-body">
+              <a href="profile.html" class="btn btn-warning">
+                Mở Profile Page
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="../assets/vendor/jquery/jquery.min.js"></script>
+    <script>
+      async function loginTestUser() {
+        try {
+          const response = await fetch("../auth/login.php", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              email: "newuser@test.com",
+              mat_khau: "123456",
+            }),
+          });
+
+          const data = await response.json();
+
+          if (data.success) {
+            // Save to localStorage like AuthManager does
+            localStorage.setItem("user_token", data.data.token);
+            localStorage.setItem("user_data", JSON.stringify(data.data));
+
+            document.getElementById("loginResult").innerHTML =
+              '<div class="alert alert-success">Đăng nhập thành công! User ID: ' +
+              data.data.id_taikhoan +
+              "</div>";
+          } else {
+            document.getElementById("loginResult").innerHTML =
+              '<div class="alert alert-danger">Lỗi: ' + data.message + "</div>";
+          }
+        } catch (error) {
+          document.getElementById("loginResult").innerHTML =
+            '<div class="alert alert-danger">Lỗi: ' + error.message + "</div>";
+        }
+      }
+
+      async function loadProfile() {
+        const userData = JSON.parse(localStorage.getItem("user_data") || "{}");
+
+        if (!userData.id_taikhoan) {
+          document.getElementById("profileResult").innerHTML =
+            '<div class="alert alert-warning">Vui lòng đăng nhập trước</div>';
+          return;
+        }
+
+        try {
+          const response = await fetch(
+            "../auth/profile.php?id_taikhoan=" + userData.id_taikhoan
+          );
+          const data = await response.json();
+
+          if (data.success) {
+            document.getElementById("profileResult").innerHTML =
+              '<div class="alert alert-success">Profile loaded: <pre>' +
+              JSON.stringify(data.data, null, 2) +
+              "</pre></div>";
+          } else {
+            document.getElementById("profileResult").innerHTML =
+              '<div class="alert alert-danger">Lỗi: ' + data.message + "</div>";
+          }
+        } catch (error) {
+          document.getElementById("profileResult").innerHTML =
+            '<div class="alert alert-danger">Lỗi: ' + error.message + "</div>";
+        }
+      }
+
+      async function updateProfile() {
+        const userData = JSON.parse(localStorage.getItem("user_data") || "{}");
+        const newName = document.getElementById("newName").value;
+
+        if (!userData.id_taikhoan) {
+          document.getElementById("updateResult").innerHTML =
+            '<div class="alert alert-warning">Vui lòng đăng nhập trước</div>';
+          return;
+        }
+
+        try {
+          const response = await fetch("../auth/profile.php", {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              id_taikhoan: userData.id_taikhoan,
+              ten: newName,
+              sdt: userData.sdt || "0987654321",
+              dia_chi: userData.dia_chi || "Test Address",
+              ngay_sinh: userData.ngay_sinh || "1995-05-05",
+            }),
+          });
+
+          const data = await response.json();
+
+          if (data.success) {
+            document.getElementById("updateResult").innerHTML =
+              '<div class="alert alert-success">Cập nhật thành công!</div>';
+          } else {
+            document.getElementById("updateResult").innerHTML =
+              '<div class="alert alert-danger">Lỗi: ' + data.message + "</div>";
+          }
+        } catch (error) {
+          document.getElementById("updateResult").innerHTML =
+            '<div class="alert alert-danger">Lỗi: ' + error.message + "</div>";
+        }
+      }
+    </script>
+  </body>
+</html>
