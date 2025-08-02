@@ -56,25 +56,6 @@ function updateUserInterface(user) {
   console.log("Updated UI for user:", user.ho_ten || user.email);
 }
 
-function handlePendingSearch() {
-  const pendingSearch = localStorage.getItem("pending_search");
-  if (pendingSearch) {
-    // Xóa pending search
-    localStorage.removeItem("pending_search");
-
-    // Thực hiện tìm kiếm
-    $(".search-input").val(pendingSearch);
-    showNotification(`Đang tìm kiếm: "${pendingSearch}"`, "info");
-
-    // Chuyển hướng tới trang danh sách với từ khóa tìm kiếm
-    setTimeout(() => {
-      window.location.href = `list_product.html?search=${encodeURIComponent(
-        pendingSearch
-      )}`;
-    }, 1500);
-  }
-}
-
 /* ===========================================
    CÁC HÀM ĐIỀU HƯỚNG (Navigation Functions)
    =========================================== */
@@ -175,78 +156,6 @@ function initializePromotionSlider() {
       $(this).removeClass("animate__pulse");
     }
   );
-}
-
-/* ===========================================
-   CHỨC NĂNG TÌM KIẾM (Search Functionality - jQuery)
-   =========================================== */
-
-// initializeSearchFunctionality(): Khởi tạo chức năng tìm kiếm
-function initializeSearchFunctionality() {
-  const $searchInput = $(".search-input");
-  const $searchBtn = $(".search-btn");
-
-  if ($searchInput.length && $searchBtn.length) {
-    // jQuery keypress event: Lắng nghe sự kiện nhấn phím
-    $searchInput.on("keypress", function (e) {
-      if (e.which === 13) {
-        // Enter key
-        performSearch($(this).val());
-      }
-    });
-
-    // jQuery click event: Lắng nghe sự kiện click chuột
-    $searchBtn.on("click", function () {
-      performSearch($searchInput.val());
-    });
-
-    // Focus/blur effects với jQuery
-    $searchInput
-      .on("focus", function () {
-        $(this).parent().addClass("search-focused");
-      })
-      .on("blur", function () {
-        $(this).parent().removeClass("search-focused");
-      });
-
-    // Auto-complete suggestion (placeholder)
-    $searchInput.on("input", function () {
-      const term = $(this).val();
-      if (term.length > 2) {
-        // TODO: Implement auto-complete
-        console.log("Auto-complete for:", term);
-      }
-    });
-  }
-}
-
-// performSearch(): Thực hiện tìm kiếm
-function performSearch(searchTerm) {
-  if (searchTerm.trim()) {
-    // Hiển thị loading animation
-    $(".search-btn").html('<i class="fas fa-spinner fa-spin"></i>');
-
-    // Simulate search delay
-    setTimeout(function () {
-      $(".search-btn").html('<i class="fas fa-search"></i>');
-      showNotification("Tìm kiếm: " + searchTerm, "success");
-
-      // TODO: Implement actual search functionality
-      // $.ajax({
-      //     url: 'search.php',
-      //     method: 'GET',
-      //     data: { q: searchTerm },
-      //     success: function(response) {
-      //         // Handle search results
-      //     }
-      // });
-
-      console.log("Searching for:", searchTerm);
-    }, 1000);
-  } else {
-    showNotification("Vui lòng nhập từ khóa tìm kiếm", "warning");
-    $(".search-input").focus();
-  }
 }
 
 /* ===========================================

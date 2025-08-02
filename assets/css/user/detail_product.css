@@ -4,7 +4,7 @@
 
 /* Container và Layout */
 .product-detail-container {
-  margin-top: 100px; /* Space for fixed navbar */
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
   padding: 20px 15px;
 }
 

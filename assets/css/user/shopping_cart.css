@@ -128,8 +128,6 @@
 .cart-item:hover {
   background: #f8f9fa;
   border-radius: 10px;
-  padding-left: 15px;
-  padding-right: 15px;
 }
 
 .cart-item-image {

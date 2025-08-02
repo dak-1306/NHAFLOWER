@@ -12,6 +12,18 @@ body {
   font-family: "Nunito", sans-serif; /* Sử dụng font Nunito */
   padding-top: 90px; /* Space for fixed navbar */
 }
+/* .main-content - Container chính chứa nội dung trang */
+.main-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin:0 auto;
+  width: 60vw;
+  min-height: 80vh;
+  text-align: center;
+}
+
 /* .navbar-custom - Class cho thanh navigation tùy chỉnh */
 .navbar-custom {
   background: rgba(255, 255, 255, 0.9);
