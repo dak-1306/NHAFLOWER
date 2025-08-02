@@ -107,8 +107,8 @@
                     <i class="fas fa-camera"></i>
                   </button>
                 </div>
-                <h4 id="profileName">Tên người dùng</h4>
-                <p id="profileEmail">email@example.com</p>
+                <h4 id="profileName"></h4>
+                <p id="profileEmail"></p>
               </div>
 
               <nav class="profile-nav">
@@ -154,7 +154,7 @@
                     </a>
                   </li>
                   <li>
-                    <a href="#" class="logout-btn" onclick="logout()">
+                    <a href="#" class="nav-item logout-btn" onclick="logout()">
                       <i class="fas fa-sign-out-alt"></i>
                       Đăng xuất
                     </a>
@@ -421,77 +421,6 @@
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Address Modal -->
-    <div class="modal fade" id="addressModal" tabindex="-1" role="dialog">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">Thêm địa chỉ mới</h5>
-            <button type="button" class="close" data-dismiss="modal">
-              <span>&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            <form id="addressForm">
-              <div class="form-group">
-                <label>Tên người nhận</label>
-                <input
-                  type="text"
-                  id="recipientName"
-                  class="form-control"
-                  required
-                />
-              </div>
-              <div class="form-group">
-                <label>Số điện thoại</label>
-                <input
-                  type="tel"
-                  id="recipientPhone"
-                  class="form-control"
-                  required
-                />
-              </div>
-              <div class="form-group">
-                <label>Địa chỉ chi tiết</label>
-                <textarea
-                  id="fullAddress"
-                  class="form-control"
-                  rows="3"
-                  required
-                ></textarea>
-              </div>
-              <div class="form-check">
-                <input
-                  type="checkbox"
-                  id="isDefault"
-                  class="form-check-input"
-                />
-                <label class="form-check-label" for="isDefault">
-                  Đặt làm địa chỉ mặc định
-                </label>
-              </div>
-            </form>
-          </div>
-          <div class="modal-footer">
-            <button
-              type="button"
-              class="btn btn-secondary"
-              data-dismiss="modal"
-            >
-              Hủy
-            </button>
-            <button
-              type="button"
-              class="btn btn-primary"
-              onclick="saveAddress()"
-            >
-              Lưu địa chỉ
-            </button>
           </div>
         </div>
       </div>
