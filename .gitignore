@@ -15,7 +15,7 @@
 
 # Dependencies
 node_modules/
-vendor/
+# vendor/ - commented out to include vendor files in repo
 
 # IDE files
 .vscode/
