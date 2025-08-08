@@ -1,0 +1,86 @@
+/* ====================================
+   PERSONAL INFO FORM STYLES
+   ==================================== */
+
+/* Form Styles */
+.form-group {
+  margin-bottom: 25px;
+}
+
+.form-group label {
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.form-control {
+  border: 2px solid #e9ecef;
+  border-radius: 10px;
+  padding: 12px 15px;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.form-control:focus {
+  border-color: #8b5a96;
+  box-shadow: 0 0 0 3px rgba(139, 90, 150, 0.1);
+  outline: none;
+}
+
+.form-control[readonly] {
+  background-color: #f8f9fa;
+  border-color: #dee2e6;
+}
+
+.form-actions {
+  margin-top: 30px;
+  text-align: right;
+}
+
+.form-actions .btn {
+  margin-left: 10px;
+}
+
+/* ====================================
+   SECURITY SECTION
+   ==================================== */
+.security-options {
+  margin-top: 30px;
+  padding-top: 30px;
+  border-top: 1px solid #f1f1f1;
+}
+
+.security-options h5 {
+  color: #2c3e50;
+  margin-bottom: 20px;
+}
+
+.form-check {
+  margin-bottom: 15px;
+}
+
+.form-check-input:checked {
+  background-color: #8b5a96;
+  border-color: #8b5a96;
+}
+
+.form-check-label {
+  color: #5a6c7d;
+  font-weight: 500;
+}
+
+/* ====================================
+   RESPONSIVE DESIGN
+   ==================================== */
+@media (max-width: 576px) {
+  .form-actions {
+    text-align: center;
+  }
+
+  .form-actions .btn {
+    display: block;
+    width: 100%;
+    margin: 5px 0;
+  }
+}

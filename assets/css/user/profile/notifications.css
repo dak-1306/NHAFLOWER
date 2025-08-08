@@ -1,0 +1,52 @@
+/* ====================================
+   NOTIFICATIONS
+   ==================================== */
+.notification-item {
+  display: flex;
+  align-items: flex-start;
+  padding: 20px;
+  border-bottom: 1px solid #f1f1f1;
+  transition: all 0.3s ease;
+}
+
+.notification-item:hover {
+  background: #f8f9fa;
+}
+
+.notification-item.unread {
+  background: #fff7e6;
+  border-left: 4px solid #8b5a96;
+}
+
+.notification-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #8b5a96;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 15px;
+  flex-shrink: 0;
+}
+
+.notification-content {
+  flex: 1;
+}
+
+.notification-title {
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 5px;
+}
+
+.notification-message {
+  color: #6c757d;
+  margin-bottom: 5px;
+}
+
+.notification-time {
+  color: #999;
+  font-size: 12px;
+}

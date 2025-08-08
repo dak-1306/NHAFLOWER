@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NHAFLOWER - Thông tin cá nhân</title>
+
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N"
+      crossorigin="anonymous"
+    />
+    <link
+      href="../../assets/vendor/bootstrap/css/bootstrap.min.css"
+      rel="stylesheet"
+      onerror="console.warn('Local Bootstrap CSS not available, using CDN')"
+    />
+
+    <!-- Font Awesome -->
+    <link
+      href="../../assets/vendor/fontawesome-free/css/all.min.css"
+      rel="stylesheet"
+    />
+
+    <!-- Custom CSS -->
+    <link
+      rel="stylesheet"
+      href="../../assets/css/user/profile/profile-base.css"
+    />
+    <link
+      rel="stylesheet"
+      href="../../assets/css/user/profile/personal-info.css"
+    />
+    <link rel="stylesheet" href="../../assets/css/user/common.css" />
+  </head>
+  <body>
+    <!-- THANH NAVIGATION -->
+    <nav class="navbar navbar-expand-lg navbar-custom fixed-top">
+      <div class="container">
+        <div class="navbar-nav mr-auto">
+          <a class="nav-link-custom" href="../home.html">Home</a>
+          <a class="nav-link-custom" href="../list_product.html">Danh sách</a>
+        </div>
+
+        <div class="navbar-brand-logo">
+          <img
+            src="../../assets/img/user/logo_NHAFLOWER.png"
+            alt="NHAFLOWER"
+            class="brand-circle-logo"
+          />
+        </div>
+
+        <div class="navbar-nav ml-auto">
+          <div class="nav-icon-wrapper">
+            <i class="fas fa-search nav-icon" title="Tìm kiếm"></i>
+          </div>
+          <div class="nav-icon-wrapper">
+            <div
+              class="user-avatar"
+              title="Trang cá nhân"
+              onclick="window.location.href='index.html'"
+            >
+              <i class="fas fa-user"></i>
+            </div>
+          </div>
+          <div class="nav-icon-wrapper">
+            <i
+              class="fas fa-shopping-bag nav-icon"
+              title="Giỏ hàng"
+              onclick="window.location.href='../shopping_cart.html'"
+            ></i>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <div class="row profile-container">
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+          <div class="profile-sidebar">
+            <div class="profile-avatar-section">
+              <div class="profile-avatar">
+                <img
+                  id="profileAvatar"
+                  src="../../assets/img/user/default-avatar.png"
+                  alt="Avatar"
+                  onerror="this.src='../../assets/img/products/default-flower.svg'"
+                />
+                <button class="change-avatar-btn" onclick="changeAvatar()">
+                  <i class="fas fa-camera"></i>
+                </button>
+              </div>
+              <h4 id="profileName">Người dùng NHAFLOWER</h4>
+              <p id="profileEmail">user@nhaflower.com</p>
+            </div>
+
+            <nav class="profile-nav">
+              <ul>
+                <li>
+                  <a href="personal-info.html" class="nav-item active">
+                    <i class="fas fa-user"></i>
+                    Thông tin cá nhân
+                  </a>
+                </li>
+                <li>
+                  <a href="orders.html" class="nav-item">
+                    <i class="fas fa-shopping-bag"></i>
+                    Đơn hàng của tôi
+                  </a>
+                </li>
+                <li>
+                  <a href="addresses.html" class="nav-item">
+                    <i class="fas fa-map-marker-alt"></i>
+                    Địa chỉ giao hàng
+                  </a>
+                </li>
+                <li>
+                  <a href="favorites.html" class="nav-item">
+                    <i class="fas fa-heart"></i>
+                    Sản phẩm yêu thích
+                  </a>
+                </li>
+                <li>
+                  <a href="notifications.html" class="nav-item">
+                    <i class="fas fa-bell"></i>
+                    Thông báo
+                  </a>
+                </li>
+                <li>
+                  <a href="security.html" class="nav-item">
+                    <i class="fas fa-lock"></i>
+                    Bảo mật
+                  </a>
+                </li>
+                <li>
+                  <a href="#" class="nav-item logout-btn" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Đăng xuất
+                  </a>
+                </li>
+              </ul>
+            </nav>
+          </div>
+        </div>
+
+        <!-- Personal Info Content -->
+        <div class="col-lg-8">
+          <div class="content-card">
+            <div class="card-header">
+              <h3>Thông tin cá nhân</h3>
+              <button class="btn btn-primary" onclick="editPersonalInfo()">
+                <i class="fas fa-edit"></i>
+                Chỉnh sửa
+              </button>
+            </div>
+            <div class="card-body">
+              <form id="personalInfoForm">
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label>Họ và tên</label>
+                      <input
+                        type="text"
+                        id="fullName"
+                        class="form-control"
+                        value="Nguyễn Văn An"
+                        readonly
+                      />
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label>Email</label>
+                      <input
+                        type="email"
+                        id="email"
+                        class="form-control"
+                        value="nguyenvanan@email.com"
+                        readonly
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label>Số điện thoại</label>
+                      <input
+                        type="tel"
+                        id="phone"
+                        class="form-control"
+                        value="0123456789"
+                        readonly
+                      />
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label>Ngày sinh</label>
+                      <input
+                        type="date"
+                        id="birthDate"
+                        class="form-control"
+                        value="1990-01-01"
+                        readonly
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label>Giới tính</label>
+                      <select id="gender" class="form-control" disabled>
+                        <option value="male" selected>Nam</option>
+                        <option value="female">Nữ</option>
+                        <option value="other">Khác</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label>Nghề nghiệp</label>
+                      <input
+                        type="text"
+                        id="occupation"
+                        class="form-control"
+                        value="Kỹ sư phần mềm"
+                        readonly
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-12">
+                    <div class="form-group">
+                      <label>Địa chỉ</label>
+                      <textarea
+                        id="address"
+                        class="form-control"
+                        rows="3"
+                        readonly
+                      >
+123 Đường ABC, Phường XYZ, Quận 1, TP.HCM</textarea
+                      >
+                    </div>
+                  </div>
+                </div>
+                <div class="form-actions" style="display: none">
+                  <button type="submit" class="btn btn-success">
+                    <i class="fas fa-save"></i>
+                    Lưu thay đổi
+                  </button>
+                  <button
+                    type="button"
+                    class="btn btn-secondary"
+                    onclick="cancelEdit()"
+                  >
+                    <i class="fas fa-times"></i>
+                    Hủy
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <!-- Account Verification Status -->
+          <div class="content-card mt-4">
+            <div class="card-header">
+              <h5>Trạng thái xác minh tài khoản</h5>
+            </div>
+            <div class="card-body">
+              <div class="verification-item">
+                <div class="verification-icon verified">
+                  <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="verification-info">
+                  <h6>Email đã xác minh</h6>
+                  <p>Email của bạn đã được xác minh thành công</p>
+                </div>
+              </div>
+              <div class="verification-item">
+                <div class="verification-icon verified">
+                  <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="verification-info">
+                  <h6>Số điện thoại đã xác minh</h6>
+                  <p>Số điện thoại của bạn đã được xác minh</p>
+                </div>
+              </div>
+              <div class="verification-item">
+                <div class="verification-icon pending">
+                  <i class="fas fa-clock"></i>
+                </div>
+                <div class="verification-info">
+                  <h6>Xác minh danh tính</h6>
+                  <p>Xác minh danh tính để tăng độ tin cậy tài khoản</p>
+                  <button class="btn btn-outline-primary btn-sm">
+                    Xác minh ngay
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="../../assets/vendor/jquery/jquery.min.js"></script>
+    <script src="../../assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Base Profile Manager -->
+    <script src="../../assets/js/user/profile/profile-base.js"></script>
+
+    <!-- Custom JavaScript -->
+    <script src="../../assets/js/user/profile/profile-personal-info.js"></script>
+  </body>
+</html>

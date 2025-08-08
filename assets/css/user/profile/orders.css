@@ -1,0 +1,111 @@
+/* ====================================
+   ORDER STYLES
+   ==================================== */
+.order-item {
+  border: 1px solid #e9ecef;
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 20px;
+  transition: all 0.3s ease;
+}
+
+.order-item:hover {
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.order-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #f1f1f1;
+}
+
+.order-id {
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.order-date {
+  color: #6c757d;
+  font-size: 14px;
+}
+
+.order-status {
+  padding: 5px 15px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.order-status.cho {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.order-status.dang_giao {
+  background: #d1ecf1;
+  color: #0c5460;
+}
+
+.order-status.hoan_tat {
+  background: #d4edda;
+  color: #155724;
+}
+
+.order-products {
+  margin-bottom: 15px;
+}
+
+.order-product-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.order-product-img {
+  width: 50px;
+  height: 50px;
+  border-radius: 5px;
+  object-fit: cover;
+  margin-right: 15px;
+}
+
+.order-product-info h6 {
+  margin: 0;
+  color: #2c3e50;
+  font-size: 14px;
+}
+
+.order-product-info p {
+  margin: 0;
+  color: #6c757d;
+  font-size: 12px;
+}
+
+.order-total {
+  text-align: right;
+  font-weight: 600;
+  color: #2c3e50;
+  font-size: 16px;
+}
+
+/* ====================================
+   RESPONSIVE DESIGN
+   ==================================== */
+@media (max-width: 992px) {
+  .order-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+}
+
+@media (max-width: 768px) {
+  .order-filters {
+    margin-top: 15px;
+  }
+}

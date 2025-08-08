@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NHAFLOWER - Bảo mật tài khoản</title>
+
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N"
+      crossorigin="anonymous"
+    />
+    <link
+      href="../../assets/vendor/bootstrap/css/bootstrap.min.css"
+      rel="stylesheet"
+      onerror="console.warn('Local Bootstrap CSS not available, using CDN')"
+    />
+
+    <!-- Font Awesome -->
+    <link
+      href="../../assets/vendor/fontawesome-free/css/all.min.css"
+      rel="stylesheet"
+    />
+
+    <!-- Custom CSS -->
+    <link
+      rel="stylesheet"
+      href="../../assets/css/user/profile/profile-base.css"
+    />
+    <link
+      rel="stylesheet"
+      href="../../assets/css/user/profile/personal-info.css"
+    />
+    <link rel="stylesheet" href="../../assets/css/user/common.css" />
+  </head>
+  <body>
+    <!-- THANH NAVIGATION -->
+    <nav class="navbar navbar-expand-lg navbar-custom fixed-top">
+      <div class="container">
+        <div class="navbar-nav mr-auto">
+          <a class="nav-link-custom" href="../home.html">Home</a>
+          <a class="nav-link-custom" href="../list_product.html">Danh sách</a>
+        </div>
+
+        <div class="navbar-brand-logo">
+          <img
+            src="../../assets/img/user/logo_NHAFLOWER.png"
+            alt="NHAFLOWER"
+            class="brand-circle-logo"
+          />
+        </div>
+
+        <div class="navbar-nav ml-auto">
+          <div class="nav-icon-wrapper">
+            <i class="fas fa-search nav-icon" title="Tìm kiếm"></i>
+          </div>
+          <div class="nav-icon-wrapper">
+            <div
+              class="user-avatar"
+              title="Trang cá nhân"
+              onclick="window.location.href='personal-info.html'"
+            >
+              <i class="fas fa-user"></i>
+            </div>
+          </div>
+          <div class="nav-icon-wrapper">
+            <i
+              class="fas fa-shopping-bag nav-icon"
+              title="Giỏ hàng"
+              onclick="window.location.href='../shopping_cart.html'"
+            ></i>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <div class="row profile-container">
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+          <div class="profile-sidebar">
+            <div class="profile-avatar-section">
+              <div class="profile-avatar">
+                <img
+                  id="profileAvatar"
+                  src="../../assets/img/user/default-avatar.png"
+                  alt="Avatar"
+                  onerror="this.src='../../assets/img/products/default-flower.svg'"
+                />
+                <button class="change-avatar-btn" onclick="changeAvatar()">
+                  <i class="fas fa-camera"></i>
+                </button>
+              </div>
+              <h4 id="profileName">Người dùng NHAFLOWER</h4>
+              <p id="profileEmail">user@nhaflower.com</p>
+            </div>
+
+            <nav class="profile-nav">
+              <ul>
+                <li>
+                  <a href="personal-info.html" class="nav-item">
+                    <i class="fas fa-user"></i>
+                    Thông tin cá nhân
+                  </a>
+                </li>
+                <li>
+                  <a href="orders.html" class="nav-item">
+                    <i class="fas fa-shopping-bag"></i>
+                    Đơn hàng của tôi
+                  </a>
+                </li>
+                <li>
+                  <a href="addresses.html" class="nav-item">
+                    <i class="fas fa-map-marker-alt"></i>
+                    Địa chỉ giao hàng
+                  </a>
+                </li>
+                <li>
+                  <a href="favorites.html" class="nav-item">
+                    <i class="fas fa-heart"></i>
+                    Sản phẩm yêu thích
+                  </a>
+                </li>
+                <li>
+                  <a href="notifications.html" class="nav-item">
+                    <i class="fas fa-bell"></i>
+                    Thông báo
+                  </a>
+                </li>
+                <li>
+                  <a href="security.html" class="nav-item active">
+                    <i class="fas fa-lock"></i>
+                    Bảo mật
+                  </a>
+                </li>
+                <li>
+                  <a href="#" class="nav-item logout-btn" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Đăng xuất
+                  </a>
+                </li>
+              </ul>
+            </nav>
+          </div>
+        </div>
+
+        <!-- Security Content -->
+        <div class="col-lg-8">
+          <!-- Change Password -->
+          <div class="content-card">
+            <div class="card-header">
+              <h3>Đổi mật khẩu</h3>
+            </div>
+            <div class="card-body">
+              <form id="changePasswordForm">
+                <div class="form-group">
+                  <label>Mật khẩu hiện tại *</label>
+                  <div class="password-input-wrapper">
+                    <input
+                      type="password"
+                      id="currentPassword"
+                      class="form-control"
+                      required
+                    />
+                    <button
+                      type="button"
+                      class="password-toggle"
+                      onclick="togglePassword('currentPassword')"
+                    >
+                      <i class="fas fa-eye"></i>
+                    </button>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label>Mật khẩu mới *</label>
+                  <div class="password-input-wrapper">
+                    <input
+                      type="password"
+                      id="newPassword"
+                      class="form-control"
+                      required
+                    />
+                    <button
+                      type="button"
+                      class="password-toggle"
+                      onclick="togglePassword('newPassword')"
+                    >
+                      <i class="fas fa-eye"></i>
+                    </button>
+                  </div>
+                  <div class="password-strength mt-2">
+                    <div class="strength-bar">
+                      <div class="strength-fill" id="strengthFill"></div>
+                    </div>
+                    <small id="strengthText" class="form-text text-muted">
+                      Mật khẩu phải có ít nhất 8 ký tự, bao gồm chữ hoa, chữ
+                      thường và số
+                    </small>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label>Xác nhận mật khẩu mới *</label>
+                  <div class="password-input-wrapper">
+                    <input
+                      type="password"
+                      id="confirmPassword"
+                      class="form-control"
+                      required
+                    />
+                    <button
+                      type="button"
+                      class="password-toggle"
+                      onclick="togglePassword('confirmPassword')"
+                    >
+                      <i class="fas fa-eye"></i>
+                    </button>
+                  </div>
+                  <small id="passwordMatch" class="form-text"></small>
+                </div>
+                <button type="submit" class="btn btn-primary">
+                  <i class="fas fa-key"></i>
+                  Đổi mật khẩu
+                </button>
+              </form>
+            </div>
+          </div>
+
+          <!-- Two-Factor Authentication -->
+          <div class="content-card mt-4">
+            <div class="card-header">
+              <h5>Xác thực hai yếu tố (2FA)</h5>
+            </div>
+            <div class="card-body">
+              <div class="security-feature">
+                <div class="feature-info">
+                  <div class="feature-icon">
+                    <i class="fas fa-shield-alt"></i>
+                  </div>
+                  <div class="feature-details">
+                    <h6>Xác thực hai yếu tố</h6>
+                    <p>
+                      Thêm lớp bảo mật bổ sung cho tài khoản của bạn bằng cách
+                      sử dụng ứng dụng xác thực.
+                    </p>
+                  </div>
+                </div>
+                <div class="feature-toggle">
+                  <div class="custom-control custom-switch">
+                    <input
+                      type="checkbox"
+                      class="custom-control-input"
+                      id="enable2FA"
+                    />
+                    <label class="custom-control-label" for="enable2FA"></label>
+                  </div>
+                </div>
+              </div>
+              <div id="twoFASetup" class="mt-3" style="display: none">
+                <div class="alert alert-info">
+                  <i class="fas fa-info-circle"></i>
+                  Quét mã QR bằng ứng dụng Google Authenticator hoặc Authy để
+                  thiết lập xác thực hai yếu tố.
+                </div>
+                <div class="text-center">
+                  <div class="qr-code-placeholder">
+                    <i class="fas fa-qrcode"></i>
+                    <p>Mã QR sẽ được hiển thị ở đây</p>
+                  </div>
+                  <div class="mt-3">
+                    <input
+                      type="text"
+                      class="form-control d-inline-block"
+                      placeholder="Nhập mã xác thực 6 chữ số"
+                      style="width: 200px"
+                    />
+                    <button class="btn btn-primary ml-2">Xác nhận</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Login Sessions -->
+          <div class="content-card mt-4">
+            <div class="card-header">
+              <h5>Phiên đăng nhập</h5>
+              <button
+                class="btn btn-outline-danger btn-sm"
+                onclick="logoutAllDevices()"
+              >
+                <i class="fas fa-sign-out-alt"></i>
+                Đăng xuất tất cả thiết bị
+              </button>
+            </div>
+            <div class="card-body">
+              <div class="session-item current">
+                <div class="session-info">
+                  <div class="session-icon">
+                    <i class="fas fa-desktop"></i>
+                  </div>
+                  <div class="session-details">
+                    <h6>Windows PC - Chrome</h6>
+                    <p>IP: 192.168.1.100 • TP.HCM, Việt Nam</p>
+                    <small class="text-success">
+                      <i class="fas fa-circle"></i> Phiên hiện tại
+                    </small>
+                  </div>
+                </div>
+                <div class="session-time">
+                  <small>Hoạt động: Vừa xong</small>
+                </div>
+              </div>
+
+              <div class="session-item">
+                <div class="session-info">
+                  <div class="session-icon">
+                    <i class="fas fa-mobile-alt"></i>
+                  </div>
+                  <div class="session-details">
+                    <h6>iPhone - Safari</h6>
+                    <p>IP: 172.20.10.5 • TP.HCM, Việt Nam</p>
+                    <small class="text-muted">Đăng nhập: 2 giờ trước</small>
+                  </div>
+                </div>
+                <div class="session-actions">
+                  <button
+                    class="btn btn-outline-danger btn-sm"
+                    onclick="terminateSession('mobile-001')"
+                  >
+                    <i class="fas fa-times"></i> Đăng xuất
+                  </button>
+                </div>
+              </div>
+
+              <div class="session-item">
+                <div class="session-info">
+                  <div class="session-icon">
+                    <i class="fas fa-tablet-alt"></i>
+                  </div>
+                  <div class="session-details">
+                    <h6>iPad - Safari</h6>
+                    <p>IP: 192.168.1.105 • TP.HCM, Việt Nam</p>
+                    <small class="text-muted">Đăng nhập: 1 ngày trước</small>
+                  </div>
+                </div>
+                <div class="session-actions">
+                  <button
+                    class="btn btn-outline-danger btn-sm"
+                    onclick="terminateSession('tablet-001')"
+                  >
+                    <i class="fas fa-times"></i> Đăng xuất
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Security Settings -->
+          <div class="content-card mt-4">
+            <div class="card-header">
+              <h5>Cài đặt bảo mật</h5>
+            </div>
+            <div class="card-body">
+              <div class="security-feature">
+                <div class="feature-info">
+                  <div class="feature-icon">
+                    <i class="fas fa-envelope-open-text"></i>
+                  </div>
+                  <div class="feature-details">
+                    <h6>Thông báo đăng nhập</h6>
+                    <p>
+                      Nhận email thông báo khi có đăng nhập từ thiết bị mới.
+                    </p>
+                  </div>
+                </div>
+                <div class="feature-toggle">
+                  <div class="custom-control custom-switch">
+                    <input
+                      type="checkbox"
+                      class="custom-control-input"
+                      id="loginNotifications"
+                      checked
+                    />
+                    <label
+                      class="custom-control-label"
+                      for="loginNotifications"
+                    ></label>
+                  </div>
+                </div>
+              </div>
+
+              <div class="security-feature">
+                <div class="feature-info">
+                  <div class="feature-icon">
+                    <i class="fas fa-clock"></i>
+                  </div>
+                  <div class="feature-details">
+                    <h6>Tự động đăng xuất</h6>
+                    <p>
+                      Tự động đăng xuất sau khi không hoạt động trong một thời
+                      gian.
+                    </p>
+                  </div>
+                </div>
+                <div class="feature-toggle">
+                  <select class="form-control" style="width: 150px">
+                    <option value="15">15 phút</option>
+                    <option value="30" selected>30 phút</option>
+                    <option value="60">1 giờ</option>
+                    <option value="120">2 giờ</option>
+                    <option value="0">Không bao giờ</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="security-feature">
+                <div class="feature-info">
+                  <div class="feature-icon">
+                    <i class="fas fa-user-shield"></i>
+                  </div>
+                  <div class="feature-details">
+                    <h6>Hiển thị thông tin cá nhân</h6>
+                    <p>
+                      Cho phép hiển thị thông tin cá nhân trong hồ sơ công khai.
+                    </p>
+                  </div>
+                </div>
+                <div class="feature-toggle">
+                  <div class="custom-control custom-switch">
+                    <input
+                      type="checkbox"
+                      class="custom-control-input"
+                      id="publicProfile"
+                    />
+                    <label
+                      class="custom-control-label"
+                      for="publicProfile"
+                    ></label>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mt-4">
+                <button
+                  class="btn btn-success"
+                  onclick="saveSecuritySettings()"
+                >
+                  <i class="fas fa-save"></i>
+                  Lưu cài đặt
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Account Deletion -->
+          <div class="content-card mt-4">
+            <div class="card-header">
+              <h5 class="text-danger">
+                <i class="fas fa-exclamation-triangle"></i>
+                Xóa tài khoản
+              </h5>
+            </div>
+            <div class="card-body">
+              <div class="alert alert-warning">
+                <strong>Cảnh báo:</strong> Hành động này không thể hoàn tác. Tất
+                cả dữ liệu của bạn sẽ bị xóa vĩnh viễn.
+              </div>
+              <p>
+                Nếu bạn muốn xóa tài khoản, tất cả thông tin cá nhân, đơn hàng,
+                và dữ liệu liên quan sẽ bị xóa hoàn toàn.
+              </p>
+              <button
+                class="btn btn-outline-danger"
+                onclick="showDeleteAccountModal()"
+              >
+                <i class="fas fa-trash-alt"></i>
+                Yêu cầu xóa tài khoản
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Delete Account Confirmation Modal -->
+    <div class="modal fade" id="deleteAccountModal" tabindex="-1" role="dialog">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header bg-danger text-white">
+            <h5 class="modal-title">
+              <i class="fas fa-exclamation-triangle"></i>
+              Xác nhận xóa tài khoản
+            </h5>
+            <button type="button" class="close text-white" data-dismiss="modal">
+              <span>&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="alert alert-danger">
+              <strong>Lưu ý quan trọng:</strong> Hành động này không thể hoàn
+              tác!
+            </div>
+            <p>Khi xóa tài khoản, những thông tin sau sẽ bị xóa vĩnh viễn:</p>
+            <ul>
+              <li>Thông tin cá nhân và hồ sơ</li>
+              <li>Lịch sử đơn hàng</li>
+              <li>Sản phẩm yêu thích</li>
+              <li>Địa chỉ giao hàng</li>
+              <li>Thông báo và tin nhắn</li>
+            </ul>
+            <div class="form-group mt-3">
+              <label>Nhập mật khẩu của bạn để xác nhận:</label>
+              <input
+                type="password"
+                id="deleteConfirmPassword"
+                class="form-control"
+                required
+              />
+            </div>
+            <div class="form-check">
+              <input
+                type="checkbox"
+                id="confirmDelete"
+                class="form-check-input"
+                required
+              />
+              <label class="form-check-label" for="confirmDelete">
+                Tôi hiểu rằng hành động này không thể hoàn tác
+              </label>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-dismiss="modal"
+            >
+              Hủy
+            </button>
+            <button
+              type="button"
+              class="btn btn-danger"
+              onclick="confirmDeleteAccount()"
+            >
+              <i class="fas fa-trash-alt"></i>
+              Xóa tài khoản vĩnh viễn
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="../../assets/vendor/jquery/jquery.min.js"></script>
+    <script src="../../assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Custom JavaScript -->
+    <script src="../../assets/js/user/profile-security.js"></script>
+  </body>
+</html>
