@@ -234,21 +234,21 @@ class ProductDetailManager {
           id: 2,
           name: "Hoa tulip vàng",
           price: 320000,
-          image: "../assets/img/products/tulip-yellow-1.jpg",
+          image: "../assets/img/products/hoa_cuc_trang.jpg",
           rating: 4.8,
         },
         {
           id: 3,
           name: "Hoa lan tím",
           price: 450000,
-          image: "../assets/img/products/orchid-purple-1.jpg",
+          image: "../assets/img/products/hoa_hong_do.jpg",
           rating: 4.9,
         },
         {
           id: 4,
           name: "Hoa cúc họa mi",
           price: 180000,
-          image: "../assets/img/products/daisy-white-1.jpg",
+          image: "../assets/img/products/default-flower.svg",
           rating: 4.7,
         },
       ];
@@ -263,7 +263,9 @@ class ProductDetailManager {
             <div class="product-image">
               <img src="${product.image}" alt="${
             product.name
-          }" style="width: 100%; height: 200px; object-fit: cover; border-radius: 10px;">
+          }" 
+               style="width: 100%; height: 200px; object-fit: cover; border-radius: 10px;"
+               onerror="this.src='../assets/img/products/default-flower.svg'; console.warn('Failed to load related product image:', this.src);">
             </div>
             <div class="product-info" style="padding: 15px; text-align: center;">
               <div class="product-name" style="font-weight: 600; margin-bottom: 10px;">${
