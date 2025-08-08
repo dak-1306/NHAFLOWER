@@ -85,9 +85,7 @@ class ProductDetailManager {
         reviewCount: 156,
         category: "hoa-hong",
         images: [
-          "../assets/img/products/rose-red-1.jpg",
-          "../assets/img/products/rose-red-2.jpg",
-          "../assets/img/products/rose-red-3.jpg",
+          "../assets/img/products/hoa_hong_do.jpg"
         ],
         inStock: true,
         stockQuantity: 50,
@@ -103,8 +101,7 @@ class ProductDetailManager {
         reviewCount: 89,
         category: "hoa-tulip",
         images: [
-          "../assets/img/products/tulip-yellow-1.jpg",
-          "../assets/img/products/tulip-yellow-2.jpg",
+          "../assets/img/products/hoa_cuc_trang.jpg"
         ],
       },
       // Thêm các sản phẩm khác...
@@ -153,10 +150,25 @@ class ProductDetailManager {
 
   // Render product images
   renderProductImages(images) {
-    // Update main image only
-    $("#mainProductImage")
+    // Update main image only with error handling
+    const $mainImage = $("#mainProductImage");
+    
+    // Add error handler before setting src
+    $mainImage.off('error').on('error', function() {
+      console.log('Image failed to load:', this.src);
+      // Fallback to default SVG placeholder
+      this.src = '../assets/img/products/default-flower.svg';
+    });
+    
+    // Add load handler for successful loading
+    $mainImage.off('load').on('load', function() {
+      console.log('Image loaded successfully:', this.src);
+    });
+    
+    $mainImage
       .attr("src", images[0])
-      .attr("alt", this.currentProduct.name);
+      .attr("alt", this.currentProduct.name)
+      .show();
   }
 
   // Render rating stars
