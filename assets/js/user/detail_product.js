@@ -84,9 +84,7 @@ class ProductDetailManager {
         rating: 4.9,
         reviewCount: 156,
         category: "hoa-hong",
-        images: [
-          "../assets/img/products/hoa_hong_do.jpg"
-        ],
+        images: ["../assets/img/products/hoa_hong_do.jpg"],
         inStock: true,
         stockQuantity: 50,
       },
@@ -100,9 +98,7 @@ class ProductDetailManager {
         rating: 4.8,
         reviewCount: 89,
         category: "hoa-tulip",
-        images: [
-          "../assets/img/products/hoa_cuc_trang.jpg"
-        ],
+        images: ["../assets/img/products/hoa_cuc_trang.jpg"],
       },
       // Thêm các sản phẩm khác...
     };
@@ -152,19 +148,19 @@ class ProductDetailManager {
   renderProductImages(images) {
     // Update main image only with error handling
     const $mainImage = $("#mainProductImage");
-    
+
     // Add error handler before setting src
-    $mainImage.off('error').on('error', function() {
-      console.log('Image failed to load:', this.src);
+    $mainImage.off("error").on("error", function () {
+      console.log("Image failed to load:", this.src);
       // Fallback to default SVG placeholder
-      this.src = '../assets/img/products/default-flower.svg';
+      this.src = "../assets/img/products/default-flower.svg";
     });
-    
+
     // Add load handler for successful loading
-    $mainImage.off('load').on('load', function() {
-      console.log('Image loaded successfully:', this.src);
+    $mainImage.off("load").on("load", function () {
+      console.log("Image loaded successfully:", this.src);
     });
-    
+
     $mainImage
       .attr("src", images[0])
       .attr("alt", this.currentProduct.name)
@@ -261,9 +257,7 @@ class ProductDetailManager {
             product.id
           })">
             <div class="product-image">
-              <img src="${product.image}" alt="${
-            product.name
-          }" 
+              <img src="${product.image}" alt="${product.name}" 
                style="width: 100%; height: 200px; object-fit: cover; border-radius: 10px;"
                onerror="this.src='../assets/img/products/default-flower.svg'; console.warn('Failed to load related product image:', this.src);">
             </div>
@@ -313,8 +307,7 @@ class ProductDetailManager {
   goToProduct(productId) {
     window.location.href = `detail_product.html?id=${productId}`;
   }
-
-  }
+}
 // Global functions for onclick events
 function openImageModal() {
   const mainImageSrc = $("#mainProductImage").attr("src");

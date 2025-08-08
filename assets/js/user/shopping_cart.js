@@ -39,7 +39,7 @@ class ShoppingCartManager {
             originalPrice: 300000,
             quantity: 2,
             size: "Vừa",
-            image: "../assets/img/products/default-flower.jpg",
+            image: "../assets/img/products/hoa_hong_do.jpg",
             inStock: true,
             stockQuantity: 10,
           },
@@ -50,7 +50,7 @@ class ShoppingCartManager {
             originalPrice: 200000,
             quantity: 1,
             size: "Nhỏ",
-            image: "../assets/img/products/default-flower-2.jpg",
+            image: "../assets/img/products/hoa_cuc_trang.jpg",
             inStock: true,
             stockQuantity: 5,
           },
@@ -115,7 +115,8 @@ class ShoppingCartManager {
         (item) => `
       <div class="cart-item" data-id="${item.id}">
         <div class="cart-item-image">
-          <img src="${item.image}" alt="${item.name}" />
+          <img src="${item.image}" alt="${item.name}" 
+               onerror="this.src='../assets/img/products/default-flower.svg'; console.warn('Failed to load cart item image:', this.src);" />
         </div>
         
         <div class="cart-item-details">
@@ -319,21 +320,21 @@ class ShoppingCartManager {
         name: "Hoa cúc họa mi",
         price: 150000,
         originalPrice: 180000,
-        image: "../assets/img/products/default-flower-3.jpg",
+        image: "../assets/img/products/hoa_cuc_trang.jpg",
         rating: 4.8,
       },
       {
         id: 4,
         name: "Hoa lavender",
         price: 120000,
-        image: "../assets/img/products/default-flower-4.jpg",
+        image: "../assets/img/products/hoa_hong_do.jpg",
         rating: 4.6,
       },
       {
         id: 5,
         name: "Hoa hướng dương",
         price: 200000,
-        image: "../assets/img/products/default-flower-5.jpg",
+        image: "../assets/img/products/default-flower.svg",
         rating: 4.9,
       },
     ];
@@ -345,7 +346,7 @@ class ShoppingCartManager {
         <div class="card product-card">
           <img src="${product.image}" class="card-img-top" alt="${
           product.name
-        }">
+        }" onerror="this.src='../assets/img/products/default-flower.svg'; console.warn('Failed to load shopping cart related product image:', this.src);">
           <div class="card-body">
             <h6 class="card-title">${product.name}</h6>
             <div class="product-price">
