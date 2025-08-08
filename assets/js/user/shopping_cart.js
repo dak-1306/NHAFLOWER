@@ -27,9 +27,21 @@ class ShoppingCartManager {
   loadCartItems() {
     try {
       const savedCart = localStorage.getItem("nhaflower_cart");
-      if (savedCart) {
+      const cartVersion = localStorage.getItem("nhaflower_cart_version");
+      const currentVersion = "2.0"; // Update when image paths change
+
+      if (savedCart && cartVersion === currentVersion) {
         this.cartItems = JSON.parse(savedCart);
+        // Validate and fix image paths
+        this.cartItems = this.fixImagePaths(this.cartItems);
       } else {
+        // Clear old data and use demo data
+        if (savedCart) {
+          console.log("Clearing old cart data due to version mismatch");
+          localStorage.removeItem("nhaflower_cart");
+        }
+        localStorage.setItem("nhaflower_cart_version", currentVersion);
+
         // Demo data for testing
         this.cartItems = [
           {
@@ -60,6 +72,34 @@ class ShoppingCartManager {
       console.error("Error loading cart items:", error);
       this.cartItems = [];
     }
+  }
+
+  // Fix image paths to use existing files
+  fixImagePaths(items) {
+    const availableImages = [
+      "../assets/img/products/hoa_hong_do.jpg",
+      "../assets/img/products/hoa_cuc_trang.jpg",
+      "../assets/img/products/default-flower.svg",
+    ];
+
+    const badImagePaths = [
+      "default-flower.jpg",
+      "default-flower-2.jpg",
+      "default-flower-3.jpg",
+      "default-flower-4.jpg",
+      "default-flower-5.jpg",
+    ];
+
+    return items.map((item) => {
+      // Check if image path contains any bad paths
+      if (badImagePaths.some((badPath) => item.image.includes(badPath))) {
+        console.warn("Fixing invalid image path:", item.image);
+        // Assign available images based on item ID
+        const imageIndex = (item.id - 1) % availableImages.length;
+        item.image = availableImages[imageIndex];
+      }
+      return item;
+    });
   }
 
   // Save giỏ hàng vào localStorage
@@ -516,3 +556,12 @@ let cartManager;
 $(document).ready(() => {
   cartManager = new ShoppingCartManager();
 });
+
+// Development utility function - clear cart localStorage
+function clearCartData() {
+  localStorage.removeItem("nhaflower_cart");
+  console.log("Cart localStorage cleared. Refresh page to load demo data.");
+}
+
+// Add to window for debugging
+window.clearCartData = clearCartData;
