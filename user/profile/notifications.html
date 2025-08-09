@@ -75,7 +75,6 @@
         </div>
       </div>
     </nav>
-
     <!-- Main Content -->
     <div class="main-content">
       <div class="row profile-container">
@@ -119,12 +118,6 @@
                   </a>
                 </li>
                 <li>
-                  <a href="favorites.html" class="nav-item">
-                    <i class="fas fa-heart"></i>
-                    Sản phẩm yêu thích
-                  </a>
-                </li>
-                <li>
                   <a href="notifications.html" class="nav-item active">
                     <i class="fas fa-bell"></i>
                     Thông báo
@@ -146,326 +139,67 @@
             </nav>
           </div>
         </div>
-
-        <!-- Notifications Content -->
-        <div class="col-lg-8">
-          <div class="content-card">
-            <div class="card-header">
-              <h3>Thông báo</h3>
-              <div class="notification-actions">
-                <button
-                  class="btn btn-outline-secondary btn-sm"
-                  onclick="markAllAsRead()"
-                >
-                  <i class="fas fa-check-double"></i>
-                  Đánh dấu đã đọc tất cả
-                </button>
-                <button
-                  class="btn btn-outline-danger btn-sm"
-                  onclick="clearAllNotifications()"
-                >
-                  <i class="fas fa-trash"></i>
-                  Xóa tất cả
-                </button>
-              </div>
-            </div>
-            <div class="card-body">
-              <div class="notification-filters mb-3">
-                <div class="btn-group" role="group">
-                  <button
-                    type="button"
-                    class="btn btn-outline-primary active"
-                    onclick="filterNotifications('all')"
-                  >
-                    Tất cả
-                  </button>
-                  <button
-                    type="button"
-                    class="btn btn-outline-primary"
-                    onclick="filterNotifications('unread')"
-                  >
-                    Chưa đọc
-                  </button>
-                  <button
-                    type="button"
-                    class="btn btn-outline-primary"
-                    onclick="filterNotifications('orders')"
-                  >
-                    Đơn hàng
-                  </button>
-                  <button
-                    type="button"
-                    class="btn btn-outline-primary"
-                    onclick="filterNotifications('promotions')"
-                  >
-                    Khuyến mãi
-                  </button>
-                </div>
-              </div>
-
-              <div id="notificationsList">
-                <!-- Notification Item 1 - Unread -->
-                <div class="notification-item unread" data-type="orders">
-                  <div class="notification-icon orders">
-                    <i class="fas fa-shopping-bag"></i>
-                  </div>
-                  <div class="notification-content">
-                    <div class="notification-header">
-                      <h6>Đơn hàng #DH002 đang được giao</h6>
-                      <span class="notification-time">2 giờ trước</span>
-                    </div>
-                    <p>
-                      Đơn hàng của bạn đang trên đường giao. Dự kiến giao hàng
-                      trong ngày hôm nay.
-                    </p>
-                    <div class="notification-actions">
-                      <button
-                        class="btn btn-primary btn-sm"
-                        onclick="viewOrderDetail('DH002')"
-                      >
-                        Xem đơn hàng
-                      </button>
-                      <button
-                        class="btn btn-outline-secondary btn-sm"
-                        onclick="trackOrder('DH002')"
-                      >
-                        Theo dõi giao hàng
-                      </button>
-                    </div>
-                  </div>
-                  <button
-                    class="notification-close"
-                    onclick="removeNotification(1)"
-                  >
-                    <i class="fas fa-times"></i>
-                  </button>
-                </div>
-
-                <!-- Notification Item 2 - Unread -->
-                <div class="notification-item unread" data-type="promotions">
-                  <div class="notification-icon promotions">
-                    <i class="fas fa-gift"></i>
-                  </div>
-                  <div class="notification-content">
-                    <div class="notification-header">
-                      <h6>🌸 Khuyến mãi đặc biệt - Giảm 30% tất cả sản phẩm</h6>
-                      <span class="notification-time">5 giờ trước</span>
-                    </div>
-                    <p>
-                      Chương trình khuyến mãi cuối năm với mức giảm giá lên đến
-                      30% cho tất cả sản phẩm hoa tươi. Áp dụng đến hết ngày
-                      31/12.
-                    </p>
-                    <div class="notification-actions">
-                      <button
-                        class="btn btn-primary btn-sm"
-                        onclick="viewPromotions()"
-                      >
-                        Xem khuyến mãi
-                      </button>
-                      <button
-                        class="btn btn-outline-primary btn-sm"
-                        onclick="shopNow()"
-                      >
-                        Mua sắm ngay
-                      </button>
-                    </div>
-                  </div>
-                  <button
-                    class="notification-close"
-                    onclick="removeNotification(2)"
-                  >
-                    <i class="fas fa-times"></i>
-                  </button>
-                </div>
-
-                <!-- Notification Item 3 - Read -->
-                <div class="notification-item read" data-type="orders">
-                  <div class="notification-icon orders">
-                    <i class="fas fa-check-circle"></i>
-                  </div>
-                  <div class="notification-content">
-                    <div class="notification-header">
-                      <h6>Đơn hàng #DH001 đã giao thành công</h6>
-                      <span class="notification-time">1 ngày trước</span>
-                    </div>
-                    <p>
-                      Đơn hàng của bạn đã được giao thành công. Cảm ơn bạn đã
-                      mua sắm tại NHAFLOWER!
-                    </p>
-                    <div class="notification-actions">
-                      <button
-                        class="btn btn-outline-primary btn-sm"
-                        onclick="rateOrder('DH001')"
-                      >
-                        Đánh giá sản phẩm
-                      </button>
-                      <button
-                        class="btn btn-outline-secondary btn-sm"
-                        onclick="reorderItems('DH001')"
-                      >
-                        Mua lại
-                      </button>
-                    </div>
-                  </div>
-                  <button
-                    class="notification-close"
-                    onclick="removeNotification(3)"
-                  >
-                    <i class="fas fa-times"></i>
-                  </button>
-                </div>
-
-                <!-- Notification Item 4 - Read -->
-                <div class="notification-item read" data-type="system">
-                  <div class="notification-icon system">
-                    <i class="fas fa-user-check"></i>
-                  </div>
-                  <div class="notification-content">
-                    <div class="notification-header">
-                      <h6>Tài khoản của bạn đã được xác minh</h6>
-                      <span class="notification-time">3 ngày trước</span>
-                    </div>
-                    <p>
-                      Chúc mừng! Tài khoản của bạn đã được xác minh thành công.
-                      Bạn có thể sử dụng đầy đủ các tính năng của NHAFLOWER.
-                    </p>
-                  </div>
-                  <button
-                    class="notification-close"
-                    onclick="removeNotification(4)"
-                  >
-                    <i class="fas fa-times"></i>
-                  </button>
-                </div>
-
-                <!-- Notification Item 5 - Read -->
-                <div class="notification-item read" data-type="promotions">
-                  <div class="notification-icon promotions">
-                    <i class="fas fa-star"></i>
-                  </div>
-                  <div class="notification-content">
-                    <div class="notification-header">
-                      <h6>Chào mừng bạn đến với NHAFLOWER! 🌺</h6>
-                      <span class="notification-time">1 tuần trước</span>
-                    </div>
-                    <p>
-                      Cảm ơn bạn đã đăng ký tài khoản. Hãy khám phá bộ sưu tập
-                      hoa tươi đa dạng của chúng tôi!
-                    </p>
-                    <div class="notification-actions">
-                      <button
-                        class="btn btn-primary btn-sm"
-                        onclick="exploreProducts()"
-                      >
-                        Khám phá sản phẩm
-                      </button>
-                    </div>
-                  </div>
-                  <button
-                    class="notification-close"
-                    onclick="removeNotification(5)"
-                  >
-                    <i class="fas fa-times"></i>
-                  </button>
-                </div>
-              </div>
-
-              <!-- Empty State -->
-              <div
-                id="emptyNotifications"
-                class="text-center"
-                style="display: none"
-              >
-                <div class="empty-state">
-                  <i class="fas fa-bell-slash empty-icon"></i>
-                  <h5>Không có thông báo</h5>
-                  <p>Bạn đã đọc hết tất cả thông báo</p>
-                </div>
-              </div>
-
-              <!-- Pagination -->
-              <nav aria-label="Notifications pagination" class="mt-4">
-                <ul class="pagination justify-content-center">
-                  <li class="page-item disabled">
-                    <a class="page-link" href="#" tabindex="-1">Trước</a>
-                  </li>
-                  <li class="page-item active">
-                    <a class="page-link" href="#">1</a>
-                  </li>
-                  <li class="page-item">
-                    <a class="page-link" href="#">2</a>
-                  </li>
-                  <li class="page-item">
-                    <a class="page-link" href="#">Sau</a>
-                  </li>
-                </ul>
-              </nav>
-            </div>
+        <!-- Notification Settings -->
+        <div class="col-lg-8 content-card">
+          <div class="card-header">
+            <h5>Cài đặt thông báo</h5>
           </div>
-
-          <!-- Notification Settings -->
-          <div class="content-card mt-4">
-            <div class="card-header">
-              <h5>Cài đặt thông báo</h5>
+          <div class="card-body">
+            <div class="form-check">
+              <input
+                type="checkbox"
+                id="emailNotifications"
+                class="form-check-input"
+                checked
+              />
+              <label class="form-check-label" for="emailNotifications">
+                <i class="fas fa-envelope"></i>
+                Nhận thông báo qua email
+              </label>
             </div>
-            <div class="card-body">
-              <div class="form-check">
-                <input
-                  type="checkbox"
-                  id="emailNotifications"
-                  class="form-check-input"
-                  checked
-                />
-                <label class="form-check-label" for="emailNotifications">
-                  <i class="fas fa-envelope"></i>
-                  Nhận thông báo qua email
-                </label>
-              </div>
-              <div class="form-check">
-                <input
-                  type="checkbox"
-                  id="orderUpdates"
-                  class="form-check-input"
-                  checked
-                />
-                <label class="form-check-label" for="orderUpdates">
-                  <i class="fas fa-shopping-bag"></i>
-                  Thông báo cập nhật đơn hàng
-                </label>
-              </div>
-              <div class="form-check">
-                <input
-                  type="checkbox"
-                  id="promotionNotifications"
-                  class="form-check-input"
-                  checked
-                />
-                <label class="form-check-label" for="promotionNotifications">
-                  <i class="fas fa-gift"></i>
-                  Thông báo khuyến mãi và ưu đãi
-                </label>
-              </div>
-              <div class="form-check">
-                <input
-                  type="checkbox"
-                  id="systemNotifications"
-                  class="form-check-input"
-                  checked
-                />
-                <label class="form-check-label" for="systemNotifications">
-                  <i class="fas fa-cog"></i>
-                  Thông báo hệ thống
-                </label>
-              </div>
-              <button
-                class="btn btn-primary mt-3"
-                onclick="saveNotificationSettings()"
-              >
-                <i class="fas fa-save"></i>
-                Lưu cài đặt
-              </button>
+            <div class="form-check">
+              <input
+                type="checkbox"
+                id="orderUpdates"
+                class="form-check-input"
+                checked
+              />
+              <label class="form-check-label" for="orderUpdates">
+                <i class="fas fa-shopping-bag"></i>
+                Thông báo cập nhật đơn hàng
+              </label>
             </div>
+            <div class="form-check">
+              <input
+                type="checkbox"
+                id="promotionNotifications"
+                class="form-check-input"
+                checked
+              />
+              <label class="form-check-label" for="promotionNotifications">
+                <i class="fas fa-gift"></i>
+                Thông báo khuyến mãi và ưu đãi
+              </label>
+            </div>
+            <div class="form-check">
+              <input
+                type="checkbox"
+                id="systemNotifications"
+                class="form-check-input"
+                checked
+              />
+              <label class="form-check-label" for="systemNotifications">
+                <i class="fas fa-cog"></i>
+                Thông báo hệ thống
+              </label>
+            </div>
+            <button
+              class="btn btn-primary mt-3"
+              onclick="saveNotificationSettings()"
+            >
+              <i class="fas fa-save"></i>
+              Lưu cài đặt
+            </button>
           </div>
         </div>
       </div>
@@ -476,6 +210,6 @@
     <script src="../../assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 
     <!-- Custom JavaScript -->
-    <script src="../../assets/js/user/profile-notifications.js"></script>
+    <script src="../../assets/js/user/profile/profile-notifications.js"></script>
   </body>
 </html>
