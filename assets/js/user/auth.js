@@ -85,7 +85,7 @@ class AuthManager {
 
     // PRIORITY 3: Xử lý protected pages
     const protectedPages = [
-      "profile.html",
+      "profile/",
       "shopping_cart.html",
       "list_product.html",
       "detail_product.html",
