@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+
+    <title>NHAFLOWER - Quản lý Danh mục</title>
+
+    <!-- Custom fonts for this template -->
+    <link
+      href="../assets/vendor/fontawesome-free/css/all.min.css"
+      rel="stylesheet"
+      type="text/css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+      rel="stylesheet"
+    />
+
+    <!-- Custom styles for this template -->
+    <link href="../assets/css/admin/sb-admin-2.min.css" rel="stylesheet" />
+
+    <!-- Custom styles for this page -->
+    <link
+      href="../assets/vendor/datatables/dataTables.bootstrap4.min.css"
+      rel="stylesheet"
+    />
+    <!-- SweetAlert2 -->
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.32/dist/sweetalert2.min.css" rel="stylesheet">
+    <!-- Custom admin styles -->
+    <link href="../assets/css/admin/custom-admin.css" rel="stylesheet" />
+    
+    <style>
+      /* Custom color scheme for NHAFLOWER */
+      :root {
+        --primary-color: #e91e63;
+        --primary-light: #f48fb1;
+        --primary-dark: #ad1457;
+        --success-color: #4caf50;
+        --success-light: #81c784;
+        --success-dark: #2e7d32;
+      }
+
+      /* Sidebar colors */
+      .bg-gradient-primary {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+      }
+
+      .sidebar-dark .nav-item .nav-link[data-toggle="collapse"]::after {
+        color: rgba(255, 255, 255, 0.8);
+      }
+
+      /* Card headers */
+      .card-header .text-primary {
+        color: var(--primary-color) !important;
+      }
+
+      /* Buttons */
+      .btn-primary {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+      }
+
+      .btn-primary:hover {
+        background-color: var(--primary-dark);
+        border-color: var(--primary-dark);
+      }
+
+      .btn-success {
+        background-color: var(--success-color);
+        border-color: var(--success-color);
+      }
+
+      .btn-success:hover {
+        background-color: var(--success-dark);
+        border-color: var(--success-dark);
+      }
+
+      /* Progress bars */
+      .progress-bar {
+        background-color: var(--primary-color);
+      }
+
+      /* Active nav item */
+      .sidebar-dark .nav-item.active .nav-link {
+        color: #fff;
+        background-color: var(--primary-color);
+      }
+
+      /* Custom buttons for actions */
+      .btn-edit {
+        background-color: #17a2b8;
+        border-color: #17a2b8;
+        color: white;
+      }
+
+      .btn-edit:hover {
+        background-color: #138496;
+        border-color: #117a8b;
+        color: white;
+      }
+
+      .btn-delete {
+        background-color: #dc3545;
+        border-color: #dc3545;
+        color: white;
+      }
+
+      .btn-delete:hover {
+        background-color: #c82333;
+        border-color: #bd2130;
+        color: white;
+      }
+
+      /* Loading state */
+      .loading {
+        text-align: center;
+        color: #6c757d;
+        font-style: italic;
+      }
+
+      /* Modal header */
+      .modal-header {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+        color: white;
+      }
+
+      .modal-header .close {
+        color: white;
+        opacity: 0.8;
+      }
+
+      .modal-header .close:hover {
+        opacity: 1;
+      }
+    </style>
+  </head>
+
+  <body id="page-top">
+    <!-- Page Wrapper -->
+    <div id="wrapper">
+      <!-- Sidebar -->
+      <ul
+        class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion"
+        id="accordionSidebar"
+      >
+        <!-- Sidebar - Brand -->
+        <a
+          class="sidebar-brand d-flex align-items-center justify-content-center"
+          href="index.html"
+        >
+          <div class="sidebar-brand-icon rotate-n-15">
+            <i class="fas fa-seedling"></i>
+          </div>
+          <div class="sidebar-brand-text mx-3">NHAFLOWER</div>
+        </a>
+
+        <!-- Divider -->
+        <hr class="sidebar-divider my-0" />
+
+        <!-- Nav Item - Dashboard -->
+        <li class="nav-item">
+          <a class="nav-link" href="index.html">
+            <i class="fas fa-fw fa-tachometer-alt"></i>
+            <span>Dashboard</span></a
+          >
+        </li>
+
+        <!-- Divider -->
+        <hr class="sidebar-divider" />
+
+        <!-- Heading -->
+        <div class="sidebar-heading">Quản lý chính</div>
+
+        <!-- Nav Item - Khách hàng -->
+        <li class="nav-item">
+          <a class="nav-link" href="customers.html">
+            <i class="fas fa-fw fa-users"></i>
+            <span>Khách hàng</span>
+          </a>
+        </li>
+
+        <!-- Nav Item - Sản phẩm -->
+        <li class="nav-item">
+          <a class="nav-link" href="products.html">
+            <i class="fas fa-fw fa-leaf"></i>
+            <span>Sản phẩm</span>
+          </a>
+        </li>
+
+        <!-- Nav Item - Đơn hàng -->
+        <li class="nav-item">
+          <a class="nav-link" href="orders.html">
+            <i class="fas fa-fw fa-shopping-cart"></i>
+            <span>Đơn hàng</span>
+          </a>
+        </li>
+
+        <!-- Nav Item - Danh mục -->
+        <li class="nav-item active">
+          <a class="nav-link" href="categories.html">
+            <i class="fas fa-fw fa-tags"></i>
+            <span>Danh mục</span>
+          </a>
+        </li>
+
+        <!-- Divider -->
+        <hr class="sidebar-divider d-none d-md-block" />
+
+        <!-- Sidebar Toggler (Sidebar) -->
+        <div class="text-center d-none d-md-inline">
+          <button class="rounded-circle border-0" id="sidebarToggle"></button>
+        </div>
+
+        <!-- Sidebar Message -->
+        <div class="sidebar-card d-none d-lg-flex">
+          <img
+            class="sidebar-card-illustration mb-2"
+            src="../assets/img/admin/undraw_rocket.svg"
+            alt="..."
+          />
+          <p class="text-center mb-2">
+            <strong>NHAFLOWER</strong> Hệ thống quản lý bán hoa chuyên nghiệp!
+          </p>
+          <a class="btn btn-success btn-sm" href="../user/home.html"
+            >Xem trang chủ</a
+          >
+        </div>
+      </ul>
+      <!-- End of Sidebar -->
+
+      <!-- Content Wrapper -->
+      <div id="content-wrapper" class="d-flex flex-column">
+        <!-- Main Content -->
+        <div id="content">
+          <!-- Topbar -->
+          <nav
+            class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow"
+          >
+            <!-- Sidebar Toggle (Topbar) -->
+            <button
+              id="sidebarToggleTop"
+              class="btn btn-link d-md-none rounded-circle mr-3"
+            >
+              <i class="fa fa-bars"></i>
+            </button>
+
+            <!-- Topbar Search -->
+            <form
+              class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search"
+            >
+              <div class="input-group">
+                <input
+                  type="text"
+                  class="form-control bg-light border-0 small"
+                  placeholder="Tìm kiếm danh mục..."
+                  aria-label="Search"
+                  aria-describedby="basic-addon2"
+                />
+                <div class="input-group-append">
+                  <button class="btn btn-primary" type="button" style="background-color: var(--primary-color); border-color: var(--primary-color);">
+                    <i class="fas fa-search fa-sm"></i>
+                  </button>
+                </div>
+              </div>
+            </form>
+
+            <!-- Topbar Navbar -->
+            <ul class="navbar-nav ml-auto">
+              <!-- Nav Item - Alerts -->
+              <li class="nav-item dropdown no-arrow mx-1">
+                <a
+                  class="nav-link dropdown-toggle"
+                  href="#"
+                  id="alertsDropdown"
+                  role="button"
+                  data-toggle="dropdown"
+                  aria-haspopup="true"
+                  aria-expanded="false"
+                >
+                  <i class="fas fa-bell fa-fw"></i>
+                  <!-- Counter - Alerts -->
+                  <span class="badge badge-danger badge-counter">3+</span>
+                </a>
+              </li>
+
+              <div class="topbar-divider d-none d-sm-block"></div>
+
+              <!-- Nav Item - User Information -->
+              <li class="nav-item dropdown no-arrow">
+                <a
+                  class="nav-link dropdown-toggle"
+                  href="#"
+                  id="userDropdown"
+                  role="button"
+                  data-toggle="dropdown"
+                  aria-haspopup="true"
+                  aria-expanded="false"
+                >
+                  <span class="mr-2 d-none d-lg-inline text-gray-600 small"
+                    >Admin NHAFLOWER</span
+                  >
+                  <img
+                    class="img-profile rounded-circle"
+                    src="../assets/img/admin/undraw_profile.svg"
+                  />
+                </a>
+              </li>
+            </ul>
+          </nav>
+          <!-- End of Topbar -->
+
+          <!-- Begin Page Content -->
+          <div class="container-fluid">
+            <!-- Page Heading -->
+            <div class="d-sm-flex align-items-center justify-content-between mb-4">
+              <h1 class="h3 mb-0 text-gray-800">
+                <i class="fas fa-tags text-primary mr-2"></i>Quản lý Danh mục
+              </h1>
+              <button class="btn btn-primary" onclick="showAddCategoryModal()">
+                <i class="fas fa-plus mr-1"></i>Thêm danh mục mới
+              </button>
+            </div>
+
+            <!-- DataTales Example -->
+            <div class="card shadow mb-4">
+              <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">
+                  <i class="fas fa-table mr-1"></i>Danh sách danh mục
+                </h6>
+              </div>
+              <div class="card-body">
+                <div class="table-responsive">
+                  <table
+                    class="table table-bordered"
+                    id="categoriesTable"
+                    width="100%"
+                    cellspacing="0"
+                  >
+                    <thead>
+                      <tr>
+                        <th>Mã danh mục</th>
+                        <th>Tên danh mục</th>
+                        <th>Mô tả</th>
+                        <th>Số sản phẩm</th>
+                        <th>Thao tác</th>
+                      </tr>
+                    </thead>
+                    <tbody id="categoriesTableBody">
+                      <tr>
+                        <td colspan="5" class="loading">
+                          <i class="fas fa-spinner fa-spin mr-2"></i>Đang tải dữ
+                          liệu...
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- /.container-fluid -->
+        </div>
+        <!-- End of Main Content -->
+
+        <!-- Footer -->
+        <footer class="sticky-footer bg-white">
+          <div class="container my-auto">
+            <div class="copyright text-center my-auto">
+              <span>Copyright &copy; NHAFLOWER 2025</span>
+            </div>
+          </div>
+        </footer>
+        <!-- End of Footer -->
+      </div>
+      <!-- End of Content Wrapper -->
+    </div>
+    <!-- End of Page Wrapper -->
+
+    <!-- Add/Edit Category Modal -->
+    <div class="modal fade" id="categoryModal" tabindex="-1" role="dialog">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">
+              <i class="fas fa-plus mr-2"></i><span id="modalTitle">Thêm danh mục mới</span>
+            </h5>
+            <button type="button" class="close text-white" data-dismiss="modal">
+              <span>&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <form id="categoryForm">
+              <input type="hidden" id="categoryId">
+              <div class="form-group">
+                <label for="categoryName">Tên danh mục <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" id="categoryName" required placeholder="Nhập tên danh mục...">
+                <div class="invalid-feedback"></div>
+              </div>
+              <div class="form-group">
+                <label for="categoryDescription">Mô tả</label>
+                <textarea class="form-control" id="categoryDescription" rows="3" placeholder="Nhập mô tả danh mục..."></textarea>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
+            <button type="button" class="btn btn-primary" id="saveCategoryBtn">
+              <i class="fas fa-save mr-1"></i>Lưu danh mục
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scroll to Top Button-->
+    <a class="scroll-to-top rounded" href="#page-top">
+      <i class="fas fa-angle-up"></i>
+    </a>
+
+    <!-- Bootstrap core JavaScript-->
+    <script src="../assets/vendor/jquery/jquery.min.js"></script>
+    <script src="../assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Core plugin JavaScript-->
+    <script src="../assets/vendor/jquery-easing/jquery.easing.min.js"></script>
+
+    <!-- Custom scripts for all pages-->
+    <script src="../assets/js/admin/sb-admin-2.min.js"></script>
+
+    <!-- Page level plugins -->
+    <script src="../assets/vendor/datatables/jquery.dataTables.min.js"></script>
+    <script src="../assets/vendor/datatables/dataTables.bootstrap4.min.js"></script>
+
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.32/dist/sweetalert2.all.min.js"></script>
+
+    <!-- Custom JavaScript for Categories Management -->
+    <script src="../assets/js/admin/categories.js"></script>
+  </body>
+</html>

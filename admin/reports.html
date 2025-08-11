@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="NHAFLOWER - Hệ thống báo cáo chi tiết" />
+    <meta name="author" content="NHAFLOWER" />
+
+    <title>NHAFLOWER - Báo cáo</title>
+
+    <!-- Custom fonts for this template -->
+    <link href="../assets/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css" />
+    <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet" />
+
+    <!-- Custom styles for this template -->
+    <link href="../assets/css/admin/sb-admin-2.min.css" rel="stylesheet" />
+
+    <!-- DataTables CSS -->
+    <link href="../assets/vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
+
+    <!-- SweetAlert2 -->
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.32/dist/sweetalert2.min.css" rel="stylesheet">
+
+    <!-- Custom admin styles -->
+    <link href="../assets/css/admin/custom-admin.css" rel="stylesheet" />
+
+    <style>
+        /* NHAFLOWER Colors */
+        :root {
+            --primary-color: #e91e63;
+            --primary-light: #f48fb1;
+            --primary-dark: #ad1457;
+            --success-color: #4caf50;
+            --warning-color: #ff9800;
+            --info-color: #2196f3;
+            --danger-color: #f44336;
+        }
+
+        .bg-gradient-primary {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            border-color: var(--primary-dark);
+        }
+
+        /* Report Cards */
+        .report-card {
+            border: 1px solid #e3e6f0;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+            background: #fff;
+        }
+
+        .report-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .report-card .card-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+            color: white;
+            font-weight: bold;
+            border-radius: 0.5rem 0.5rem 0 0;
+        }
+
+        /* Filter Panel */
+        .filter-panel {
+            background: linear-gradient(135deg, #f8f9fc, #ffffff);
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid #e3e6f0;
+        }
+
+        /* Report Tables */
+        .report-table {
+            font-size: 0.85rem;
+        }
+
+        .report-table th {
+            background-color: #f8f9fc;
+            color: var(--primary-dark);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.5px;
+        }
+
+        .report-table td {
+            vertical-align: middle;
+        }
+
+        /* Status badges */
+        .status-badge {
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 0.3rem 0.6rem;
+            border-radius: 0.35rem;
+        }
+
+        .status-pending {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+
+        .status-processing {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .status-completed {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        /* Export buttons */
+        .export-buttons .btn {
+            margin: 0.25rem;
+            border-radius: 0.35rem;
+            font-weight: 500;
+            font-size: 0.85rem;
+        }
+
+        /* Loading states */
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            border-radius: 0.5rem;
+        }
+
+        .spinner-border-sm {
+            width: 1rem;
+            height: 1rem;
+        }
+
+        /* Summary cards */
+        .summary-card {
+            background: linear-gradient(135deg, #fff, #f8f9fc);
+            border-left: 4px solid var(--primary-color);
+            border-radius: 0 0.5rem 0.5rem 0;
+            transition: all 0.3s ease;
+        }
+
+        .summary-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 15px rgba(233, 30, 99, 0.2);
+        }
+
+        /* Print styles */
+        @media print {
+            .no-print { display: none !important; }
+            .print-header { display: block !important; }
+            
+            .report-table {
+                font-size: 0.7rem;
+            }
+            
+            .card {
+                border: 1px solid #000 !important;
+                box-shadow: none !important;
+            }
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .filter-panel {
+                padding: 1rem;
+            }
+            
+            .export-buttons {
+                text-align: center;
+                margin-top: 1rem;
+            }
+            
+            .report-table {
+                font-size: 0.75rem;
+            }
+        }
+    </style>
+</head>
+
+<body id="page-top">
+    <!-- Page Wrapper -->
+    <div id="wrapper">
+        <!-- Sidebar -->
+        <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+            <!-- Sidebar - Brand -->
+            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
+                <div class="sidebar-brand-icon rotate-n-15">
+                    <i class="fas fa-seedling"></i>
+                </div>
+                <div class="sidebar-brand-text mx-3">NHAFLOWER</div>
+            </a>
+
+            <!-- Divider -->
+            <hr class="sidebar-divider my-0" />
+
+            <!-- Nav Item - Dashboard -->
+            <li class="nav-item">
+                <a class="nav-link" href="index.html">
+                    <i class="fas fa-fw fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+
+            <!-- Divider -->
+            <hr class="sidebar-divider" />
+
+            <!-- Heading -->
+            <div class="sidebar-heading">Quản lý chính</div>
+
+            <!-- Nav Item - Khách hàng -->
+            <li class="nav-item">
+                <a class="nav-link" href="customers.html">
+                    <i class="fas fa-fw fa-users"></i>
+                    <span>Khách hàng</span>
+                </a>
+            </li>
+
+            <!-- Nav Item - Sản phẩm -->
+            <li class="nav-item">
+                <a class="nav-link" href="products.html">
+                    <i class="fas fa-fw fa-leaf"></i>
+                    <span>Sản phẩm</span>
+                </a>
+            </li>
+
+            <!-- Nav Item - Đơn hàng -->
+            <li class="nav-item">
+                <a class="nav-link" href="orders.html">
+                    <i class="fas fa-fw fa-shopping-cart"></i>
+                    <span>Đơn hàng</span>
+                </a>
+            </li>
+
+            <!-- Nav Item - Danh mục -->
+            <li class="nav-item">
+                <a class="nav-link" href="categories.html">
+                    <i class="fas fa-fw fa-tags"></i>
+                    <span>Danh mục</span>
+                </a>
+            </li>
+
+            <!-- Divider -->
+            <hr class="sidebar-divider" />
+
+            <!-- Heading -->
+            <div class="sidebar-heading">Báo cáo & Thống kê</div>
+
+            <!-- Nav Item - Biểu đồ -->
+            <li class="nav-item">
+                <a class="nav-link" href="charts.html">
+                    <i class="fas fa-fw fa-chart-area"></i>
+                    <span>Biểu đồ & Thống kê</span>
+                </a>
+            </li>
+
+            <!-- Nav Item - Báo cáo -->
+            <li class="nav-item active">
+                <a class="nav-link" href="reports.html">
+                    <i class="fas fa-fw fa-file-alt"></i>
+                    <span>Báo cáo Chi tiết</span>
+                </a>
+            </li>
+
+            <!-- Divider -->
+            <hr class="sidebar-divider d-none d-md-block" />
+
+            <!-- Sidebar Toggler -->
+            <div class="text-center d-none d-md-inline">
+                <button class="rounded-circle border-0" id="sidebarToggle"></button>
+            </div>
+
+            <!-- Sidebar Message -->
+            <div class="sidebar-card d-none d-lg-flex">
+                <img class="sidebar-card-illustration mb-2" src="../assets/img/admin/undraw_rocket.svg" alt="..." />
+                <p class="text-center mb-2">
+                    <strong>NHAFLOWER</strong> Hệ thống quản lý bán hoa chuyên nghiệp!
+                </p>
+                <a class="btn btn-success btn-sm" href="../user/home.html">Xem trang chủ</a>
+            </div>
+        </ul>
+        <!-- End of Sidebar -->
+
+        <!-- Content Wrapper -->
+        <div id="content-wrapper" class="d-flex flex-column">
+            <!-- Main Content -->
+            <div id="content">
+                <!-- Topbar -->
+                <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+                    <!-- Sidebar Toggle (Topbar) -->
+                    <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+                        <i class="fa fa-bars"></i>
+                    </button>
+
+                    <!-- Topbar Search -->
+                    <form class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
+                        <div class="input-group">
+                            <input type="text" class="form-control bg-light border-0 small" placeholder="Tìm kiếm báo cáo..." aria-label="Search" aria-describedby="basic-addon2" />
+                            <div class="input-group-append">
+                                <button class="btn btn-primary" type="button">
+                                    <i class="fas fa-search fa-sm"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+
+                    <!-- Topbar Navbar -->
+                    <ul class="navbar-nav ml-auto">
+                        <!-- Nav Item - Alerts -->
+                        <li class="nav-item dropdown no-arrow mx-1">
+                            <a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="fas fa-bell fa-fw"></i>
+                                <span class="badge badge-danger badge-counter">3+</span>
+                            </a>
+                        </li>
+
+                        <div class="topbar-divider d-none d-sm-block"></div>
+
+                        <!-- Nav Item - User Information -->
+                        <li class="nav-item dropdown no-arrow">
+                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <span class="mr-2 d-none d-lg-inline text-gray-600 small">Admin NHAFLOWER</span>
+                                <img class="img-profile rounded-circle" src="../assets/img/admin/undraw_profile.svg" />
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+                <!-- End of Topbar -->
+
+                <!-- Begin Page Content -->
+                <div class="container-fluid">
+                    <!-- Page Heading -->
+                    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                        <h1 class="h3 mb-0 text-gray-800">
+                            <i class="fas fa-file-alt text-primary mr-2"></i>Báo cáo Chi tiết
+                        </h1>
+                        <div class="export-buttons no-print">
+                            <button class="btn btn-success btn-sm" onclick="exportToExcel()">
+                                <i class="fas fa-file-excel mr-1"></i>Xuất Excel
+                            </button>
+                            <button class="btn btn-danger btn-sm" onclick="exportToPDF()">
+                                <i class="fas fa-file-pdf mr-1"></i>Xuất PDF
+                            </button>
+                            <button class="btn btn-secondary btn-sm" onclick="printReport()">
+                                <i class="fas fa-print mr-1"></i>In báo cáo
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Print Header (hidden by default, shown when printing) -->
+                    <div class="print-header" style="display: none;">
+                        <div class="text-center mb-4">
+                            <h2 style="color: #e91e63;"><i class="fas fa-seedling"></i> NHAFLOWER</h2>
+                            <h4>BÁO CÁO CHI TIẾT</h4>
+                            <p>Ngày tạo: <span id="printDate"></span></p>
+                        </div>
+                    </div>
+
+                    <!-- Filter Panel -->
+                    <div class="filter-panel no-print">
+                        <div class="row">
+                            <div class="col-lg-2 col-md-6 mb-3">
+                                <label for="reportType" class="form-label"><strong>Loại báo cáo:</strong></label>
+                                <select class="form-control form-control-sm" id="reportType">
+                                    <option value="overview">Tổng quan</option>
+                                    <option value="revenue">Doanh thu</option>
+                                    <option value="products">Sản phẩm</option>
+                                    <option value="customers">Khách hàng</option>
+                                    <option value="orders">Đơn hàng</option>
+                                    <option value="inventory">Tồn kho</option>
+                                </select>
+                            </div>
+                            <div class="col-lg-2 col-md-6 mb-3">
+                                <label for="dateFrom" class="form-label"><strong>Từ ngày:</strong></label>
+                                <input type="date" class="form-control form-control-sm" id="dateFrom">
+                            </div>
+                            <div class="col-lg-2 col-md-6 mb-3">
+                                <label for="dateTo" class="form-label"><strong>Đến ngày:</strong></label>
+                                <input type="date" class="form-control form-control-sm" id="dateTo">
+                            </div>
+                            <div class="col-lg-2 col-md-6 mb-3">
+                                <label for="statusFilter" class="form-label"><strong>Trạng thái:</strong></label>
+                                <select class="form-control form-control-sm" id="statusFilter">
+                                    <option value="">Tất cả</option>
+                                    <option value="cho">Chờ xác nhận</option>
+                                    <option value="dang_giao">Đang giao</option>
+                                    <option value="hoan_tat">Hoàn thành</option>
+                                </select>
+                            </div>
+                            <div class="col-lg-2 col-md-6 mb-3">
+                                <label for="categoryFilter" class="form-label"><strong>Danh mục:</strong></label>
+                                <select class="form-control form-control-sm" id="categoryFilter">
+                                    <option value="">Tất cả danh mục</option>
+                                </select>
+                            </div>
+                            <div class="col-lg-2 col-md-6 mb-3">
+                                <label class="form-label">&nbsp;</label>
+                                <div>
+                                    <button class="btn btn-primary btn-sm w-100" onclick="generateReport()">
+                                        <i class="fas fa-search mr-1"></i>Tạo báo cáo
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Summary Cards Row -->
+                    <div class="row" id="summaryCards">
+                        <!-- Will be populated dynamically -->
+                    </div>
+
+                    <!-- Reports Container -->
+                    <div id="reportsContainer">
+                        <!-- Overview Report -->
+                        <div class="report-card mb-4" id="overviewReport" style="display: none;">
+                            <div class="card-header">
+                                <h6 class="m-0"><i class="fas fa-chart-pie mr-2"></i>Báo cáo Tổng quan</h6>
+                            </div>
+                            <div class="card-body position-relative">
+                                <div class="loading-overlay" id="overviewLoading" style="display: none;">
+                                    <div class="text-center">
+                                        <div class="spinner-border text-primary" role="status">
+                                            <span class="sr-only">Đang tải...</span>
+                                        </div>
+                                        <p class="mt-2 text-muted">Đang tạo báo cáo...</p>
+                                    </div>
+                                </div>
+                                <div id="overviewContent"></div>
+                            </div>
+                        </div>
+
+                        <!-- Revenue Report -->
+                        <div class="report-card mb-4" id="revenueReport" style="display: none;">
+                            <div class="card-header">
+                                <h6 class="m-0"><i class="fas fa-dollar-sign mr-2"></i>Báo cáo Doanh thu</h6>
+                            </div>
+                            <div class="card-body position-relative">
+                                <div class="loading-overlay" id="revenueLoading" style="display: none;">
+                                    <div class="text-center">
+                                        <div class="spinner-border text-primary" role="status">
+                                            <span class="sr-only">Đang tải...</span>
+                                        </div>
+                                        <p class="mt-2 text-muted">Đang tạo báo cáo doanh thu...</p>
+                                    </div>
+                                </div>
+                                <div id="revenueContent"></div>
+                            </div>
+                        </div>
+
+                        <!-- Products Report -->
+                        <div class="report-card mb-4" id="productsReport" style="display: none;">
+                            <div class="card-header">
+                                <h6 class="m-0"><i class="fas fa-leaf mr-2"></i>Báo cáo Sản phẩm</h6>
+                            </div>
+                            <div class="card-body position-relative">
+                                <div class="loading-overlay" id="productsLoading" style="display: none;">
+                                    <div class="text-center">
+                                        <div class="spinner-border text-primary" role="status">
+                                            <span class="sr-only">Đang tải...</span>
+                                        </div>
+                                        <p class="mt-2 text-muted">Đang phân tích sản phẩm...</p>
+                                    </div>
+                                </div>
+                                <div id="productsContent"></div>
+                            </div>
+                        </div>
+
+                        <!-- Customers Report -->
+                        <div class="report-card mb-4" id="customersReport" style="display: none;">
+                            <div class="card-header">
+                                <h6 class="m-0"><i class="fas fa-users mr-2"></i>Báo cáo Khách hàng</h6>
+                            </div>
+                            <div class="card-body position-relative">
+                                <div class="loading-overlay" id="customersLoading" style="display: none;">
+                                    <div class="text-center">
+                                        <div class="spinner-border text-primary" role="status">
+                                            <span class="sr-only">Đang tải...</span>
+                                        </div>
+                                        <p class="mt-2 text-muted">Đang phân tích khách hàng...</p>
+                                    </div>
+                                </div>
+                                <div id="customersContent"></div>
+                            </div>
+                        </div>
+
+                        <!-- Orders Report -->
+                        <div class="report-card mb-4" id="ordersReport" style="display: none;">
+                            <div class="card-header">
+                                <h6 class="m-0"><i class="fas fa-shopping-cart mr-2"></i>Báo cáo Đơn hàng</h6>
+                            </div>
+                            <div class="card-body position-relative">
+                                <div class="loading-overlay" id="ordersLoading" style="display: none;">
+                                    <div class="text-center">
+                                        <div class="spinner-border text-primary" role="status">
+                                            <span class="sr-only">Đang tải...</span>
+                                        </div>
+                                        <p class="mt-2 text-muted">Đang phân tích đơn hàng...</p>
+                                    </div>
+                                </div>
+                                <div id="ordersContent"></div>
+                            </div>
+                        </div>
+
+                        <!-- Inventory Report -->
+                        <div class="report-card mb-4" id="inventoryReport" style="display: none;">
+                            <div class="card-header">
+                                <h6 class="m-0"><i class="fas fa-boxes mr-2"></i>Báo cáo Tồn kho</h6>
+                            </div>
+                            <div class="card-body position-relative">
+                                <div class="loading-overlay" id="inventoryLoading" style="display: none;">
+                                    <div class="text-center">
+                                        <div class="spinner-border text-primary" role="status">
+                                            <span class="sr-only">Đang tải...</span>
+                                        </div>
+                                        <p class="mt-2 text-muted">Đang kiểm tra tồn kho...</p>
+                                    </div>
+                                </div>
+                                <div id="inventoryContent"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- System Status Panel -->
+                    <div class="row mb-4" id="systemStatusPanel">
+                        <div class="col-12">
+                            <div class="card border-left-info shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                                <i class="fas fa-info-circle mr-1"></i>Trạng thái hệ thống
+                                            </div>
+                                            <div class="h6 mb-0 font-weight-bold text-gray-800" id="systemStatusText">
+                                                Đang kiểm tra...
+                                            </div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <button class="btn btn-sm btn-outline-info" onclick="checkSystemStatus()">
+                                                <i class="fas fa-sync-alt mr-1"></i>Kiểm tra lại
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-secondary" onclick="toggleDebugMode()">
+                                                <i class="fas fa-bug mr-1"></i>Debug
+                                            </button>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Debug Information (hidden by default) -->
+                                    <div id="debugInfo" style="display: none;" class="mt-3 p-3 bg-light border rounded">
+                                        <h6>Debug Information:</h6>
+                                        <ul id="debugList" class="mb-0 small text-muted">
+                                            <li>Đang tải thông tin debug...</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <!-- /.container-fluid -->
+            </div>
+            <!-- End of Main Content -->
+
+            <!-- Footer -->
+            <footer class="sticky-footer bg-white">
+                <div class="container my-auto">
+                    <div class="copyright text-center my-auto">
+                        <span>Copyright &copy; NHAFLOWER 2025</span>
+                    </div>
+                </div>
+            </footer>
+            <!-- End of Footer -->
+        </div>
+        <!-- End of Content Wrapper -->
+    </div>
+    <!-- End of Page Wrapper -->
+
+    <!-- Scroll to Top Button-->
+    <a class="scroll-to-top rounded" href="#page-top">
+        <i class="fas fa-angle-up"></i>
+    </a>
+
+    <!-- Bootstrap core JavaScript-->
+    <script src="../assets/vendor/jquery/jquery.min.js"></script>
+    <script src="../assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Core plugin JavaScript-->
+    <script src="../assets/vendor/jquery-easing/jquery.easing.min.js"></script>
+
+    <!-- Custom scripts for all pages-->
+    <script src="../assets/js/admin/sb-admin-2.min.js"></script>
+
+    <!-- Page level plugins -->
+    <script src="../assets/vendor/datatables/jquery.dataTables.min.js"></script>
+    <script src="../assets/vendor/datatables/dataTables.bootstrap4.min.js"></script>
+
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.32/dist/sweetalert2.all.min.js"></script>
+
+    <!-- Custom JavaScript for Reports -->
+    <script src="../assets/js/admin/reports.js"></script>
+</body>
+</html>
