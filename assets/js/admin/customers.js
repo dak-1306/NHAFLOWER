@@ -5,10 +5,9 @@
  * Created: 2025
  */
 
-class CustomerManager {
-  constructor() {
-    // Khôi phục relative URL
-    this.API_BASE_URL = "../api/khach_hang/";
+class CustomerManager {  constructor() {
+    // Fixed URL to match actual API structure
+    this.API_BASE_URL = "../api/";
     this.customersTable = null;
     this.init();
   }
@@ -58,19 +57,28 @@ class CustomerManager {
       $(".alert-custom").fadeOut();
     }, 3000);
   }
-
   // Tải danh sách khách hàng
   async loadCustomers() {
     try {
       console.log("Loading customers...");
-      const response = await fetch(this.API_BASE_URL + "get_customers.php");
+      const response = await fetch(this.API_BASE_URL + "khach_hang.php?action=get");
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      const customers = await response.json();
-      console.log("Customers loaded:", customers);
+      const result = await response.json();
+      console.log("Customers API response:", result);
+
+      // Check if the API response has success and data properties
+      let customers;
+      if (result.success && result.data) {
+        customers = result.data;
+      } else if (Array.isArray(result)) {
+        customers = result;
+      } else {
+        throw new Error("Invalid API response format");
+      }
 
       // Destroy existing DataTable if exists
       if (this.customersTable) {
@@ -79,14 +87,14 @@ class CustomerManager {
       }
 
       this.displayCustomers(customers);
-      this.initDataTable();
-    } catch (error) {
+      this.initDataTable();    } catch (error) {
       console.error("Lỗi khi tải danh sách khách hàng:", error);
       const tbody = document.getElementById("customersTableBody");
-      tbody.innerHTML = `<tr><td colspan="7" class="text-center text-danger">
+      // Remove colspan to avoid DataTables conflicts
+      tbody.innerHTML = `<tr><td class="text-center text-danger" style="padding: 20px;">
                 <i class="fas fa-exclamation-triangle mr-2"></i>
                 Lỗi: ${error.message}
-            </td></tr>`;
+            </td><td></td><td></td><td></td><td></td><td></td><td></td></tr>`;
       this.showAlert(
         `Lỗi khi tải danh sách khách hàng: ${error.message}`,
         "danger"
@@ -126,11 +134,10 @@ class CustomerManager {
 
   // Hiển thị danh sách khách hàng
   displayCustomers(customers) {
-    const tbody = document.getElementById("customersTableBody");
-
-    if (!customers || customers.length === 0) {
+    const tbody = document.getElementById("customersTableBody");    if (!customers || customers.length === 0) {
+      // Avoid colspan to prevent DataTables issues
       tbody.innerHTML =
-        '<tr><td colspan="7" class="text-center">Không có dữ liệu khách hàng</td></tr>';
+        '<tr><td class="text-center" style="padding: 20px;">Không có dữ liệu khách hàng</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>';
       return;
     }
 
@@ -251,7 +258,7 @@ class CustomerManager {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
 
-      const accountResponse = await fetch("../api/tai_khoan/add_taikhoan.php", {
+      const accountResponse = await fetch("../api/tai_khoan.php?action=add", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -296,7 +303,7 @@ class CustomerManager {
       const controller2 = new AbortController();
       const timeoutId2 = setTimeout(() => controller2.abort(), 10000);
 
-      const apiUrl = this.API_BASE_URL + "create_customer.php";
+      const apiUrl = this.API_BASE_URL + "khach_hang.php?action=add";
       console.log("API URL:", apiUrl);
       console.log("Full URL:", window.location.origin + "/" + apiUrl);
 
@@ -376,14 +383,22 @@ class CustomerManager {
       }
     }
   }
-
   // Chỉnh sửa khách hàng
   async editCustomer(id) {
     try {
       const response = await fetch(
-        this.API_BASE_URL + `get_customer.php?id=${id}`
+        this.API_BASE_URL + `khach_hang.php?action=get_by_id&id=${id}`
       );
-      const customer = await response.json();
+      const result = await response.json();
+      
+      let customer;
+      if (result.success && result.data) {
+        customer = result.data;
+      } else if (result.id_khachhang) {
+        customer = result;
+      } else {
+        throw new Error("Customer not found");
+      }
 
       // Điền dữ liệu vào form
       document.getElementById("editCustomerId").value = customer.id_khachhang;
@@ -413,9 +428,8 @@ class CustomerManager {
       ngay_sinh: formData.get("ngay_sinh"),
     };
 
-    try {
-      const response = await fetch(
-        this.API_BASE_URL + `update_customer.php?id=${customerId}`,
+    try {      const response = await fetch(
+        this.API_BASE_URL + `khach_hang.php?action=update&id=${customerId}`,
         {
           method: "POST",
           headers: {
@@ -446,9 +460,8 @@ class CustomerManager {
       return;
     }
 
-    try {
-      const response = await fetch(
-        this.API_BASE_URL + `delete_customer.php?id=${id}`
+    try {      const response = await fetch(
+        this.API_BASE_URL + `khach_hang.php?action=delete&id=${id}`
       );
       const result = await response.json();
 

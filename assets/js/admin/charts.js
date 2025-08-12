@@ -42,19 +42,34 @@ let isLoading = false;
 
 // Document ready
 $(document).ready(function() {
-    // Enhanced initialization
-    enhancedInit();
-    
-    initializeCharts();
-    loadStatistics();
-    loadChartDataEnhanced(); // Use enhanced version
-    bindEvents();
-    
-    // Set default date range (last 30 days)
-    setDefaultDateRange();
-    
-    console.log('NHAFLOWER Charts System Initialized');
+    // Wait for Chart.js to be available
+    waitForChartJS(() => {
+        // Enhanced initialization
+        enhancedInit();
+        
+        initializeCharts();
+        loadStatistics();
+        loadChartDataEnhanced(); // Use enhanced version
+        bindEvents();
+        
+        // Set default date range (last 30 days)
+        setDefaultDateRange();
+        
+        console.log('NHAFLOWER Charts System Initialized');
+    });
 });
+
+/**
+ * Wait for Chart.js to be available
+ */
+function waitForChartJS(callback) {
+    if (typeof Chart !== 'undefined') {
+        callback();
+    } else {
+        console.log('Waiting for Chart.js to load...');
+        setTimeout(() => waitForChartJS(callback), 100);
+    }
+}
 
 /**
  * Set default date range
@@ -97,28 +112,44 @@ function bindEvents() {
  * Initialize all charts
  */
 function initializeCharts() {
-    initRevenueChart();
-    initCategoryChart();
-    initTopProductsChart();
-    initOrderStatusChart();
+    try {
+        if (typeof Chart === 'undefined') {
+            console.error('Chart.js is not loaded');
+            return;
+        }
+        
+        initRevenueChart();
+        initCategoryChart();
+        initTopProductsChart();
+        initOrderStatusChart();
+    } catch (error) {
+        console.error('Error initializing charts:', error);
+    }
 }
 
 /**
  * Initialize revenue chart
  */
 function initRevenueChart() {
-    const ctx = document.getElementById('revenueChart').getContext('2d');
-    
-    revenueChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: [],
-            datasets: [{
-                label: 'Doanh thu (₫)',
-                data: [],
-                backgroundColor: colors.primary + '20',
-                borderColor: colors.primary,
-                borderWidth: 3,
+    try {
+        const canvas = document.getElementById('revenueChart');
+        if (!canvas) {
+            console.warn('Revenue chart canvas not found');
+            return;
+        }
+        
+        const ctx = canvas.getContext('2d');
+        
+        revenueChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Doanh thu (₫)',
+                    data: [],
+                    backgroundColor: colors.primary + '20',
+                    borderColor: colors.primary,
+                    borderWidth: 3,
                 fill: true,
                 tension: 0.4,
                 pointBackgroundColor: colors.primary,
@@ -171,8 +202,7 @@ function initRevenueChart() {
                     titleColor: '#fff',
                     bodyColor: '#fff',
                     borderColor: colors.primary,
-                    borderWidth: 1,
-                    callbacks: {
+                    borderWidth: 1,                    callbacks: {
                         label: function(context) {
                             return 'Doanh thu: ' + formatCurrency(context.parsed.y);
                         }
@@ -181,13 +211,23 @@ function initRevenueChart() {
             }
         }
     });
+    } catch (error) {
+        console.error('Error initializing revenue chart:', error);
+    }
 }
 
 /**
  * Initialize category pie chart
  */
 function initCategoryChart() {
-    const ctx = document.getElementById('categoryChart').getContext('2d');
+    try {
+        const canvas = document.getElementById('categoryChart');
+        if (!canvas) {
+            console.warn('Category chart canvas not found');
+            return;
+        }
+        
+        const ctx = canvas.getContext('2d');
     
     categoryChart = new Chart(ctx, {
         type: 'doughnut',
@@ -217,18 +257,27 @@ function initCategoryChart() {
                         padding: 20,
                         usePointStyle: true
                     }
-                }
-            },
+                }        },
             cutout: '50%'
         }
     });
+    } catch (error) {
+        console.error('Error initializing category chart:', error);
+    }
 }
 
 /**
  * Initialize top products bar chart
  */
 function initTopProductsChart() {
-    const ctx = document.getElementById('topProductsChart').getContext('2d');
+    try {
+        const canvas = document.getElementById('topProductsChart');
+        if (!canvas) {
+            console.warn('Top products chart canvas not found');
+            return;
+        }
+        
+        const ctx = canvas.getContext('2d');
     
     topProductsChart = new Chart(ctx, {
         type: 'bar',

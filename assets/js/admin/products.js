@@ -102,12 +102,10 @@ $(document).ready(function() {
                 showAlert('error', 'Không thể tải danh sách sản phẩm. Vui lòng thử lại.');
             }
         });
-    }
-
-    // Load categories for dropdown
+    }    // Load categories for dropdown
     function loadCategories() {
         $.ajax({
-            url: '../api/loai_hoa/get_all_loaihoa.php',
+            url: '../api/loai_hoa.php?action=get',
             type: 'GET',
             dataType: 'json',
             success: function(response) {

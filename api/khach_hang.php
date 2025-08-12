@@ -17,8 +17,13 @@ function sendResponse($success, $message, $data = null) {
 }
 
 if ($action === 'get' || $action === 'get_all') {
-    $sql = "SELECT * FROM KhachHang";
+    $sql = "SELECT * FROM khachhang";
     $result = $conn->query($sql);
+    
+    if (!$result) {
+        sendResponse(false, 'Lỗi database: ' . $conn->error);
+    }
+    
     $customers = array();
     while ($row = $result->fetch_assoc()) {
         $customers[] = $row;
@@ -28,7 +33,7 @@ if ($action === 'get' || $action === 'get_all') {
 
 if ($action === 'get_by_id') {
     $id = $_GET['id'] ?? 0;
-    $sql = "SELECT * FROM KhachHang WHERE id_khachhang = $id";
+    $sql = "SELECT * FROM khachhang WHERE id_khachhang = $id";
     $result = $conn->query($sql);
     $row = $result->fetch_assoc();
     if ($row) sendResponse(true, 'Lấy khách hàng thành công', $row);
@@ -46,7 +51,7 @@ if ($action === 'add' || $action === 'post') {
     $diachi = $conn->real_escape_string($data['dia_chi']);
     $id_taikhoan = intval($data['id_taikhoan']);
     $ngay_sinh = isset($data['ngay_sinh']) && !empty($data['ngay_sinh']) ? "'" . $conn->real_escape_string($data['ngay_sinh']) . "'" : "NULL";
-    $sql = "INSERT INTO KhachHang (ten, sdt, dia_chi, id_taikhoan, ngay_sinh) VALUES ('$ten', '$sdt', '$diachi', $id_taikhoan, $ngay_sinh)";
+    $sql = "INSERT INTO khachhang (ten, sdt, dia_chi, id_taikhoan, ngay_sinh) VALUES ('$ten', '$sdt', '$diachi', $id_taikhoan, $ngay_sinh)";
     if ($conn->query($sql)) {
         sendResponse(true, 'Tạo khách hàng thành công');
     } else {
@@ -61,7 +66,7 @@ if ($action === 'update' || $action === 'put') {
     $sdt = $conn->real_escape_string($data['so_dien_thoai']);
     $diachi = $conn->real_escape_string($data['dia_chi']);
     $ngay_sinh = isset($data['ngay_sinh']) && !empty($data['ngay_sinh']) ? "'" . $conn->real_escape_string($data['ngay_sinh']) . "'" : "NULL";
-    $sql = "UPDATE KhachHang SET ten = '$ten', sdt = '$sdt', dia_chi = '$diachi', ngay_sinh = $ngay_sinh WHERE id_khachhang = $id";
+    $sql = "UPDATE khachhang SET ten = '$ten', sdt = '$sdt', dia_chi = '$diachi', ngay_sinh = $ngay_sinh WHERE id_khachhang = $id";
     if ($conn->query($sql)) {
         sendResponse(true, 'Cập nhật thành công');
     } else {
@@ -71,7 +76,7 @@ if ($action === 'update' || $action === 'put') {
 
 if ($action === 'delete') {
     $id = $_GET['id'] ?? 0;
-    $sql = "DELETE FROM KhachHang WHERE id_khachhang = $id";
+    $sql = "DELETE FROM khachhang WHERE id_khachhang = $id";
     if ($conn->query($sql)) {
         sendResponse(true, 'Xóa khách hàng thành công');
     } else {

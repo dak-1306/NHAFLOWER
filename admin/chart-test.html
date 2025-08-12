@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chart.js Test - NHAFLOWER</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #f8f9fc;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        .status {
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .chart-container {
+            width: 100%;
+            height: 400px;
+            margin: 20px 0;
+        }
+        h2 {
+            color: #e91e63;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>🌸 NHAFLOWER - Chart.js Loading Test</h2>
+        
+        <div id="status" class="status">
+            ⏳ Đang kiểm tra Chart.js...
+        </div>
+        
+        <div class="chart-container">
+            <canvas id="testChart"></canvas>
+        </div>
+        
+        <div id="results"></div>
+    </div>    <!-- Load Chart.js from local vendor -->
+    <script src="../assets/vendor/chart.js/Chart.bundle.min.js"></script>
+    
+    <script>
+        function updateStatus(message, isError = false) {
+            const statusDiv = document.getElementById('status');
+            statusDiv.textContent = message;
+            statusDiv.className = 'status ' + (isError ? 'error' : 'success');
+        }
+
+        function showResults(results) {
+            document.getElementById('results').innerHTML = results;
+        }
+
+        // Test Chart.js loading
+        setTimeout(() => {
+            try {
+                if (typeof Chart !== 'undefined') {
+                    updateStatus('✅ Chart.js đã tải thành công!');
+                    
+                    // Test creating a chart
+                    const ctx = document.getElementById('testChart').getContext('2d');
+                    const testChart = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: ['Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5'],
+                            datasets: [{
+                                label: 'Test Data',
+                                data: [12, 19, 15, 25, 22],
+                                backgroundColor: '#e91e6320',
+                                borderColor: '#e91e63',
+                                borderWidth: 2,
+                                fill: true,
+                                tension: 0.4
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    display: true,
+                                    position: 'top'
+                                }
+                            }
+                        }
+                    });
+                    
+                    showResults(`
+                        <div class="status success">
+                            <h3>✅ Kết quả kiểm tra:</h3>
+                            <ul>
+                                <li>Chart.js version: ${Chart.version}</li>
+                                <li>Biểu đồ test: Tạo thành công</li>
+                                <li>Canvas rendering: Hoạt động bình thường</li>
+                                <li>Trạng thái: SẴN SÀNG cho charts.html</li>
+                            </ul>
+                        </div>
+                    `);
+                } else {
+                    updateStatus('❌ Chart.js không tải được!', true);
+                    showResults(`
+                        <div class="status error">
+                            <h3>❌ Lỗi:</h3>
+                            <ul>
+                                <li>Chart.js không khả dụng</li>
+                                <li>Có thể do kết nối internet</li>
+                                <li>Hoặc CDN bị chặn</li>
+                            </ul>
+                        </div>
+                    `);
+                }
+            } catch (error) {
+                updateStatus('❌ Lỗi khi tạo biểu đồ!', true);
+                showResults(`
+                    <div class="status error">
+                        <h3>❌ Chi tiết lỗi:</h3>
+                        <p>${error.message}</p>
+                    </div>
+                `);
+            }
+        }, 500);
+    </script>
+</body>
+</html>

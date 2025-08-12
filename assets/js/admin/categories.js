@@ -82,13 +82,23 @@ function bindEvents() {
  */
 function loadCategories() {
     // Sử dụng API loai_hoa để có field names đúng với categories management
-    
-    $.ajax({
-        url: '../api/loai_hoa/get_all_loaihoa.php',
+      $.ajax({
+        url: '../api/loai_hoa.php?action=get',
         type: 'GET',
         dataType: 'json',
-        success: function(data) {
-            // API này trả về data trực tiếp, không wrap trong response object
+        success: function(response) {
+            // Handle both structured API response and direct array
+            let data = [];
+            if (response && response.success && response.data) {
+                data = response.data;
+            } else if (Array.isArray(response)) {
+                data = response;
+            } else {
+                console.error('Invalid response format:', response);
+                showError('Dữ liệu trả về không hợp lệ');
+                return;
+            }
+            
             if (Array.isArray(data)) {
                 displayCategories(data);
             } else {
@@ -178,17 +188,14 @@ function saveCategory() {
     const formData = {
         ten_loai: categoryName,
         mo_ta: categoryDescription
-    };
-
-    let apiUrl, method;
+    };    let apiUrl, method;
     if (isEditMode) {
-        apiUrl = '../api/loai_hoa/update_loaihoa.php';
-        formData.id_loaihoa = categoryId;
+        apiUrl = '../api/loai_hoa.php?action=update&id=' + categoryId;
         method = 'POST';
     } else {
-        apiUrl = '../api/loai_hoa/add_loaihoa.php';
+        apiUrl = '../api/loai_hoa.php?action=add';
         method = 'POST';
-    }    $.ajax({
+    }$.ajax({
         url: apiUrl,
         type: method,
         data: formData, // Send as form data, not JSON
@@ -252,9 +259,8 @@ function deleteCategory(categoryId) {
         confirmButtonText: 'Xóa',
         cancelButtonText: 'Hủy'
     }).then((result) => {
-        if (result.isConfirmed) {
-            $.ajax({
-                url: '../api/loai_hoa/delete_loaihoa.php',
+        if (result.isConfirmed) {            $.ajax({
+                url: '../api/loai_hoa.php?action=delete&id=' + categoryId,
                 type: 'POST',
                 dataType: 'json',
                 data: { id: categoryId },

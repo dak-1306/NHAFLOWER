@@ -18,8 +18,13 @@ function sendResponse($success, $message, $data = null) {
 
 if ($action === 'get' || $action === 'get_all') {
     // Lấy tất cả đơn hàng
-    $sql = "SELECT dh.*, kh.ten_khachhang FROM DonHang dh JOIN KhachHang kh ON dh.id_khachhang = kh.id_khachhang";
+    $sql = "SELECT dh.*, kh.ten as ten_khachhang FROM donhang dh LEFT JOIN khachhang kh ON dh.id_khachhang = kh.id_khachhang";
     $result = mysqli_query($conn, $sql);
+    
+    if (!$result) {
+        sendResponse(false, 'Lỗi database: ' . mysqli_error($conn));
+    }
+    
     $data = [];
     while ($row = mysqli_fetch_assoc($result)) {
         $data[] = $row;

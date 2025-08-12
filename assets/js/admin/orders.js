@@ -86,18 +86,26 @@ function loadOrders() {
     console.log("Loading orders...");
     
     $.ajax({
-        url: '../api/don_hang/get_all_donhang.php',
+        url: '../api/don_hang.php?action=get',
         type: 'GET',
         dataType: 'json',
         data: currentFilters,
-        success: function(data) {
-            console.log("Orders loaded successfully:", data);
-            if (Array.isArray(data)) {
-                displayOrders(data);
+        success: function(response) {
+            console.log("Orders API response:", response);
+            
+            let orders = [];
+            if (response && response.success && response.data) {
+                orders = response.data;
+            } else if (Array.isArray(response)) {
+                orders = response;
             } else {
-                console.error("Invalid data format:", data);
+                console.error("Invalid response format:", response);
                 showError('Dữ liệu trả về không hợp lệ');
+                return;
             }
+            
+            console.log("Orders loaded successfully:", orders);
+            displayOrders(orders);
         },
         error: function(xhr, status, error) {
             console.error('Error loading orders:', error, xhr.responseText);
