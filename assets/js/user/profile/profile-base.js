@@ -38,8 +38,16 @@ class BaseProfileManager {
       userData.ten || userData.email || "Người dùng NHAFLOWER"
     );
     $("#profileEmail").text(userData.email || "");
-    // Keep default avatar for now
-    $("#profileAvatar").attr("src", "../../assets/img/user/default-avatar.png");
+    // Load avatar từ localStorage nếu có, không thì dùng mặc định
+    const savedAvatar = localStorage.getItem("nhaflower_avatar");
+    if (savedAvatar) {
+      $("#profileAvatar").attr("src", savedAvatar);
+    } else {
+      $("#profileAvatar").attr(
+        "src",
+        "../../assets/img/user/default-avatar.png"
+      );
+    }
   }
 
   /**
@@ -138,8 +146,8 @@ class BaseProfileManager {
       localStorage.removeItem("user_token");
       localStorage.removeItem("user_data");
       localStorage.removeItem("pending_search");
-      // Ưu tiên chuyển về login.html
-      window.location.href = "../login.html";
+      // Chuyển về index.html
+      window.location.href = "../index.html";
     }
   }
 
@@ -156,7 +164,10 @@ class BaseProfileManager {
       if (file) {
         const reader = new FileReader();
         reader.onload = function (e) {
-          $("#profileAvatar").attr("src", e.target.result);
+          const base64 = e.target.result;
+          $("#profileAvatar").attr("src", base64);
+          // Lưu avatar vào localStorage
+          localStorage.setItem("nhaflower_avatar", base64);
         };
         reader.readAsDataURL(file);
       }
