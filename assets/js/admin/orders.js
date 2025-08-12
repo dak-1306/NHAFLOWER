@@ -1,109 +1,107 @@
 /**
  * NHAFLOWER - Order Management JavaScript
- * Simplified and robust version
+ * Quản lý đơn hàng cho admin panel
  */
 
 let ordersTable;
+let currentFilters = {};
 
+// Document ready
 $(document).ready(function() {
     console.log("Orders page initializing...");
-    try {
-        initializeOrdersTable();
-        loadOrders();
-        console.log("Orders page initialized successfully.");
-    } catch (error) {
-        console.error("Initialization error:", error);
-    }
+    initializeOrdersTable();
+    bindEvents();
+    loadOrders();
+    console.log("Orders page initialized.");
 });
 
 /**
  * Initialize DataTable for orders
  */
 function initializeOrdersTable() {
-    console.log("Initializing DataTable...");
+    console.log("Initializing DataTable for orders...");
+    try {
+        ordersTable = $('#ordersTable').DataTable({
+            "processing": true,
+            "language": {
+                "decimal": "",
+                "emptyTable": "Không có dữ liệu trong bảng",
+                "info": "Hiển thị _START_ đến _END_ của _TOTAL_ mục",
+                "infoEmpty": "Hiển thị 0 đến 0 của 0 mục",
+                "infoFiltered": "(lọc từ _MAX_ tổng số mục)",
+                "lengthMenu": "Hiển thị _MENU_ mục",
+                "loadingRecords": "Đang tải...",
+                "processing": "Đang xử lý...",
+                "search": "Tìm kiếm:",
+                "zeroRecords": "Không tìm thấy kết quả phù hợp",
+                "paginate": {
+                    "first": "Đầu",
+                    "last": "Cuối",
+                    "next": "Tiếp",
+                    "previous": "Trước"
+                }
+            },
+            "responsive": true,
+            "serverSide": false,
+            "pageLength": 10,
+            "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "Tất cả"]],
+            "order": [[2, "desc"]], // Sort by date descending
+            "columnDefs": [
+                {
+                    "targets": [6], // Actions column
+                    "orderable": false,
+                    "searchable": false
+                }
+            ]
+        });
+        console.log("DataTable initialized successfully");
+    } catch (error) {
+        console.error("Error initializing DataTable:", error);
+    }
+}
+
+/**
+ * Bind event handlers
+ */
+function bindEvents() {
+    console.log("Binding events...");
     
-    ordersTable = $('#ordersTable').DataTable({
-        "processing": true,
-        "language": {
-            "decimal": "",
-            "emptyTable": "Không có dữ liệu trong bảng",
-            "info": "Hiển thị _START_ đến _END_ của _TOTAL_ mục",
-            "infoEmpty": "Hiển thị 0 đến 0 của 0 mục",
-            "infoFiltered": "(lọc từ _MAX_ tổng số mục)",
-            "lengthMenu": "Hiển thị _MENU_ mục",
-            "loadingRecords": "Đang tải...",
-            "processing": "Đang xử lý...",
-            "search": "Tìm kiếm:",
-            "zeroRecords": "Không tìm thấy kết quả phù hợp",
-            "paginate": {
-                "first": "Đầu",
-                "last": "Cuối", 
-                "next": "Tiếp",
-                "previous": "Trước"
-            }
-        },
-        "responsive": true,
-        "pageLength": 10,
-        "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "Tất cả"]],
-        "order": [[2, "desc"]], // Sort by date descending
-        "columnDefs": [
-            {
-                "targets": [6], // Actions column
-                "orderable": false,
-                "searchable": false
-            }
-        ]
+    // Filter form
+    $('#statusFilter, #dateFromFilter, #dateToFilter').on('change', function() {
+        applyFilters();
     });
-    
-    console.log("DataTable initialized successfully");
+
+    // Search functionality
+    $('.navbar-search input').on('keyup', function() {
+        if (ordersTable) {
+            ordersTable.search(this.value).draw();
+        }
+    });
 }
 
 /**
  * Load orders from API
  */
 function loadOrders() {
-    console.log("Loading orders from API...");
+    console.log("Loading orders...");
     
     $.ajax({
         url: '../api/don_hang/get_all_donhang.php',
         type: 'GET',
         dataType: 'json',
-        timeout: 15000,
-        success: function(response) {
-            console.log("API Response:", response);
-            
-            let orders = [];
-            if (response && response.success && Array.isArray(response.data)) {
-                orders = response.data;
-            } else if (Array.isArray(response)) {
-                orders = response;
+        data: currentFilters,
+        success: function(data) {
+            console.log("Orders loaded successfully:", data);
+            if (Array.isArray(data)) {
+                displayOrders(data);
             } else {
-                console.error("Invalid response format:", response);
-                showNotification('Định dạng dữ liệu không hợp lệ', 'error');
-                return;
+                console.error("Invalid data format:", data);
+                showError('Dữ liệu trả về không hợp lệ');
             }
-            
-            displayOrders(orders);
-            showNotification(`Đã tải ${orders.length} đơn hàng`, 'success');
         },
         error: function(xhr, status, error) {
-            console.error('API Error:', {
-                status: status,
-                error: error,
-                responseText: xhr.responseText,
-                statusCode: xhr.status
-            });
-            
-            let message = 'Không thể tải dữ liệu đơn hàng';
-            if (xhr.status === 404) {
-                message = 'API không tìm thấy (404)';
-            } else if (xhr.status === 500) {
-                message = 'Lỗi máy chủ (500)';
-            } else if (status === 'timeout') {
-                message = 'Kết nối bị timeout';
-            }
-            
-            showNotification(message, 'error');
+            console.error('Error loading orders:', error, xhr.responseText);
+            showError('Không thể tải dữ liệu đơn hàng. Vui lòng thử lại.');
         }
     });
 }
@@ -112,96 +110,159 @@ function loadOrders() {
  * Display orders in DataTable
  */
 function displayOrders(orders) {
-    console.log("Displaying orders:", orders.length);
-    
-    if (!ordersTable) {
-        console.error("DataTable not initialized");
-        return;
-    }
+    console.log("Displaying orders:", orders);
     
     // Clear existing data
     ordersTable.clear();
 
     if (!orders || orders.length === 0) {
+        console.log("No orders to display");
         ordersTable.draw();
         return;
     }
 
+    console.log("Processing", orders.length, "orders");
+    
     // Add rows to DataTable
     orders.forEach(function(order) {
-        try {
-            const statusBadge = getStatusBadge(order.trang_thai || 'cho');
-            const paymentBadge = '<span class="badge badge-warning">Chưa thanh toán</span>';
-            const formattedDate = formatDate(order.ngay_dat);
-            const formattedTotal = formatCurrency(parseFloat(order.tong_tien || 0));
+        const statusBadge = getStatusBadge(order.trang_thai || 'cho');
+        const paymentBadge = getPaymentBadge('pending'); 
+        const formattedDate = formatDate(order.ngay_dat);
+        const formattedTotal = formatCurrency(0); // Default since we don't have total calculation
 
-            const actions = `
-                <div class="btn-group btn-group-sm" role="group">
-                    <button type="button" class="btn btn-info" onclick="viewOrderDetails(${order.id_donhang})" title="Xem chi tiết">
-                        <i class="fas fa-eye"></i>
-                    </button>
-                    <button type="button" class="btn btn-warning" onclick="showUpdateStatusModal(${order.id_donhang}, '${order.trang_thai || 'cho'}')" title="Cập nhật trạng thái">
-                        <i class="fas fa-edit"></i>
-                    </button>
-                    <button type="button" class="btn btn-danger" onclick="confirmDeleteOrder(${order.id_donhang})" title="Xóa đơn hàng">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </div>
-            `;
+        const actions = `
+            <div class="btn-group" role="group">
+                <button type="button" class="btn btn-info btn-sm" onclick="viewOrderDetails(${order.id_donhang})" title="Xem chi tiết">
+                    <i class="fas fa-eye"></i>
+                </button>
+                <button type="button" class="btn btn-warning btn-sm" onclick="showUpdateStatusModal(${order.id_donhang}, '${order.trang_thai || 'cho'}')" title="Cập nhật trạng thái">
+                    <i class="fas fa-edit"></i>
+                </button>
+                <button type="button" class="btn btn-danger btn-sm" onclick="deleteOrder(${order.id_donhang})" title="Xóa đơn hàng">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        `;
 
-            const row = [
-                `#${order.id_donhang}`,
-                order.ten_khachhang || 'N/A',
-                formattedDate,
-                formattedTotal,
-                statusBadge,
-                paymentBadge,
-                actions
-            ];
-
-            ordersTable.row.add(row);
-        } catch (error) {
-            console.error("Error processing order:", order, error);
-        }
+        const row = [
+            `#${order.id_donhang}`,
+            order.ten_khachhang || 'N/A',
+            formattedDate,
+            formattedTotal,
+            statusBadge,
+            paymentBadge,
+            actions
+        ];
+        
+        console.log("Adding row:", row);
+        ordersTable.row.add(row);
     });
 
     ordersTable.draw();
-    console.log("Orders displayed successfully");
+    console.log("DataTable drawn");
 }
+
+/**
+ * Apply filters to order list
+ */
+function applyFilters() {
+    currentFilters = {};
+    
+    const status = $('#statusFilter').val();
+    const dateFrom = $('#dateFromFilter').val();
+    const dateTo = $('#dateToFilter').val();
+    
+    if (status) {
+        currentFilters.status = status;
+    }
+    
+    if (dateFrom) {
+        currentFilters.date_from = dateFrom;
+    }
+    
+    if (dateTo) {
+        currentFilters.date_to = dateTo;
+    }
+    
+    loadOrders();
+}
+
+/**
+ * View order details (placeholder)
+ */
+function viewOrderDetails(orderId) {
+    alert('Xem chi tiết đơn hàng #' + orderId);
+}
+
+/**
+ * Show update status modal (placeholder)
+ */
+function showUpdateStatusModal(orderId, currentStatus) {
+    alert('Cập nhật trạng thái đơn hàng #' + orderId + ' (hiện tại: ' + currentStatus + ')');
+}
+
+/**
+ * Delete order (placeholder)
+ */
+function deleteOrder(orderId) {
+    if (confirm('Bạn có chắc chắn muốn xóa đơn hàng #' + orderId + ' không?')) {
+        alert('Xóa đơn hàng #' + orderId);
+    }
+}
+
+/**
+ * Export orders (placeholder)
+ */
+function exportOrders() {
+    alert('Xuất Excel danh sách đơn hàng');
+}
+
+// Utility Functions
 
 /**
  * Get status badge HTML
  */
 function getStatusBadge(status) {
     const statusMap = {
-        'cho': '<span class="badge badge-warning">Chờ xác nhận</span>',
-        'dang_giao': '<span class="badge badge-info">Đang giao</span>',
-        'hoan_tat': '<span class="badge badge-success">Hoàn thành</span>',
-        'huy': '<span class="badge badge-danger">Đã hủy</span>'
+        'cho': { class: 'warning', text: 'Chờ xác nhận' },
+        'dang_giao': { class: 'info', text: 'Đang giao' },
+        'hoan_tat': { class: 'success', text: 'Hoàn thành' },
+        'huy': { class: 'danger', text: 'Đã hủy' }
     };
-    return statusMap[status] || '<span class="badge badge-secondary">Không xác định</span>';
+    
+    const statusInfo = statusMap[status] || { class: 'secondary', text: status };
+    return `<span class="badge badge-${statusInfo.class}">${statusInfo.text}</span>`;
 }
 
 /**
- * Format date for display
+ * Get payment status badge HTML
+ */
+function getPaymentBadge(status) {
+    const statusMap = {
+        'pending': { class: 'warning', text: 'Chờ thanh toán' },
+        'paid': { class: 'success', text: 'Đã thanh toán' },
+        'failed': { class: 'danger', text: 'Thanh toán lỗi' },
+        'refunded': { class: 'info', text: 'Đã hoàn tiền' }
+    };
+    
+    const statusInfo = statusMap[status] || { class: 'secondary', text: status };
+    return `<span class="badge badge-${statusInfo.class}">${statusInfo.text}</span>`;
+}
+
+/**
+ * Format date
  */
 function formatDate(dateString) {
     if (!dateString) return 'N/A';
-    
-    try {
-        const date = new Date(dateString);
-        return date.toLocaleDateString('vi-VN');
-    } catch (error) {
-        return dateString;
-    }
+    const date = new Date(dateString);
+    return date.toLocaleDateString('vi-VN');
 }
 
 /**
  * Format currency
  */
 function formatCurrency(amount) {
-    if (isNaN(amount)) return '0 ₫';
-    
+    if (!amount) return '0 ₫';
     return new Intl.NumberFormat('vi-VN', {
         style: 'currency',
         currency: 'VND'
@@ -209,89 +270,15 @@ function formatCurrency(amount) {
 }
 
 /**
- * Show notification
+ * Show success message
  */
-function showNotification(message, type = 'info') {
-    if (typeof Swal !== 'undefined') {
-        Swal.fire({
-            text: message,
-            icon: type === 'error' ? 'error' : type === 'success' ? 'success' : 'info',
-            timer: 3000,
-            timerProgressBar: true,
-            showConfirmButton: false,
-            toast: true,
-            position: 'top-end'
-        });
-    } else {
-        console.log(`${type.toUpperCase()}: ${message}`);
-    }
+function showSuccess(message) {
+    alert('Thành công: ' + message);
 }
 
 /**
- * View order details
+ * Show error message
  */
-function viewOrderDetails(orderId) {
-    console.log("Viewing order details:", orderId);
-    showNotification(`Đang xem chi tiết đơn hàng #${orderId}`, 'info');
-}
-
-/**
- * Show update status modal
- */
-function showUpdateStatusModal(orderId, currentStatus) {
-    console.log("Update status for order:", orderId, currentStatus);
-    showNotification(`Cập nhật trạng thái đơn hàng #${orderId}`, 'info');
-}
-
-/**
- * Confirm delete order
- */
-function confirmDeleteOrder(orderId) {
-    if (typeof Swal !== 'undefined') {
-        Swal.fire({
-            title: 'Xác nhận xóa',
-            text: `Bạn có chắc muốn xóa đơn hàng #${orderId}?`,
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#dc3545',
-            cancelButtonColor: '#6c757d',
-            confirmButtonText: 'Xóa',
-            cancelButtonText: 'Hủy'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                deleteOrder(orderId);
-            }
-        });
-    } else {
-        if (confirm(`Bạn có chắc muốn xóa đơn hàng #${orderId}?`)) {
-            deleteOrder(orderId);
-        }
-    }
-}
-
-/**
- * Delete order
- */
-function deleteOrder(orderId) {
-    console.log("Deleting order:", orderId);
-    showNotification(`Đã xóa đơn hàng #${orderId}`, 'success');
-    // TODO: Implement actual delete functionality
-}
-
-/**
- * Apply filters
- */
-function applyFilters() {
-    console.log("Applying filters...");
-    // TODO: Implement filter functionality
-    loadOrders();
-}
-
-/**
- * Export orders
- */
-function exportOrders() {
-    console.log("Exporting orders...");
-    showNotification('Xuất dữ liệu thành công', 'success');
-    // TODO: Implement export functionality
+function showError(message) {
+    alert('Lỗi: ' + message);
 }
