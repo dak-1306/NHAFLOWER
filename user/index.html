@@ -3,6 +3,15 @@
   <!-- Thiết lập ngôn ngữ trang web là tiếng Việt -->
 
   <head>
+    <script>
+      // Nếu chưa đăng nhập thì chuyển về login.html
+      if (
+        !localStorage.getItem("user_token") ||
+        !localStorage.getItem("user_data")
+      ) {
+        window.location.href = "login.html";
+      }
+    </script>
     <!-- Thiết lập mã hóa ký tự UTF-8 để hiển thị tiếng Việt -->
     <meta charset="utf-8" />
     <!-- Đảm bảo tương thích với Internet Explorer -->

@@ -132,8 +132,13 @@ class BaseProfileManager {
    */
   logout() {
     if (confirm("Bạn có chắc chắn muốn đăng xuất?")) {
+      // Xóa toàn bộ thông tin đăng nhập ở mọi dạng
       localStorage.removeItem("nhaflower_user");
       localStorage.removeItem("nhaflower_cart");
+      localStorage.removeItem("user_token");
+      localStorage.removeItem("user_data");
+      localStorage.removeItem("pending_search");
+      // Ưu tiên chuyển về login.html
       window.location.href = "../login.html";
     }
   }
