@@ -90,14 +90,14 @@ try {
                     // Map field names to frontend expectations
                     $product = [
                         'id_sanpham' => $row['id_sanpham'],
-                        'ten_sanpham' => $row['ten_hoa'], // Map ten_hoa -> ten_sanpham
+                        'ten_hoa' => $row['ten_hoa'],
                         'gia' => $row['gia'],
                         'mo_ta' => $row['mo_ta'],
-                        'so_luong_ton_kho' => $row['so_luong'], // Map so_luong -> so_luong_ton_kho
-                        'id_danhmuc' => $row['id_loaihoa'], // Map id_loaihoa -> id_danhmuc
+                        'so_luong_ton_kho' => $row['so_luong'],
+                        'id_loaihoa' => $row['id_loaihoa'],
                         'ten_danhmuc' => $row['ten_danhmuc'],
                         'hinh_anh' => $row['hinh_anh'],
-                        'trang_thai' => 'active', // Default value since DB doesn't have this field
+                        'trang_thai' => 'active',
                         'id_khuyenmai' => $row['id_khuyenmai']
                     ];
                     sendResponse(true, 'Lấy thông tin sản phẩm thành công', $product);
@@ -117,14 +117,14 @@ try {
                     // Map field names to frontend expectations
                     $products[] = [
                         'id_sanpham' => $row['id_sanpham'],
-                        'ten_sanpham' => $row['ten_hoa'], // Map ten_hoa -> ten_sanpham
+                        'ten_hoa' => $row['ten_hoa'],
                         'gia' => $row['gia'],
                         'mo_ta' => $row['mo_ta'],
-                        'so_luong_ton_kho' => $row['so_luong'], // Map so_luong -> so_luong_ton_kho
-                        'id_danhmuc' => $row['id_loaihoa'], // Map id_loaihoa -> id_danhmuc
+                        'so_luong_ton_kho' => $row['so_luong'],
+                        'id_loaihoa' => $row['id_loaihoa'],
                         'ten_danhmuc' => $row['ten_danhmuc'] ?: 'Chưa phân loại',
                         'hinh_anh' => $row['hinh_anh'],
-                        'trang_thai' => 'active', // Default value since DB doesn't have this field
+                        'trang_thai' => 'active',
                         'id_khuyenmai' => $row['id_khuyenmai']
                     ];
                 }

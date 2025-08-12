@@ -62,7 +62,7 @@ if ($action === 'add' || $action === 'post') {
     $diachi = $data['dia_chi_giao'] ?? '';
     $trangthai = $data['trang_thai'] ?? '';
     if (!$id_kh || !$ngay || !$diachi || !$trangthai) sendResponse(false, 'Thiếu thông tin');
-    $sql = "INSERT INTO DonHang (id_khachhang, ngay_dat, dia_chi_giao, trang_thai) VALUES ($id_kh, '$ngay', '$diachi', '$trangthai')";
+    $sql = "INSERT INTO donhang (id_khachhang, ngay_dat, dia_chi_giao, trang_thai) VALUES ($id_kh, '$ngay', '$diachi', '$trangthai')";
     if (mysqli_query($conn, $sql)) {
         sendResponse(true, 'Đơn hàng đã được tạo');
     } else {
@@ -77,7 +77,7 @@ if ($action === 'update' || $action === 'put') {
     $diachi = $data['dia_chi_giao'] ?? '';
     $trangthai = $data['trang_thai'] ?? '';
     if (!$id) sendResponse(false, 'Thiếu id đơn hàng');
-    $sql = "UPDATE DonHang SET dia_chi_giao = '$diachi', trang_thai = '$trangthai' WHERE id_donhang = $id";
+    $sql = "UPDATE donhang SET dia_chi_giao = '$diachi', trang_thai = '$trangthai' WHERE id_donhang = $id";
     if (mysqli_query($conn, $sql)) {
         sendResponse(true, 'Cập nhật thành công');
     } else {
@@ -88,7 +88,7 @@ if ($action === 'update' || $action === 'put') {
 if ($action === 'delete') {
     $id = isset($_GET['id']) ? intval($_GET['id']) : null;
     if (!$id) sendResponse(false, 'Thiếu id đơn hàng');
-    $sql = "DELETE FROM DonHang WHERE id_donhang = $id";
+    $sql = "DELETE FROM donhang WHERE id_donhang = $id";
     if (mysqli_query($conn, $sql)) {
         sendResponse(true, 'Xóa đơn hàng thành công');
     } else {

@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <title>NHAFLOWER - Orders (Simple)</title>
+
+    <!-- Bootstrap CSS from CDN for reliability -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <!-- Font Awesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+    />
+    <!-- DataTables CSS -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.datatables.net/1.10.25/css/dataTables.bootstrap4.min.css"
+    />
+
+    <style>
+      body {
+        font-family: "Nunito", sans-serif;
+        background-color: #f8f9fc;
+        margin: 0;
+        padding: 20px;
+      }
+      .page-header {
+        background: linear-gradient(135deg, #e91e63, #f48fb1);
+        color: white;
+        padding: 20px;
+        margin-bottom: 30px;
+        border-radius: 8px;
+      }
+      .card {
+        border: 0;
+        box-shadow: 0 0.15rem 1.75rem 0 rgba(33, 40, 50, 0.15);
+        margin-bottom: 20px;
+      }
+      .card-header {
+        background-color: #f8f9fc;
+        border-bottom: 1px solid #e3e6f0;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Page Header -->
+    <div class="page-header">
+      <h1>
+        <i class="fas fa-shopping-cart mr-3"></i>Quản lý Đơn hàng NHAFLOWER
+      </h1>
+      <p class="mb-0">Phiên bản đơn giản để kiểm tra chức năng</p>
+    </div>
+
+    <!-- Status Display -->
+    <div class="card">
+      <div class="card-header">
+        <h6 class="m-0 font-weight-bold text-primary">Trạng thái hệ thống</h6>
+      </div>
+      <div class="card-body">
+        <div id="status-info"></div>
+      </div>
+    </div>
+
+    <!-- Filter Section -->
+    <div class="card">
+      <div class="card-header">
+        <h6 class="m-0 font-weight-bold text-primary">Bộ lọc</h6>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-3">
+            <select class="form-control" id="statusFilter">
+              <option value="">Tất cả trạng thái</option>
+              <option value="cho">Chờ xác nhận</option>
+              <option value="dang_giao">Đang giao</option>
+              <option value="hoan_tat">Hoàn thành</option>
+              <option value="huy">Đã hủy</option>
+            </select>
+          </div>
+          <div class="col-md-3">
+            <button class="btn btn-primary" onclick="loadOrders()">
+              <i class="fas fa-sync mr-1"></i>Tải dữ liệu
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Orders Table -->
+    <div class="card">
+      <div class="card-header">
+        <h6 class="m-0 font-weight-bold text-primary">
+          <i class="fas fa-table mr-1"></i>Danh sách đơn hàng
+        </h6>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table
+            class="table table-bordered"
+            id="ordersTable"
+            width="100%"
+            cellspacing="0"
+          >
+            <thead>
+              <tr>
+                <th>Mã đơn</th>
+                <th>Khách hàng</th>
+                <th>Ngày đặt</th>
+                <th>Trạng thái</th>
+                <th>Thao tác</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Data will be loaded here -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- JavaScript Libraries -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.25/js/dataTables.bootstrap4.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.32/dist/sweetalert2.all.min.js"></script>
+
+    <script>
+      let ordersTable;
+
+      $(document).ready(function () {
+        updateStatus("Initializing...", "info");
+
+        // Initialize DataTable
+        try {
+          ordersTable = $("#ordersTable").DataTable({
+            processing: true,
+            language: {
+              emptyTable: "Không có dữ liệu trong bảng",
+              info: "Hiển thị _START_ đến _END_ của _TOTAL_ mục",
+              infoEmpty: "Hiển thị 0 đến 0 của 0 mục",
+              lengthMenu: "Hiển thị _MENU_ mục",
+              loadingRecords: "Đang tải...",
+              processing: "Đang xử lý...",
+              search: "Tìm kiếm:",
+              zeroRecords: "Không tìm thấy kết quả phù hợp",
+              paginate: {
+                first: "Đầu",
+                last: "Cuối",
+                next: "Tiếp",
+                previous: "Trước",
+              },
+            },
+            responsive: true,
+            pageLength: 10,
+          });
+          updateStatus("DataTable initialized successfully", "success");
+        } catch (error) {
+          console.error("DataTable initialization error:", error);
+          updateStatus(
+            "DataTable initialization failed: " + error.message,
+            "error"
+          );
+        }
+
+        // Auto-load orders
+        setTimeout(loadOrders, 1000);
+      });
+
+      function updateStatus(message, type = "info") {
+        const statusClass = {
+          info: "alert-info",
+          success: "alert-success",
+          error: "alert-danger",
+          warning: "alert-warning",
+        };
+
+        $("#status-info").html(
+          `<div class="alert ${statusClass[type]} mb-0">
+                    <i class="fas fa-${
+                      type === "success"
+                        ? "check"
+                        : type === "error"
+                        ? "exclamation-triangle"
+                        : "info-circle"
+                    } mr-2"></i>
+                    ${message}
+                </div>`
+        );
+      }
+
+      function loadOrders() {
+        updateStatus("Loading orders from API...", "info");
+
+        $.ajax({
+          url: "../api/don_hang.php?action=get_all",
+          type: "GET",
+          dataType: "json",
+          timeout: 10000,
+          success: function (data) {
+            console.log("API Response:", data);
+
+            if (data && data.success && Array.isArray(data.data)) {
+              updateStatus(
+                `Successfully loaded ${data.data.length} orders`,
+                "success"
+              );
+              displayOrders(data.data);
+            } else if (Array.isArray(data)) {
+              updateStatus(
+                `Loaded ${data.length} orders (legacy format)`,
+                "success"
+              );
+              displayOrders(data);
+            } else {
+              console.error("Invalid data format:", data);
+              updateStatus("Invalid data format received from API", "error");
+            }
+          },
+          error: function (xhr, status, error) {
+            console.error("AJAX Error:", {
+              status: status,
+              error: error,
+              responseText: xhr.responseText,
+              statusCode: xhr.status,
+            });
+
+            let errorMsg = `API Error: ${error}`;
+            if (xhr.status === 404) {
+              errorMsg = "API endpoint not found (404)";
+            } else if (xhr.status === 500) {
+              errorMsg = "Server error (500)";
+            } else if (status === "timeout") {
+              errorMsg = "Request timed out";
+            }
+
+            updateStatus(errorMsg, "error");
+          },
+        });
+      }
+
+      function displayOrders(orders) {
+        if (!ordersTable) {
+          updateStatus("DataTable not initialized", "error");
+          return;
+        }
+
+        // Clear existing data
+        ordersTable.clear();
+
+        if (!orders || orders.length === 0) {
+          updateStatus("No orders found", "warning");
+          ordersTable.draw();
+          return;
+        }
+
+        // Add rows
+        orders.forEach(function (order) {
+          const statusBadge = getStatusBadge(order.trang_thai || "cho");
+          const formattedDate = order.ngay_dat
+            ? new Date(order.ngay_dat).toLocaleDateString("vi-VN")
+            : "N/A";
+
+          const actions = `
+                    <div class="btn-group btn-group-sm">
+                        <button type="button" class="btn btn-info" onclick="viewOrder(${order.id_donhang})" title="Xem">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button type="button" class="btn btn-warning" onclick="editOrder(${order.id_donhang})" title="Sửa">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                    </div>
+                `;
+
+          ordersTable.row.add([
+            `#${order.id_donhang}`,
+            order.ten_khachhang || "N/A",
+            formattedDate,
+            statusBadge,
+            actions,
+          ]);
+        });
+
+        ordersTable.draw();
+        updateStatus(`Displayed ${orders.length} orders in table`, "success");
+      }
+
+      function getStatusBadge(status) {
+        const statusMap = {
+          cho: '<span class="badge badge-warning">Chờ xác nhận</span>',
+          dang_giao: '<span class="badge badge-info">Đang giao</span>',
+          hoan_tat: '<span class="badge badge-success">Hoàn thành</span>',
+          huy: '<span class="badge badge-danger">Đã hủy</span>',
+        };
+        return (
+          statusMap[status] ||
+          '<span class="badge badge-secondary">Không xác định</span>'
+        );
+      }
+
+      function viewOrder(id) {
+        Swal.fire({
+          title: "Chi tiết đơn hàng",
+          text: `Xem chi tiết đơn hàng #${id}`,
+          icon: "info",
+        });
+      }
+
+      function editOrder(id) {
+        Swal.fire({
+          title: "Chỉnh sửa đơn hàng",
+          text: `Chỉnh sửa đơn hàng #${id}`,
+          icon: "question",
+        });
+      }
+    </script>
+  </body>
+</html>

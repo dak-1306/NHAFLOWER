@@ -7,74 +7,76 @@ let categoriesTable;
 let isEditMode = false;
 
 // Document ready
-$(document).ready(function() {
-    initializeCategoriesTable();
-    bindEvents();
-    loadCategories();
+$(document).ready(function () {
+  initializeCategoriesTable();
+  bindEvents();
+  loadCategories();
 });
 
 /**
  * Initialize DataTable for categories
  */
 function initializeCategoriesTable() {
-    categoriesTable = $('#categoriesTable').DataTable({
-        "language": {
-            "url": "https://cdn.datatables.net/plug-ins/1.13.7/i18n/vi.json"
-        },
-        "responsive": true,
-        "processing": true,
-        "serverSide": false,
-        "pageLength": 10,
-        "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "Tất cả"]],
-        "order": [[0, "asc"]], // Sort by ID ascending
-        "columnDefs": [
-            {
-                "targets": [4], // Actions column
-                "orderable": false,
-                "searchable": false
-            }
-        ],
-        "drawCallback": function(settings) {
-            // Re-initialize tooltips after table draw
-            $('[data-toggle="tooltip"]').tooltip();
-        }
-    });
-}
+  categoriesTable = $("#categoriesTable").DataTable({
+    language: {
+      url: "https://cdn.datatables.net/plug-ins/1.13.7/i18n/vi.json",
+    },
+    responsive: true,
+    processing: true,
+    serverSide: false,
+    pageLength: 10,
+    lengthMenu: [
+      [10, 25, 50, -1],
+      [10, 25, 50, "Tất cả"],
+    ],
+    order: [[0, "asc"]], // Sort by ID ascending
+    columnDefs: [
+      {
+        targets: [4], // Actions column
+        orderable: false,
+        searchable: false,
+      },
+    ],
+    drawCallback: function (settings) {
+      // Re-initialize tooltips after table draw
+      $('[data-toggle="tooltip"]').tooltip();
+    },
+  });
 
 /**
  * Bind event handlers
  */
 function bindEvents() {
-    // Category form submission
-    $('#saveCategoryBtn').on('click', function(e) {
-        e.preventDefault();
-        saveCategory();
-    });
+  // Category form submission
+  $("#saveCategoryBtn").on("click", function (e) {
+    e.preventDefault();
+    saveCategory();
+  });
 
-    // Form validation on input
-    $('#categoryName').on('input', function() {
-        validateCategoryName($(this).val());
-    });
+  // Form validation on input
+  $("#categoryName").on("input", function () {
+    validateCategoryName($(this).val());
+  });
 
-    // Search functionality
-    $('.navbar-search input').on('keyup', function() {
-        if (categoriesTable) {
-            categoriesTable.search(this.value).draw();
-        }
-    });
+  // Search functionality
+  $(".navbar-search input").on("keyup", function () {
+    if (categoriesTable) {
+      categoriesTable.search(this.value).draw();
+    }
+  });
 
-    // Modal events
-    $('#categoryModal').on('show.bs.modal', function() {
-        // Focus on name input when modal opens
-        setTimeout(function() {
-            $('#categoryName').focus();
-        }, 500);
-    });
+  // Modal events
+  $("#categoryModal").on("show.bs.modal", function () {
+    // Focus on name input when modal opens
+    setTimeout(function () {
+      $("#categoryName").focus();
+    }, 500);
+  });
 
-    $('#categoryModal').on('hidden.bs.modal', function() {
-        // Reset form when modal closes
-        resetCategoryForm();
-    });
+  $("#categoryModal").on("hidden.bs.modal", function () {
+    // Reset form when modal closes
+    resetCategoryForm();
+  });
 }
 
 /**
@@ -116,74 +118,80 @@ function loadCategories() {
  * Display categories in DataTable
  */
 function displayCategories(categories) {
-    // Clear existing data
-    categoriesTable.clear();
+  // Clear existing data
+  categoriesTable.clear();
 
-    if (!categories || categories.length === 0) {
-        categoriesTable.draw();
-        return;
-    }    // Add rows to DataTable - sử dụng field names từ loai_hoa API
-    categories.forEach(function(category) {
-        const actions = `
+  if (!categories || categories.length === 0) {
+    categoriesTable.draw();
+    return;
+  } // Add rows to DataTable - sử dụng field names từ loai_hoa API
+  categories.forEach(function (category) {
+    const actions = `
             <div class="btn-group" role="group">
-                <button type="button" class="btn btn-info btn-sm" onclick="editCategory(${category.id_loaihoa}, '${escapeHtml(category.ten_loai)}', '${escapeHtml(category.mo_ta || '')}')" data-toggle="tooltip" title="Sửa danh mục">
+                <button type="button" class="btn btn-info btn-sm" onclick="editCategory(${
+                  category.id_loaihoa
+                }, '${escapeHtml(category.ten_loai)}', '${escapeHtml(
+      category.mo_ta || ""
+    )}')" data-toggle="tooltip" title="Sửa danh mục">
                     <i class="fas fa-edit"></i>
                 </button>
-                <button type="button" class="btn btn-danger btn-sm" onclick="deleteCategory(${category.id_loaihoa})" data-toggle="tooltip" title="Xóa danh mục">
+                <button type="button" class="btn btn-danger btn-sm" onclick="deleteCategory(${
+                  category.id_loaihoa
+                })" data-toggle="tooltip" title="Xóa danh mục">
                     <i class="fas fa-trash"></i>
                 </button>
             </div>
         `;
 
-        categoriesTable.row.add([
-            category.id_loaihoa,
-            category.ten_loai || 'N/A',
-            category.mo_ta || 'Không có mô tả',
-            '0', // Will need to count products later
-            actions
-        ]);
-    });
+    categoriesTable.row.add([
+      category.id_loaihoa,
+      category.ten_loai || "N/A",
+      category.mo_ta || "Không có mô tả",
+      "0", // Will need to count products later
+      actions,
+    ]);
+  });
 
-    categoriesTable.draw();
-    
-    // Initialize tooltips
-    $('[data-toggle="tooltip"]').tooltip();
+  categoriesTable.draw();
+
+  // Initialize tooltips
+  $('[data-toggle="tooltip"]').tooltip();
 }
 
 /**
  * Show add category modal
  */
 function showAddCategoryModal() {
-    isEditMode = false;
-    $('#modalTitle').text('Thêm danh mục mới');
-    $('#categoryId').val('');
-    $('#categoryModal').modal('show');
+  isEditMode = false;
+  $("#modalTitle").text("Thêm danh mục mới");
+  $("#categoryId").val("");
+  $("#categoryModal").modal("show");
 }
 
 /**
  * Edit category
  */
 function editCategory(id, name, description) {
-    isEditMode = true;
-    $('#modalTitle').text('Chỉnh sửa danh mục');
-    $('#categoryId').val(id);
-    $('#categoryName').val(name);
-    $('#categoryDescription').val(description);
-    $('#categoryModal').modal('show');
+  isEditMode = true;
+  $("#modalTitle").text("Chỉnh sửa danh mục");
+  $("#categoryId").val(id);
+  $("#categoryName").val(name);
+  $("#categoryDescription").val(description);
+  $("#categoryModal").modal("show");
 }
 
 /**
  * Save category (add or update)
  */
 function saveCategory() {
-    const categoryId = $('#categoryId').val();
-    const categoryName = $('#categoryName').val().trim();
-    const categoryDescription = $('#categoryDescription').val().trim();
+  const categoryId = $("#categoryId").val();
+  const categoryName = $("#categoryName").val().trim();
+  const categoryDescription = $("#categoryDescription").val().trim();
 
-    // Validate input
-    if (!validateCategoryName(categoryName)) {
-        return;
-    }
+  // Validate input
+  if (!validateCategoryName(categoryName)) {
+    return;
+  }
 
     const formData = {
         ten_loai: categoryName,
@@ -225,24 +233,24 @@ function saveCategory() {
                 showError('Phản hồi không hợp lệ từ server');
             }
         },
-        error: function(xhr, status, error) {
-            console.error('Error saving category:', xhr.responseText);
-            let errorMessage = 'Không thể lưu danh mục. ';
-            
-            if (xhr.responseText) {
-                try {
-                    const errorResponse = JSON.parse(xhr.responseText);
-                    errorMessage += errorResponse.message || xhr.responseText;
-                } catch (e) {
-                    errorMessage += xhr.responseText;
-                }
-            } else {
-                errorMessage += 'Vui lòng thử lại.';
-            }
-            
-            showError(errorMessage);
-        }
-    });
+      error: function(xhr, status, error) {
+          console.error('Error saving category:', xhr.responseText);
+          let errorMessage = 'Không thể lưu danh mục. ';
+          
+          if (xhr.responseText) {
+              try {
+                  const errorResponse = JSON.parse(xhr.responseText);
+                  errorMessage += errorResponse.message || xhr.responseText;
+              } catch (e) {
+                  errorMessage += xhr.responseText;
+              }
+          } else {
+              errorMessage += 'Vui lòng thử lại.';
+          }
+          
+          showError(errorMessage);
+      }
+  });
 }
 
 /**
@@ -287,34 +295,34 @@ function deleteCategory(categoryId) {
  * Validate category name
  */
 function validateCategoryName(name) {
-    const $nameInput = $('#categoryName');
-    const $feedback = $nameInput.siblings('.invalid-feedback');
+  const $nameInput = $("#categoryName");
+  const $feedback = $nameInput.siblings(".invalid-feedback");
 
-    if (!name || name.length < 2) {
-        $nameInput.addClass('is-invalid');
-        $feedback.text('Tên danh mục phải có ít nhất 2 ký tự');
-        return false;
-    }
+  if (!name || name.length < 2) {
+    $nameInput.addClass("is-invalid");
+    $feedback.text("Tên danh mục phải có ít nhất 2 ký tự");
+    return false;
+  }
 
-    if (name.length > 100) {
-        $nameInput.addClass('is-invalid');
-        $feedback.text('Tên danh mục không được quá 100 ký tự');
-        return false;
-    }
+  if (name.length > 100) {
+    $nameInput.addClass("is-invalid");
+    $feedback.text("Tên danh mục không được quá 100 ký tự");
+    return false;
+  }
 
-    $nameInput.removeClass('is-invalid').addClass('is-valid');
-    return true;
+  $nameInput.removeClass("is-invalid").addClass("is-valid");
+  return true;
 }
 
 /**
  * Reset category form
  */
 function resetCategoryForm() {
-    $('#categoryForm')[0].reset();
-    $('#categoryId').val('');
-    $('#categoryName').removeClass('is-valid is-invalid');
-    $('#categoryDescription').removeClass('is-valid is-invalid');
-    isEditMode = false;
+  $("#categoryForm")[0].reset();
+  $("#categoryId").val("");
+  $("#categoryName").removeClass("is-valid is-invalid");
+  $("#categoryDescription").removeClass("is-valid is-invalid");
+  isEditMode = false;
 }
 
 // Utility Functions
@@ -323,51 +331,51 @@ function resetCategoryForm() {
  * Escape HTML to prevent XSS
  */
 function escapeHtml(text) {
-    if (!text) return '';
-    return text
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#39;');
+  if (!text) return "";
+  return text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
 }
 
 /**
  * Show loading state
  */
 function showLoading() {
-    // DataTables sẽ tự xử lý loading state với "processing": true
-    // Không cần thêm hàng loading thủ công
+  // DataTables sẽ tự xử lý loading state với "processing": true
+  // Không cần thêm hàng loading thủ công
 }
 
 /**
  * Hide loading state
  */
 function hideLoading() {
-    // DataTables sẽ tự ẩn loading state
+  // DataTables sẽ tự ẩn loading state
 }
 
 /**
  * Show success message
  */
 function showSuccess(message) {
-    Swal.fire({
-        icon: 'success',
-        title: 'Thành công!',
-        text: message,
-        timer: 2000,
-        showConfirmButton: false
-    });
+  Swal.fire({
+    icon: "success",
+    title: "Thành công!",
+    text: message,
+    timer: 2000,
+    showConfirmButton: false,
+  });
 }
 
 /**
  * Show error message
  */
 function showError(message) {
-    Swal.fire({
-        icon: 'error',
-        title: 'Lỗi!',
-        text: message,
-        confirmButtonColor: '#e91e63'
-    });
+  Swal.fire({
+    icon: "error",
+    title: "Lỗi!",
+    text: message,
+    confirmButtonColor: "#e91e63",
+  });
 }
