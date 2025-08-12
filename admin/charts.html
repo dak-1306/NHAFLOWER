@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
   <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -10,9 +10,9 @@
     <meta name="description" content="" />
     <meta name="author" content="" />
 
-    <title>NHAFLOWER - Biểu đồ Thống kê</title>
+    <title>NHAFLOWER - Biểu đồ & Báo cáo</title>
 
-    <!-- Custom fonts for this template-->
+    <!-- Custom fonts for this template -->
     <link
       href="../assets/vendor/fontawesome-free/css/all.min.css"
       rel="stylesheet"
@@ -23,13 +23,792 @@
       rel="stylesheet"
     />
 
-    <!-- Custom styles for this template-->
+    <!-- Custom styles for this template -->
     <link href="../assets/css/admin/sb-admin-2.min.css" rel="stylesheet" />
+
+    <!-- Chart.js -->
+    <link href="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.min.css" rel="stylesheet">
+
+    <!-- SweetAlert2 -->
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.32/dist/sweetalert2.min.css" rel="stylesheet">
+    
+    <!-- Custom admin styles -->
+    <link href="../assets/css/admin/custom-admin.css" rel="stylesheet" />
+
+    <style>
+      /* Custom color scheme for NHAFLOWER */
+      :root {
+        --primary-color: #e91e63;
+        --primary-light: #f48fb1;
+        --primary-dark: #ad1457;
+        --success-color: #4caf50;
+        --success-light: #81c784;
+        --success-dark: #2e7d32;
+        --warning-color: #ff9800;
+        --info-color: #2196f3;
+        --danger-color: #f44336;
+      }
+
+      /* Sidebar colors */
+      .bg-gradient-primary {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+      }
+
+      .sidebar-dark .nav-item .nav-link[data-toggle="collapse"]::after {
+        color: rgba(255, 255, 255, 0.8);
+      }
+
+      /* Card headers */
+      .card-header .text-primary {
+        color: var(--primary-color) !important;
+      }
+
+      /* Buttons */
+      .btn-primary {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+      }
+
+      .btn-primary:hover {
+        background-color: var(--primary-dark);
+        border-color: var(--primary-dark);
+      }
+
+      /* Chart containers */
+      .chart-container {
+        position: relative;
+        height: 400px;
+        width: 100%;
+        margin-bottom: 20px;
+      }
+
+      .chart-pie {
+        height: 320px !important;
+      }
+
+      .chart-area {
+        height: 360px !important;
+      }
+
+      .chart-bar {
+        height: 380px !important;
+      }
+
+      /* Statistics cards */
+      .stats-card {
+        border-left: 4px solid var(--primary-color);
+        transition: all 0.3s ease;
+      }
+
+      .stats-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      }
+
+      .stats-card.success {
+        border-left-color: var(--success-color);
+      }
+
+      .stats-card.warning {
+        border-left-color: var(--warning-color);
+      }
+
+      .stats-card.info {
+        border-left-color: var(--info-color);
+      }
+
+      .stats-card.danger {
+        border-left-color: var(--danger-color);
+      }
+
+      /* Date range picker styling */
+      .date-range-container {
+        background: #f8f9fc;
+        border-radius: 0.35rem;
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+      }
+
+      /* Export buttons */
+      .export-buttons {
+        margin-bottom: 1rem;
+      }
+
+      .btn-export {
+        margin-right: 0.5rem;
+        margin-bottom: 0.5rem;
+      }
+
+      /* Loading spinner */
+      .loading-spinner {
+        display: none;
+        text-align: center;
+        padding: 2rem;
+        color: var(--primary-color);
+      }
+
+      .loading-spinner.show {
+        display: block;
+      }
+
+      /* Progress bars */
+      .progress-bar {
+        background-color: var(--primary-color);
+      }
+
+      .progress-bar.bg-success {
+        background-color: var(--success-color) !important;
+      }
+
+      .progress-bar.bg-warning {
+        background-color: var(--warning-color) !important;
+      }
+
+      .progress-bar.bg-danger {
+        background-color: var(--danger-color) !important;
+      }
+
+      /* Table styling */
+      .report-table {
+        font-size: 0.875rem;
+      }
+
+      .report-table th {
+        background-color: #f8f9fc;
+        border-color: #e3e6f0;
+        font-weight: 600;
+      }
+
+      .report-table td {
+        border-color: #e3e6f0;
+      }
+
+      /* Responsive adjustments */
+      @media (max-width: 768px) {
+        .chart-container {
+          height: 300px;
+        }
+        
+        .export-buttons {
+          text-align: center;
+        }
+      }
+    </style>
   </head>
 
   <body id="page-top">
     <!-- Page Wrapper -->
     <div id="wrapper">
+      <!-- Sidebar -->
+      <ul
+        class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion"
+        id="accordionSidebar"
+      >
+        <!-- Sidebar - Brand -->
+        <a
+          class="sidebar-brand d-flex align-items-center justify-content-center"
+          href="index.html"
+        >
+          <div class="sidebar-brand-icon rotate-n-15">
+            <i class="fas fa-seedling"></i>
+          </div>
+          <div class="sidebar-brand-text mx-3">NHAFLOWER</div>
+        </a>
+
+        <!-- Divider -->
+        <hr class="sidebar-divider my-0" />
+
+        <!-- Nav Item - Dashboard -->
+        <li class="nav-item">
+          <a class="nav-link" href="index.html">
+            <i class="fas fa-fw fa-tachometer-alt"></i>
+            <span>Dashboard</span></a
+          >
+        </li>
+
+        <!-- Divider -->
+        <hr class="sidebar-divider" />
+
+        <!-- Heading -->
+        <div class="sidebar-heading">Quản lý chính</div>
+
+        <!-- Nav Item - Khách hàng -->
+        <li class="nav-item">
+          <a class="nav-link" href="customers.html">
+            <i class="fas fa-fw fa-users"></i>
+            <span>Khách hàng</span>
+          </a>
+        </li>
+
+        <!-- Nav Item - Sản phẩm -->
+        <li class="nav-item">
+          <a class="nav-link" href="products.html">
+            <i class="fas fa-fw fa-leaf"></i>
+            <span>Sản phẩm</span>
+          </a>
+        </li>
+
+        <!-- Nav Item - Đơn hàng -->
+        <li class="nav-item">
+          <a class="nav-link" href="orders.html">
+            <i class="fas fa-fw fa-shopping-cart"></i>
+            <span>Đơn hàng</span>
+          </a>
+        </li>
+
+        <!-- Nav Item - Danh mục -->
+        <li class="nav-item">
+          <a class="nav-link" href="categories.html">
+            <i class="fas fa-fw fa-tags"></i>
+            <span>Danh mục</span>
+          </a>
+        </li>
+
+        <!-- Divider -->
+        <hr class="sidebar-divider" />
+
+        <!-- Heading -->
+        <div class="sidebar-heading">Báo cáo & Thống kê</div>
+
+        <!-- Nav Item - Biểu đồ -->
+        <li class="nav-item active">
+          <a class="nav-link" href="charts.html">
+            <i class="fas fa-fw fa-chart-area"></i>
+            <span>Biểu đồ & Báo cáo</span>
+          </a>
+        </li>
+
+        <!-- Divider -->
+        <hr class="sidebar-divider d-none d-md-block" />
+
+        <!-- Sidebar Toggler (Sidebar) -->
+        <div class="text-center d-none d-md-inline">
+          <button class="rounded-circle border-0" id="sidebarToggle"></button>
+        </div>
+
+        <!-- Sidebar Message -->
+        <div class="sidebar-card d-none d-lg-flex">
+          <img
+            class="sidebar-card-illustration mb-2"
+            src="../assets/img/admin/undraw_rocket.svg"
+            alt="..."
+          />
+          <p class="text-center mb-2">
+            <strong>NHAFLOWER</strong> Hệ thống quản lý bán hoa chuyên nghiệp!
+          </p>
+          <a class="btn btn-success btn-sm" href="../user/home.html"
+            >Xem trang chủ</a
+          >
+        </div>
+      </ul>
+      <!-- End of Sidebar -->
+
+      <!-- Content Wrapper -->
+      <div id="content-wrapper" class="d-flex flex-column">
+        <!-- Main Content -->
+        <div id="content">
+          <!-- Topbar -->
+          <nav
+            class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow"
+          >
+            <!-- Sidebar Toggle (Topbar) -->
+            <button
+              id="sidebarToggleTop"
+              class="btn btn-link d-md-none rounded-circle mr-3"
+            >
+              <i class="fa fa-bars"></i>
+            </button>
+
+            <!-- Topbar Search -->
+            <form
+              class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search"
+            >
+              <div class="input-group">
+                <input
+                  type="text"
+                  class="form-control bg-light border-0 small"
+                  placeholder="Tìm kiếm báo cáo..."
+                  aria-label="Search"
+                  aria-describedby="basic-addon2"
+                />
+                <div class="input-group-append">
+                  <button class="btn btn-primary" type="button">
+                    <i class="fas fa-search fa-sm"></i>
+                  </button>
+                </div>
+              </div>
+            </form>
+
+            <!-- Topbar Navbar -->
+            <ul class="navbar-nav ml-auto">
+              <!-- Nav Item - Alerts -->
+              <li class="nav-item dropdown no-arrow mx-1">
+                <a
+                  class="nav-link dropdown-toggle"
+                  href="#"
+                  id="alertsDropdown"
+                  role="button"
+                  data-toggle="dropdown"
+                  aria-haspopup="true"
+                  aria-expanded="false"
+                >
+                  <i class="fas fa-bell fa-fw"></i>
+                  <!-- Counter - Alerts -->
+                  <span class="badge badge-danger badge-counter">3+</span>
+                </a>
+              </li>
+
+              <div class="topbar-divider d-none d-sm-block"></div>
+
+              <!-- Nav Item - User Information -->
+              <li class="nav-item dropdown no-arrow">
+                <a
+                  class="nav-link dropdown-toggle"
+                  href="#"
+                  id="userDropdown"
+                  role="button"
+                  data-toggle="dropdown"
+                  aria-haspopup="true"
+                  aria-expanded="false"
+                >
+                  <span class="mr-2 d-none d-lg-inline text-gray-600 small"
+                    >Admin NHAFLOWER</span
+                  >
+                  <img
+                    class="img-profile rounded-circle"
+                    src="../assets/img/admin/undraw_profile.svg"
+                  />
+                </a>
+              </li>
+            </ul>
+          </nav>
+          <!-- End of Topbar -->
+
+          <!-- Begin Page Content -->
+          <div class="container-fluid">
+            <!-- Page Heading -->
+            <div class="d-sm-flex align-items-center justify-content-between mb-4">
+              <h1 class="h3 mb-0 text-gray-800">
+                <i class="fas fa-chart-area text-primary mr-2"></i>Biểu đồ & Báo cáo
+              </h1>
+              <div class="d-flex">
+                <!-- Settings Button -->
+                <button class="btn btn-outline-secondary btn-sm mr-2" data-toggle="modal" data-target="#settingsModal">
+                  <i class="fas fa-cog mr-1"></i>Cài đặt
+                </button>
+                <div class="export-buttons">
+                  <button id="autoRefreshBtn" class="btn btn-outline-secondary btn-export" onclick="toggleAutoRefresh()">
+                    <i class="fas fa-sync-alt mr-1"></i>Tự động làm mới
+                  </button>
+                  <button class="btn btn-primary btn-export" onclick="updateCharts()">
+                    <i class="fas fa-refresh mr-1"></i>Làm mới
+                  </button>
+                  <button class="btn btn-success btn-export" onclick="exportReport('excel')">
+                    <i class="fas fa-file-excel mr-1"></i>Xuất Excel
+                  </button>
+                  <button class="btn btn-info btn-export" onclick="exportReport('pdf')">
+                    <i class="fas fa-file-pdf mr-1"></i>Xuất PDF
+                  </button>
+                  <button class="btn btn-warning btn-export" onclick="printReport()">
+                    <i class="fas fa-print mr-1"></i>In báo cáo
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Date Range Filter -->
+            <div class="date-range-container">
+              <div class="row">
+                <div class="col-md-3">
+                  <label for="dateFrom" class="form-label">Từ ngày:</label>
+                  <input type="date" class="form-control" id="dateFrom">
+                </div>
+                <div class="col-md-3">
+                  <label for="dateTo" class="form-label">Đến ngày:</label>
+                  <input type="date" class="form-control" id="dateTo">
+                </div>
+                <div class="col-md-3">
+                  <label for="reportType" class="form-label">Loại báo cáo:</label>
+                  <select class="form-control" id="reportType">
+                    <option value="overview">Tổng quan</option>
+                    <option value="revenue">Doanh thu</option>
+                    <option value="products">Sản phẩm</option>
+                    <option value="customers">Khách hàng</option>
+                  </select>
+                </div>
+                <div class="col-md-3 d-flex align-items-end">
+                  <button class="btn btn-primary w-100" onclick="updateCharts()">
+                    <i class="fas fa-sync-alt mr-1"></i>Cập nhật
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Status Indicators -->
+            <div class="row mb-3">
+              <div class="col-12">
+                <!-- Loading Spinner -->
+                <div class="loading-spinner" id="loadingSpinner">
+                  <i class="fas fa-spinner fa-spin fa-2x"></i>
+                  <p>Đang tải dữ liệu...</p>
+                </div>
+                
+                <!-- Update Indicator -->
+                <div class="alert alert-info" id="updateIndicator" style="display: none;">
+                  <i class="fas fa-sync-alt fa-spin mr-2"></i>
+                  Đang cập nhật dữ liệu...
+                </div>
+
+                <!-- Refresh Indicator -->
+                <div class="alert alert-success" id="refreshIndicator" style="display: none; position: fixed; top: 20px; right: 20px; z-index: 1000;">
+                  <i class="fas fa-check mr-2"></i>
+                  Dữ liệu đã được làm mới
+                </div>
+
+                <!-- Connection Status -->
+                <div class="alert alert-warning" id="connectionWarning" style="display: none;">
+                  <i class="fas fa-exclamation-triangle mr-2"></i>
+                  Kết nối không ổn định. Một số dữ liệu có thể chưa được cập nhật.
+                </div>
+              </div>
+            </div>
+
+            <!-- Content Row - Statistics Cards -->
+            <div class="row">
+              <!-- Earnings (Monthly) Card Example -->
+              <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-primary shadow h-100 py-2 stats-card">
+                  <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                      <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                          Doanh thu tháng này
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800" id="monthlyRevenue">0 ₫</div>
+                      </div>
+                      <div class="col-auto">
+                        <i class="fas fa-calendar fa-2x text-gray-300"></i>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Total Orders Card Example -->
+              <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-success shadow h-100 py-2 stats-card success">
+                  <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                      <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                          Tổng đơn hàng
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800" id="totalOrders">0</div>
+                      </div>
+                      <div class="col-auto">
+                        <i class="fas fa-shopping-cart fa-2x text-gray-300"></i>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Total Products Card Example -->
+              <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-info shadow h-100 py-2 stats-card info">
+                  <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                      <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Sản phẩm</div>
+                        <div class="row no-gutters align-items-center">
+                          <div class="col-auto">
+                            <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800" id="totalProducts">0</div>
+                          </div>
+                          <div class="col">
+                            <div class="progress progress-sm mr-2">
+                              <div class="progress-bar bg-info" role="progressbar" id="productProgress"
+                                style="width: 0%" aria-valuenow="0" aria-valuemin="0"
+                                aria-valuemax="100"></div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-auto">
+                        <i class="fas fa-leaf fa-2x text-gray-300"></i>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Total Customers Card Example -->
+              <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-warning shadow h-100 py-2 stats-card warning">
+                  <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                      <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                          Khách hàng
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800" id="totalCustomers">0</div>
+                      </div>
+                      <div class="col-auto">
+                        <i class="fas fa-users fa-2x text-gray-300"></i>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Content Row - Charts -->
+            <div class="row">
+              <!-- Area Chart -->
+              <div class="col-xl-8 col-lg-7">
+                <div class="card shadow mb-4">
+                  <!-- Card Header - Dropdown -->
+                  <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                      <i class="fas fa-chart-line mr-1"></i>Biểu đồ Doanh thu
+                    </h6>
+                    <div class="dropdown no-arrow">
+                      <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                      </a>
+                      <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
+                        aria-labelledby="dropdownMenuLink">
+                        <div class="dropdown-header">Tùy chọn:</div>
+                        <a class="dropdown-item" href="#" onclick="changeChartPeriod('day')">Theo ngày</a>
+                        <a class="dropdown-item" href="#" onclick="changeChartPeriod('month')">Theo tháng</a>
+                        <a class="dropdown-item" href="#" onclick="changeChartPeriod('year')">Theo năm</a>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- Card Body -->
+                  <div class="card-body">
+                    <div class="chart-container">
+                      <canvas id="revenueChart" class="chart-area"></canvas>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Pie Chart -->
+              <div class="col-xl-4 col-lg-5">
+                <div class="card shadow mb-4">
+                  <!-- Card Header -->
+                  <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                      <i class="fas fa-chart-pie mr-1"></i>Phân bố Sản phẩm
+                    </h6>
+                  </div>
+                  <!-- Card Body -->
+                  <div class="card-body">
+                    <div class="chart-container">
+                      <canvas id="categoryChart" class="chart-pie"></canvas>
+                    </div>
+                    <div class="mt-4 text-center small">
+                      <span class="mr-2">
+                        <i class="fas fa-circle" style="color: #e91e63;"></i>
+                        Hoa Hồng
+                      </span>
+                      <span class="mr-2">
+                        <i class="fas fa-circle" style="color: #4caf50;"></i>
+                        Hoa Cúc
+                      </span>
+                      <span class="mr-2">
+                        <i class="fas fa-circle" style="color: #ff9800;"></i>
+                        Hoa Tulip
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Content Row - Bar Chart and Table -->
+            <div class="row">
+              <!-- Bar Chart -->
+              <div class="col-xl-6">
+                <div class="card shadow mb-4">
+                  <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                      <i class="fas fa-chart-bar mr-1"></i>Top Sản phẩm Bán chạy
+                    </h6>
+                  </div>
+                  <div class="card-body">
+                    <div class="chart-container">
+                      <canvas id="topProductsChart" class="chart-bar"></canvas>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Orders Status Chart -->
+              <div class="col-xl-6">
+                <div class="card shadow mb-4">
+                  <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                      <i class="fas fa-chart-doughnut mr-1"></i>Trạng thái Đơn hàng
+                    </h6>
+                  </div>
+                  <div class="card-body">
+                    <div class="chart-container">
+                      <canvas id="orderStatusChart" class="chart-pie"></canvas>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Content Row - Detailed Reports -->
+            <div class="row">
+              <!-- Revenue Report Table -->
+              <div class="col-xl-8">
+                <div class="card shadow mb-4">
+                  <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                      <i class="fas fa-table mr-1"></i>Báo cáo Doanh thu Chi tiết
+                    </h6>
+                  </div>
+                  <div class="card-body">
+                    <div class="table-responsive">
+                      <table class="table table-bordered report-table" width="100%" cellspacing="0">
+                        <thead>
+                          <tr>
+                            <th>Ngày</th>
+                            <th>Số đơn hàng</th>
+                            <th>Doanh thu</th>
+                            <th>Lợi nhuận</th>
+                            <th>Tỷ lệ chuyển đổi</th>
+                          </tr>
+                        </thead>
+                        <tbody id="revenueReportTableBody">
+                          <tr>
+                            <td colspan="5" class="text-center">
+                              <i class="fas fa-spinner fa-spin"></i> Đang tải dữ liệu...
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Top Customers -->
+              <div class="col-xl-4">
+                <div class="card shadow mb-4">
+                  <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                      <i class="fas fa-crown mr-1"></i>Khách hàng VIP
+                    </h6>
+                  </div>
+                  <div class="card-body">
+                    <div id="topCustomersList">
+                      <div class="text-center">
+                        <i class="fas fa-spinner fa-spin"></i> Đang tải...
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Performance Metrics -->
+            <div class="row">
+              <div class="col-xl-12">
+                <div class="card shadow mb-4">
+                  <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                      <i class="fas fa-tachometer-alt mr-1"></i>Chỉ số Hiệu suất
+                    </h6>
+                  </div>
+                  <div class="card-body">
+                    <div class="row">
+                      <div class="col-md-3">
+                        <div class="text-center">
+                          <div class="h4 mb-0 font-weight-bold text-primary" id="conversionRate">0%</div>
+                          <div class="text-xs font-weight-bold text-uppercase text-gray-500">
+                            Tỷ lệ chuyển đổi
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-md-3">
+                        <div class="text-center">
+                          <div class="h4 mb-0 font-weight-bold text-success" id="avgOrderValue">0 ₫</div>
+                          <div class="text-xs font-weight-bold text-uppercase text-gray-500">
+                            Giá trị đơn hàng TB
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-md-3">
+                        <div class="text-center">
+                          <div class="h4 mb-0 font-weight-bold text-info" id="customerRetention">0%</div>
+                          <div class="text-xs font-weight-bold text-uppercase text-gray-500">
+                            Tỷ lệ khách hàng quay lại
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-md-3">
+                        <div class="text-center">
+                          <div class="h4 mb-0 font-weight-bold text-warning" id="inventoryTurnover">0x</div>
+                          <div class="text-xs font-weight-bold text-uppercase text-gray-500">
+                            Vòng quay kho
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+          <!-- /.container-fluid -->
+        </div>
+        <!-- End of Main Content -->
+
+        <!-- Footer -->
+        <footer class="sticky-footer bg-white">
+          <div class="container my-auto">
+            <div class="copyright text-center my-auto">
+              <span>Copyright &copy; NHAFLOWER 2025</span>
+            </div>
+          </div>
+        </footer>
+        <!-- End of Footer -->
+      </div>
+      <!-- End of Content Wrapper -->
+    </div>
+    <!-- End of Page Wrapper -->
+
+    <!-- Scroll to Top Button-->
+    <a class="scroll-to-top rounded" href="#page-top">
+      <i class="fas fa-angle-up"></i>
+    </a>
+
+    <!-- Bootstrap core JavaScript-->
+    <script src="../assets/vendor/jquery/jquery.min.js"></script>
+    <script src="../assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Core plugin JavaScript-->
+    <script src="../assets/vendor/jquery-easing/jquery.easing.min.js"></script>
+
+    <!-- Custom scripts for all pages-->
+    <script src="../assets/js/admin/sb-admin-2.min.js"></script>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.min.js"></script>
+
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.32/dist/sweetalert2.all.min.js"></script>
+
+    <!-- Custom JavaScript for Charts -->
+    <script src="../assets/js/admin/charts.js"></script>
+  </body>
+</html>
       <!-- Sidebar -->
       <ul
         class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion"
@@ -611,6 +1390,81 @@
               Cancel
             </button>
             <a class="btn btn-primary" href="login.html">Logout</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div class="modal fade" id="settingsModal" tabindex="-1" role="dialog" aria-labelledby="settingsModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="settingsModalLabel">
+              <i class="fas fa-cog mr-2"></i>Cài đặt biểu đồ & báo cáo
+            </h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <form>
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label for="refreshInterval">Tần suất làm mới (giây):</label>
+                    <select class="form-control" id="refreshInterval">
+                      <option value="10000">10 giây</option>
+                      <option value="30000" selected>30 giây</option>
+                      <option value="60000">1 phút</option>
+                      <option value="300000">5 phút</option>
+                      <option value="600000">10 phút</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label for="maxRetries">Số lần thử lại API:</label>
+                    <select class="form-control" id="maxRetries">
+                      <option value="1">1 lần</option>
+                      <option value="2">2 lần</option>
+                      <option value="3" selected>3 lần</option>
+                      <option value="5">5 lần</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <div class="custom-control custom-switch">
+                      <input type="checkbox" class="custom-control-input" id="debugMode">
+                      <label class="custom-control-label" for="debugMode">Chế độ debug</label>
+                    </div>
+                    <small class="form-text text-muted">Hiển thị thông tin debug trong console</small>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <div class="custom-control custom-switch">
+                      <input type="checkbox" class="custom-control-input" id="smoothAnimations" checked>
+                      <label class="custom-control-label" for="smoothAnimations">Hiệu ứng mượt</label>
+                    </div>
+                    <small class="form-text text-muted">Bật/tắt animation cho biểu đồ</small>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
+            <button type="button" class="btn btn-primary" onclick="saveSettings()">
+              <i class="fas fa-save mr-1"></i>Lưu cài đặt
+            </button>
+            <button type="button" class="btn btn-warning" onclick="resetSettings()">
+              <i class="fas fa-undo mr-1"></i>Khôi phục mặc định
+            </button>
           </div>
         </div>
       </div>

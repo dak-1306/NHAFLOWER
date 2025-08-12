@@ -10,7 +10,7 @@
     <meta name="description" content="" />
     <meta name="author" content="" />
 
-    <title>NHAFLOWER - Quản lý Khách hàng</title>
+    <title>NHAFLOWER - Quản lý Sản phẩm</title>
 
     <!-- Custom fonts for this template -->
     <link
@@ -31,6 +31,8 @@
       href="../assets/vendor/datatables/dataTables.bootstrap4.min.css"
       rel="stylesheet"
     />
+    <!-- SweetAlert2 -->
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.32/dist/sweetalert2.min.css" rel="stylesheet">
     <!-- Custom admin styles -->
     <link href="../assets/css/admin/custom-admin.css" rel="stylesheet" />
     
@@ -121,6 +123,80 @@
         color: #6c757d;
         font-style: italic;
       }
+
+      /* Product image preview */
+      .product-image-preview {
+        width: 60px;
+        height: 60px;
+        object-fit: cover;
+        border-radius: 8px;
+        border: 2px solid #e3e6f0;
+      }
+
+      .image-upload-area {
+        border: 2px dashed #e3e6f0;
+        border-radius: 8px;
+        padding: 20px;
+        text-align: center;
+        transition: all 0.3s ease;
+        cursor: pointer;
+      }
+
+      .image-upload-area:hover {
+        border-color: var(--primary-color);
+        background-color: #f8f9fc;
+      }
+
+      .image-upload-area.dragover {
+        border-color: var(--primary-color);
+        background-color: #f8f9fc;
+      }
+
+      /* Status badges */
+      .status-active {
+        background-color: var(--success-color);
+        color: white;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 0.75rem;
+      }
+
+      .status-inactive {
+        background-color: #6c757d;
+        color: white;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 0.75rem;
+      }
+
+      .status-out-of-stock {
+        background-color: #dc3545;
+        color: white;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 0.75rem;
+      }
+
+      /* Form validation */
+      .is-invalid {
+        border-color: #dc3545;
+      }
+
+      .invalid-feedback {
+        display: block;
+        color: #dc3545;
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+      }
+
+      /* Custom SweetAlert2 colors */
+      .swal2-confirm {
+        background-color: var(--primary-color) !important;
+      }
+
+      .swal2-confirm:hover {
+        background-color: var(--primary-dark) !important;
+      }
     </style>
   </head>
 
@@ -161,7 +237,7 @@
         <div class="sidebar-heading">Quản lý chính</div>
 
         <!-- Nav Item - Khách hàng -->
-        <li class="nav-item active">
+        <li class="nav-item">
           <a class="nav-link" href="customers.html">
             <i class="fas fa-fw fa-users"></i>
             <span>Khách hàng</span>
@@ -169,7 +245,7 @@
         </li>
 
         <!-- Nav Item - Sản phẩm -->
-        <li class="nav-item">
+        <li class="nav-item active">
           <a class="nav-link" href="products.html">
             <i class="fas fa-fw fa-leaf"></i>
             <span>Sản phẩm</span>
@@ -305,7 +381,7 @@
                 <input
                   type="text"
                   class="form-control bg-light border-0 small"
-                  placeholder="Tìm kiếm khách hàng..."
+                  placeholder="Tìm kiếm sản phẩm..."
                   aria-label="Search"
                   aria-describedby="basic-addon2"
                 />
@@ -393,14 +469,14 @@
               class="d-sm-flex align-items-center justify-content-between mb-4"
             >
               <h1 class="h3 mb-0 text-gray-800">
-                <i class="fas fa-users mr-2 text-primary"></i>Quản lý Khách hàng
+                <i class="fas fa-leaf mr-2 text-primary"></i>Quản lý Sản phẩm
               </h1>
               <button
                 class="btn btn-gradient btn-sm shadow-sm"
                 data-toggle="modal"
-                data-target="#addCustomerModal"
+                data-target="#addProductModal"
               >
-                <i class="fas fa-plus fa-sm mr-1"></i>Thêm khách hàng
+                <i class="fas fa-plus fa-sm mr-1"></i>Thêm sản phẩm
               </button>
             </div>
 
@@ -408,31 +484,32 @@
             <div class="card shadow mb-4">
               <div class="card-header py-3">
                 <h6 class="m-0 font-weight-bold text-primary">
-                  <i class="fas fa-table mr-1"></i>Danh sách khách hàng
+                  <i class="fas fa-table mr-1"></i>Danh sách sản phẩm
                 </h6>
               </div>
               <div class="card-body">
                 <div class="table-responsive">
                   <table
                     class="table table-bordered"
-                    id="customersTable"
+                    id="productsTable"
                     width="100%"
                     cellspacing="0"
                   >
                     <thead>
                       <tr>
                         <th>ID</th>
-                        <th>Tên khách hàng</th>
-                        <th>Số điện thoại</th>
-                        <th>Địa chỉ</th>
-                        <th>Ngày sinh</th>
-                        <th>ID Tài khoản</th>
+                        <th>Hình ảnh</th>
+                        <th>Tên sản phẩm</th>
+                        <th>Danh mục</th>
+                        <th>Giá</th>
+                        <th>Số lượng</th>
+                        <th>Trạng thái</th>
                         <th>Thao tác</th>
                       </tr>
                     </thead>
-                    <tbody id="customersTableBody">
+                    <tbody id="productsTableBody">
                       <tr>
-                        <td colspan="7" class="loading">
+                        <td colspan="8" class="loading">
                           <i class="fas fa-spinner fa-spin mr-2"></i>Đang tải dữ
                           liệu...
                         </td>
@@ -461,84 +538,112 @@
     </div>
     <!-- End of Page Wrapper -->
 
-    <!-- Add Customer Modal -->
-    <div class="modal fade" id="addCustomerModal" tabindex="-1" role="dialog">
-      <div class="modal-dialog" role="document">
+    <!-- Add Product Modal -->
+    <div class="modal fade" id="addProductModal" tabindex="-1" role="dialog">
+      <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title">
-              <i class="fas fa-user-plus mr-2"></i>Thêm khách hàng mới
-              <small class="d-block mt-1" style="font-size: 0.8rem; opacity: 0.8;"
-                >Hệ thống sẽ tự động tạo tài khoản</small
-              >
+              <i class="fas fa-plus mr-2"></i>Thêm sản phẩm mới
             </h5>
             <button type="button" class="close text-white" data-dismiss="modal">
               <span>&times;</span>
             </button>
           </div>
           <div class="modal-body">
-            <form id="addCustomerForm">
-              <div class="form-group">
-                <label>Tên khách hàng *</label>
-                <input
-                  type="text"
-                  class="form-control"
-                  name="ten_khachhang"
-                  required
-                />
+            <form id="addProductForm">
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label>Tên sản phẩm *</label>
+                    <input
+                      type="text"
+                      class="form-control"
+                      name="ten_sanpham"
+                      placeholder="Nhập tên sản phẩm"
+                      required
+                    />
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label>Danh mục *</label>
+                    <select class="form-control" name="id_danhmuc" required>
+                      <option value="">Chọn danh mục</option>
+                      <!-- Categories will be loaded dynamically -->
+                    </select>
+                  </div>
+                </div>
               </div>
-              <div class="form-group">
-                <label>Số điện thoại *</label>
-                <input
-                  type="text"
-                  class="form-control"
-                  name="so_dien_thoai"
-                  required
-                />
+
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label>Giá sản phẩm (VNĐ) *</label>
+                    <input
+                      type="number"
+                      class="form-control"
+                      name="gia"
+                      placeholder="Nhập giá sản phẩm"
+                      min="0"
+                      step="1000"
+                      required
+                    />
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label>Số lượng tồn kho *</label>
+                    <input
+                      type="number"
+                      class="form-control"
+                      name="so_luong_ton_kho"
+                      placeholder="Nhập số lượng"
+                      min="0"
+                      required
+                    />
+                  </div>
+                </div>
               </div>
+
               <div class="form-group">
-                <label>Địa chỉ *</label>
+                <label>Mô tả sản phẩm</label>
                 <textarea
                   class="form-control"
-                  name="dia_chi"
-                  rows="3"
-                  required
+                  name="mo_ta"
+                  rows="4"
+                  placeholder="Nhập mô tả chi tiết về sản phẩm"
                 ></textarea>
               </div>
+
               <div class="form-group">
-                <label>Ngày sinh</label>
-                <input
-                  type="date"
-                  class="form-control"
-                  name="ngay_sinh"
-                  placeholder="Chọn ngày sinh (tùy chọn)"
-                />
-                <small class="form-text text-muted">
-                  Thông tin này giúp cửa hàng chăm sóc khách hàng tốt hơn
-                </small>
+                <label>Hình ảnh sản phẩm *</label>
+                <div class="image-upload-area" id="imageUploadArea">
+                  <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
+                  <p class="text-muted">Kéo thả hình ảnh vào đây hoặc <strong>click để chọn</strong></p>
+                  <input
+                    type="file"
+                    class="d-none"
+                    id="productImageInput"
+                    name="hinh_anh"
+                    accept="image/*"
+                    required
+                  />
+                </div>
+                <div id="imagePreview" class="mt-3 d-none">
+                  <img id="previewImg" class="img-thumbnail" style="max-width: 200px;">
+                  <button type="button" class="btn btn-sm btn-danger ml-2" id="removeImageBtn">
+                    <i class="fas fa-times"></i> Xóa
+                  </button>
+                </div>
               </div>
+
               <div class="form-group">
-                <label>Email tài khoản *</label>
-                <input
-                  type="email"
-                  class="form-control"
-                  name="email_taikhoan"
-                  placeholder="Nhập email cho tài khoản mới"
-                  required
-                />
-                <small class="form-text text-muted">
-                  Hệ thống sẽ tự động tạo tài khoản mới với email này
-                </small>
-              </div>
-              <div class="form-group">
-                <label>Mật khẩu tài khoản *</label>
-                <input
-                  type="password"
-                  class="form-control"
-                  name="mat_khau_taikhoan"
-                  placeholder="Nhập mật khẩu cho tài khoản"
-                  required
-                />
+                <label>Trạng thái</label>
+                <select class="form-control" name="trang_thai">
+                  <option value="active">Hoạt động</option>
+                  <option value="inactive">Không hoạt động</option>
+                </select>
               </div>
             </form>
           </div>
@@ -550,7 +655,7 @@
             >
               Hủy
             </button>
-            <button type="button" class="btn btn-gradient" id="addCustomerBtn">
+            <button type="button" class="btn btn-gradient" id="addProductBtn">
               <i class="fas fa-save mr-1"></i>Lưu
             </button>
           </div>
@@ -558,59 +663,109 @@
       </div>
     </div>
 
-    <!-- Edit Customer Modal -->
-    <div class="modal fade" id="editCustomerModal" tabindex="-1" role="dialog">
-      <div class="modal-dialog" role="document">
+    <!-- Edit Product Modal -->
+    <div class="modal fade" id="editProductModal" tabindex="-1" role="dialog">
+      <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title">
-              <i class="fas fa-edit mr-2"></i>Chỉnh sửa khách hàng
+              <i class="fas fa-edit mr-2"></i>Chỉnh sửa sản phẩm
             </h5>
             <button type="button" class="close text-white" data-dismiss="modal">
               <span>&times;</span>
             </button>
           </div>
           <div class="modal-body">
-            <form id="editCustomerForm">
-              <input type="hidden" name="customer_id" id="editCustomerId" />
-              <div class="form-group">
-                <label>Tên khách hàng *</label>
-                <input
-                  type="text"
-                  class="form-control"
-                  name="ten_khachhang"
-                  id="editCustomerName"
-                  required
-                />
+            <form id="editProductForm">
+              <input type="hidden" name="product_id" id="editProductId" />
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label>Tên sản phẩm *</label>
+                    <input
+                      type="text"
+                      class="form-control"
+                      name="ten_sanpham"
+                      id="editProductName"
+                      required
+                    />
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label>Danh mục *</label>
+                    <select class="form-control" name="id_danhmuc" id="editProductCategory" required>
+                      <option value="">Chọn danh mục</option>
+                      <!-- Categories will be loaded dynamically -->
+                    </select>
+                  </div>
+                </div>
               </div>
-              <div class="form-group">
-                <label>Số điện thoại *</label>
-                <input
-                  type="text"
-                  class="form-control"
-                  name="so_dien_thoai"
-                  id="editCustomerPhone"
-                  required
-                />
+
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label>Giá sản phẩm (VNĐ) *</label>
+                    <input
+                      type="number"
+                      class="form-control"
+                      name="gia"
+                      id="editProductPrice"
+                      min="0"
+                      step="1000"
+                      required
+                    />
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label>Số lượng tồn kho *</label>
+                    <input
+                      type="number"
+                      class="form-control"
+                      name="so_luong_ton_kho"
+                      id="editProductStock"
+                      min="0"
+                      required
+                    />
+                  </div>
+                </div>
               </div>
+
               <div class="form-group">
-                <label>Địa chỉ *</label>
+                <label>Mô tả sản phẩm</label>
                 <textarea
                   class="form-control"
-                  name="dia_chi"
-                  id="editCustomerAddress"
-                  rows="3"
-                  required
+                  name="mo_ta"
+                  id="editProductDescription"
+                  rows="4"
                 ></textarea>
               </div>
+
               <div class="form-group">
-                <label>Ngày sinh</label>
-                <input
-                  type="date"
-                  class="form-control"
-                  name="ngay_sinh"
-                  id="editCustomerBirthday"
-                />
+                <label>Hình ảnh sản phẩm</label>
+                <div class="image-upload-area" id="editImageUploadArea">
+                  <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
+                  <p class="text-muted">Kéo thả hình ảnh mới vào đây hoặc <strong>click để chọn</strong></p>
+                  <input
+                    type="file"
+                    class="d-none"
+                    id="editProductImageInput"
+                    name="hinh_anh"
+                    accept="image/*"
+                  />
+                </div>
+                <div id="editImagePreview" class="mt-3">
+                  <!-- Current image will be shown here -->
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label>Trạng thái</label>
+                <select class="form-control" name="trang_thai" id="editProductStatus">
+                  <option value="active">Hoạt động</option>
+                  <option value="inactive">Không hoạt động</option>
+                </select>
               </div>
             </form>
           </div>
@@ -625,7 +780,7 @@
             <button
               type="button"
               class="btn btn-gradient"
-              id="updateCustomerBtn"
+              id="updateProductBtn"
             >
               <i class="fas fa-save mr-1"></i>Cập nhật
             </button>
@@ -687,7 +842,86 @@
     <script src="../assets/vendor/datatables/jquery.dataTables.min.js"></script>
     <script src="../assets/vendor/datatables/dataTables.bootstrap4.min.js"></script>
 
-    <!-- Custom JavaScript for Customers Management -->
-    <script src="../assets/js/admin/customers.js"></script>
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.32/dist/sweetalert2.all.min.js"></script>
+
+    <!-- Custom JavaScript for Products Management -->
+    <script src="../assets/js/admin/products.js"></script>
+
+    <script>
+      // Image upload functionality
+      $(document).ready(function() {
+        // Add Product Image Upload
+        $('#imageUploadArea').click(function() {
+          $('#productImageInput').click();
+        });
+
+        $('#productImageInput').change(function() {
+          handleImagePreview(this, '#imagePreview', '#previewImg');
+        });
+
+        // Edit Product Image Upload
+        $('#editImageUploadArea').click(function() {
+          $('#editProductImageInput').click();
+        });
+
+        $('#editProductImageInput').change(function() {
+          handleImagePreview(this, '#editImagePreview', '#editPreviewImg');
+        });
+
+        // Remove image function
+        $(document).on('click', '#removeImageBtn', function() {
+          $('#imagePreview').addClass('d-none');
+          $('#productImageInput').val('');
+          $('#imageUploadArea').removeClass('border-danger');
+        });
+
+        // Drag and drop functionality
+        $('.image-upload-area').on('dragover', function(e) {
+          e.preventDefault();
+          $(this).addClass('dragover');
+        });
+
+        $('.image-upload-area').on('dragleave', function(e) {
+          e.preventDefault();
+          $(this).removeClass('dragover');
+        });
+
+        $('.image-upload-area').on('drop', function(e) {
+          e.preventDefault();
+          $(this).removeClass('dragover');
+          
+          var files = e.originalEvent.dataTransfer.files;
+          if (files.length > 0) {
+            var input = $(this).find('input[type="file"]')[0];
+            input.files = files;
+            $(input).trigger('change');
+          }
+        });
+      });
+
+      function handleImagePreview(input, previewContainer, previewImg) {
+        if (input.files && input.files[0]) {
+          var reader = new FileReader();
+          
+          reader.onload = function(e) {
+            $(previewContainer).removeClass('d-none');
+            if (!$(previewImg).length) {
+              $(previewContainer).append(`<img id="${previewImg.substring(1)}" class="img-thumbnail" style="max-width: 200px;">`);
+              $(previewContainer).append(`<button type="button" class="btn btn-sm btn-danger ml-2" onclick="removeNewImage('${previewContainer}', '${input.id}')"><i class="fas fa-times"></i> Xóa</button>`);
+            }
+            $(previewImg).attr('src', e.target.result);
+          }
+          
+          reader.readAsDataURL(input.files[0]);
+        }
+      }
+
+      function removeNewImage(previewContainer, inputId) {
+        $(previewContainer + ' img').remove();
+        $(previewContainer + ' button').remove();
+        $('#' + inputId).val('');
+      }
+    </script>
   </body>
 </html>

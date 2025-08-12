@@ -1,0 +1,207 @@
+:root {
+  /* Định nghĩa màu sắc chủ đạo */
+  --primary-color: #e91e63; /* Màu hồng chủ đạo */
+  --primary-light: #f48fb1;
+  --primary-dark: #ad1457;
+  --success-color: #4caf50; /* Màu xanh lá */
+  --success-light: #81c784;
+  --success-dark: #2e7d32;
+  --info-color: #00bcd4; /* Màu xanh dương nhạt */
+  --warning-color: #ff9800; /* Màu cam */
+  --danger-color: #f44336; /* Màu đỏ */
+}
+
+/* Override primary color */
+.bg-gradient-primary {
+  background: linear-gradient(135deg, var(--primary-color), var(--primary-light)) !important;
+}
+
+.bg-primary {
+  background-color: var(--primary-color) !important;
+}
+
+.text-primary {
+  color: var(--primary-color) !important;
+}
+
+.btn-primary {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.btn-primary:hover {
+  background-color: var(--primary-dark);
+  border-color: var(--primary-dark);
+}
+
+.border-left-primary {
+  border-left: 0.25rem solid var(--primary-color) !important;
+}
+
+/* Override success color */
+.bg-success {
+  background-color: var(--success-color) !important;
+}
+
+.text-success {
+  color: var(--success-color) !important;
+}
+
+.btn-success {
+  background-color: var(--success-color);
+  border-color: var(--success-color);
+}
+
+.btn-success:hover {
+  background-color: var(--success-dark);
+  border-color: var(--success-dark);
+}
+
+.border-left-success {
+  border-left: 0.25rem solid var(--success-color) !important;
+}
+
+.progress-bar.bg-success {
+  background-color: var(--success-color) !important;
+}
+
+/* Override info color */
+.bg-info {
+  background-color: var(--info-color) !important;
+}
+
+.text-info {
+  color: var(--info-color) !important;
+}
+
+.border-left-info {
+  border-left: 0.25rem solid var(--info-color) !important;
+}
+
+.progress-bar.bg-info {
+  background-color: var(--info-color) !important;
+}
+
+/* Override warning color */
+.bg-warning {
+  background-color: var(--warning-color) !important;
+}
+
+.text-warning {
+  color: var(--warning-color) !important;
+}
+
+.border-left-warning {
+  border-left: 0.25rem solid var(--warning-color) !important;
+}
+
+.progress-bar.bg-warning {
+  background-color: var(--warning-color) !important;
+}
+
+/* Override danger color */
+.bg-danger {
+  background-color: var(--danger-color) !important;
+}
+
+.text-danger {
+  color: var(--danger-color) !important;
+}
+
+.progress-bar.bg-danger {
+  background-color: var(--danger-color) !important;
+}
+
+/* Sidebar customization */
+.sidebar .nav-item .nav-link:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.sidebar .nav-item.active .nav-link {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Topbar search */
+.topbar .navbar-search .form-control {
+  border: 1px solid #e3e6f0;
+}
+
+.topbar .navbar-search .btn {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.topbar .navbar-search .btn:hover {
+  background-color: var(--primary-dark);
+  border-color: var(--primary-dark);
+}
+
+/* Badge colors */
+.badge-primary {
+  background-color: var(--primary-color);
+}
+
+.badge-success {
+  background-color: var(--success-color);
+}
+
+.badge-info {
+  background-color: var(--info-color);
+}
+
+.badge-warning {
+  background-color: var(--warning-color);
+}
+
+.badge-danger {
+  background-color: var(--danger-color);
+}
+
+/* Card header với màu chủ đạo */
+.card-header-primary {
+  background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+  color: white;
+}
+
+/* Icon circle colors */
+.icon-circle.bg-primary {
+  background-color: var(--primary-color) !important;
+}
+
+.icon-circle.bg-success {
+  background-color: var(--success-color) !important;
+}
+
+.icon-circle.bg-info {
+  background-color: var(--info-color) !important;
+}
+
+.icon-circle.bg-warning {
+  background-color: var(--warning-color) !important;
+}
+
+/* Dropdown menu hover */
+.dropdown-item:hover {
+  background-color: var(--primary-light);
+  color: white;
+}
+
+/* Chart colors (nếu sử dụng Chart.js) */
+.chart-primary {
+  color: var(--primary-color);
+}
+
+.chart-success {
+  color: var(--success-color);
+}
+
+.chart-info {
+  color: var(--info-color);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .bg-gradient-primary {
+    background: var(--primary-color) !important;
+  }
+}
