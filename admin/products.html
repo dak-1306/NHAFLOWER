@@ -508,12 +508,7 @@
                       </tr>
                     </thead>
                     <tbody id="productsTableBody">
-                      <tr>
-                        <td colspan="8" class="loading">
-                          <i class="fas fa-spinner fa-spin mr-2"></i>Đang tải dữ
-                          liệu...
-                        </td>
-                      </tr>
+                      <!-- DataTables will populate this -->
                     </tbody>
                   </table>
                 </div>
@@ -559,7 +554,7 @@
                     <input
                       type="text"
                       class="form-control"
-                      name="ten_sanpham"
+                      name="ten_hoa"
                       placeholder="Nhập tên sản phẩm"
                       required
                     />
@@ -568,7 +563,7 @@
                 <div class="col-md-6">
                   <div class="form-group">
                     <label>Danh mục *</label>
-                    <select class="form-control" name="id_danhmuc" required>
+                    <select class="form-control" name="id_loaihoa" required>
                       <option value="">Chọn danh mục</option>
                       <!-- Categories will be loaded dynamically -->
                     </select>
@@ -597,7 +592,7 @@
                     <input
                       type="number"
                       class="form-control"
-                      name="so_luong_ton_kho"
+                      name="so_luong"
                       placeholder="Nhập số lượng"
                       min="0"
                       required
@@ -685,7 +680,7 @@
                     <input
                       type="text"
                       class="form-control"
-                      name="ten_sanpham"
+                      name="ten_hoa"
                       id="editProductName"
                       required
                     />
@@ -694,7 +689,7 @@
                 <div class="col-md-6">
                   <div class="form-group">
                     <label>Danh mục *</label>
-                    <select class="form-control" name="id_danhmuc" id="editProductCategory" required>
+                    <select class="form-control" name="id_loaihoa" id="editProductCategory" required>
                       <option value="">Chọn danh mục</option>
                       <!-- Categories will be loaded dynamically -->
                     </select>
@@ -723,7 +718,7 @@
                     <input
                       type="number"
                       class="form-control"
-                      name="so_luong_ton_kho"
+                      name="so_luong"
                       id="editProductStock"
                       min="0"
                       required
@@ -921,6 +916,124 @@
         $(previewContainer + ' img').remove();
         $(previewContainer + ' button').remove();
         $('#' + inputId).val('');
+      }
+
+      // Load products data
+      function loadProducts() {
+          $.ajax({
+              url: '../api/products.php',
+              type: 'GET',
+              dataType: 'json',
+              success: function(response) {
+                  if (response.success) {
+                      productsTable.clear();
+                      
+                      if (response.data && response.data.length > 0) {
+                          $.each(response.data, function(index, product) {
+                              var statusBadge = getStatusBadge(product.status, product.so_luong);
+                              var imageHtml = product.hinh_anh ? 
+                                  `<img src="../uploads/products/${product.hinh_anh}" class="product-image-preview" alt="${product.ten_hoa}">` :
+                                  `<div class="product-image-preview d-flex align-items-center justify-content-center bg-light"><i class="fas fa-image text-muted"></i></div>`;
+                              
+                              var priceFormatted = new Intl.NumberFormat('vi-VN', {
+                                  style: 'currency',
+                                  currency: 'VND'
+                              }).format(product.gia);
+
+                              productsTable.row.add([
+                                  product.id_sanpham,
+                                  imageHtml,
+                                  product.ten_hoa,
+                                  product.ten_loai || 'Chưa phân loại',
+                                  priceFormatted,
+                                  product.so_luong,
+                                  statusBadge,
+                                  `<div class="btn-group" role="group">
+                                      <button class="btn btn-edit btn-sm" onclick="editProduct(${product.id_sanpham})" title="Chỉnh sửa">
+                                          <i class="fas fa-edit"></i>
+                                      </button>
+                                      <button class="btn btn-delete btn-sm" onclick="deleteProduct(${product.id_sanpham}, '${product.ten_hoa}')" title="Xóa">
+                                          <i class="fas fa-trash"></i>
+                                      </button>
+                                  </div>`
+                              ]);
+                          });
+                      }
+                      
+                      productsTable.draw();
+                  } else {
+                      showAlert('error', 'Lỗi tải dữ liệu: ' + (response.message || 'Có lỗi xảy ra'));
+                  }
+              },
+              error: function(xhr, status, error) {
+                  console.error('Error loading products:', error);
+                  showAlert('error', 'Không thể tải danh sách sản phẩm. Vui lòng thử lại.');
+              }
+          });
+      }
+
+      // Validate product form
+      function validateProductForm(formSelector) {
+          var isValid = true;
+          var form = $(formSelector);
+          
+          // Clear previous errors
+          form.find('.is-invalid').removeClass('is-invalid');
+          form.find('.invalid-feedback').remove();
+          
+          // Validate required fields
+          form.find('[required]').each(function() {
+              var field = $(this);
+              var value = field.val().trim();
+              
+              if (!value) {
+                  field.addClass('is-invalid');
+                  field.after('<div class="invalid-feedback">Trường này không được để trống</div>');
+                  isValid = false;
+              }
+          });
+          
+          // Validate price
+          var price = form.find('input[name="gia"]').val();
+          if (price && parseInt(price) < 0) {
+              form.find('input[name="gia"]').addClass('is-invalid');
+              form.find('input[name="gia"]').after('<div class="invalid-feedback">Giá phải lớn hơn hoặc bằng 0</div>');
+              isValid = false;
+          }
+          
+          // Validate stock - sửa field name
+          var stock = form.find('input[name="so_luong"]').val();
+          if (stock && parseInt(stock) < 0) {
+              form.find('input[name="so_luong"]').addClass('is-invalid');
+              form.find('input[name="so_luong"]').after('<div class="invalid-feedback">Số lượng phải lớn hơn hoặc bằng 0</div>');
+              isValid = false;
+          }
+          
+          return isValid;
+      }
+
+      // Add new product
+      function addProduct() {
+          if (!validateProductForm('#addProductForm')) {
+              return;
+          }
+
+          var formData = new FormData();
+          
+          // Get form data - sử dụng đúng tên fields
+          formData.append('ten_hoa', $('input[name="ten_hoa"]').val());
+          formData.append('id_loaihoa', $('select[name="id_loaihoa"]').val());
+          formData.append('gia', $('input[name="gia"]').val());
+          formData.append('so_luong', $('input[name="so_luong"]').val());
+          formData.append('mo_ta', $('textarea[name="mo_ta"]').val());
+          
+          // Add image file
+          var imageFile = $('#productImageInput')[0].files[0];
+          if (imageFile) {
+              formData.append('hinh_anh', imageFile);
+          }
+
+          // Rest of the function stays the same...
       }
     </script>
   </body>

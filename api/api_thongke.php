@@ -124,9 +124,8 @@ function getOverviewStats($conn, &$response) {
         
         $result = $stmt->get_result();
         $stats['total_orders'] = intval($result->fetch_assoc()['total_orders'] ?? 0);
-        
-        // Total products
-        $sql = "SELECT COUNT(*) AS total_products FROM sanpham WHERE trang_thai = 1";
+          // Total products (no trang_thai field in sanpham table)
+        $sql = "SELECT COUNT(*) AS total_products FROM sanpham";
         $result = $conn->query($sql);
         if (!$result) {
             throw new Exception('Lỗi truy vấn sản phẩm: ' . $conn->error);
@@ -255,6 +254,9 @@ function getCategoryStats($conn, &$response) {
             ORDER BY product_count DESC";
     
     $result = $conn->query($sql);
+    if (!$result) {
+        throw new Exception('Lỗi truy vấn thống kê danh mục: ' . $conn->error);
+    }
     
     $data = [];
     while ($row = $result->fetch_assoc()) {
@@ -272,7 +274,7 @@ function getCategoryStats($conn, &$response) {
 function getTopProducts($conn, &$response) {
     $dateFrom = $_GET['date_from'] ?? date('Y-m-01');
     $dateTo = $_GET['date_to'] ?? date('Y-m-d');
-    $limit = $_GET['limit'] ?? 5;
+    $limit = intval($_GET['limit'] ?? 5);
     
     $sql = "SELECT 
                 sp.ten_hoa AS product_name,
@@ -288,13 +290,24 @@ function getTopProducts($conn, &$response) {
             LIMIT ?";
     
     $stmt = $conn->prepare($sql);
+    if (!$stmt) {
+        throw new Exception('Lỗi chuẩn bị câu lệnh SQL: ' . $conn->error);
+    }
+    
     $stmt->bind_param('ssi', $dateFrom, $dateTo, $limit);
-    $stmt->execute();
+    if (!$stmt->execute()) {
+        throw new Exception('Lỗi thực hiện truy vấn: ' . $stmt->error);
+    }
+    
     $result = $stmt->get_result();
     
     $data = [];
     while ($row = $result->fetch_assoc()) {
-        $data[] = $row;
+        $data[] = [
+            'product_name' => $row['product_name'],
+            'quantity_sold' => intval($row['quantity_sold']),
+            'total_revenue' => floatval($row['total_revenue'])
+        ];
     }
     
     $response['success'] = true;
@@ -317,8 +330,15 @@ function getOrderStatusStats($conn, &$response) {
             GROUP BY trang_thai";
     
     $stmt = $conn->prepare($sql);
+    if (!$stmt) {
+        throw new Exception('Lỗi chuẩn bị câu lệnh SQL: ' . $conn->error);
+    }
+    
     $stmt->bind_param('ss', $dateFrom, $dateTo);
-    $stmt->execute();
+    if (!$stmt->execute()) {
+        throw new Exception('Lỗi thực hiện truy vấn: ' . $stmt->error);
+    }
+    
     $result = $stmt->get_result();
     
     $data = [
@@ -330,13 +350,17 @@ function getOrderStatusStats($conn, &$response) {
     while ($row = $result->fetch_assoc()) {
         switch ($row['trang_thai']) {
             case 'cho':
-                $data['pending'] = $row['count'];
+                $data['pending'] = intval($row['count']);
                 break;
             case 'dang_giao':
-                $data['shipping'] = $row['count'];
+                $data['shipping'] = intval($row['count']);
                 break;
             case 'hoan_tat':
-                $data['completed'] = $row['count'];
+                $data['completed'] = intval($row['count']);
+                break;
+            default:
+                // Handle empty or unknown status
+                $data['pending'] += intval($row['count']);
                 break;
         }
     }
@@ -353,6 +377,10 @@ function getRevenueReport($conn, &$response) {
     $dateFrom = $_GET['date_from'] ?? date('Y-m-01');
     $dateTo = $_GET['date_to'] ?? date('Y-m-d');
     
+    if (!validateDate($dateFrom) || !validateDate($dateTo)) {
+        throw new Exception('Định dạng ngày không hợp lệ');
+    }
+    
     $sql = "SELECT 
                 DATE(dh.ngay_dat) AS date,
                 COUNT(DISTINCT dh.id_donhang) AS order_count,
@@ -367,13 +395,26 @@ function getRevenueReport($conn, &$response) {
             ORDER BY date DESC";
     
     $stmt = $conn->prepare($sql);
+    if (!$stmt) {
+        throw new Exception('Lỗi chuẩn bị câu lệnh SQL: ' . $conn->error);
+    }
+    
     $stmt->bind_param('ss', $dateFrom, $dateTo);
-    $stmt->execute();
+    if (!$stmt->execute()) {
+        throw new Exception('Lỗi thực hiện truy vấn: ' . $stmt->error);
+    }
+    
     $result = $stmt->get_result();
     
     $data = [];
     while ($row = $result->fetch_assoc()) {
-        $data[] = $row;
+        $data[] = [
+            'date' => $row['date'],
+            'order_count' => intval($row['order_count']),
+            'revenue' => floatval($row['revenue']),
+            'profit' => floatval($row['profit']),
+            'conversion_rate' => floatval($row['conversion_rate'])
+        ];
     }
     
     $response['success'] = true;
@@ -385,7 +426,7 @@ function getRevenueReport($conn, &$response) {
  * Get top customers
  */
 function getTopCustomers($conn, &$response) {
-    $limit = $_GET['limit'] ?? 5;
+    $limit = intval($_GET['limit'] ?? 5);
     
     $sql = "SELECT 
                 kh.ten AS customer_name,
@@ -400,13 +441,24 @@ function getTopCustomers($conn, &$response) {
             LIMIT ?";
     
     $stmt = $conn->prepare($sql);
+    if (!$stmt) {
+        throw new Exception('Lỗi chuẩn bị câu lệnh SQL: ' . $conn->error);
+    }
+    
     $stmt->bind_param('i', $limit);
-    $stmt->execute();
+    if (!$stmt->execute()) {
+        throw new Exception('Lỗi thực hiện truy vấn: ' . $stmt->error);
+    }
+    
     $result = $stmt->get_result();
     
     $data = [];
     while ($row = $result->fetch_assoc()) {
-        $data[] = $row;
+        $data[] = [
+            'customer_name' => $row['customer_name'],
+            'order_count' => intval($row['order_count']),
+            'total_spent' => floatval($row['total_spent'])
+        ];
     }
     
     $response['success'] = true;
@@ -431,7 +483,14 @@ function handleLegacyRequests($conn, &$response) {
                       AND dh.trang_thai = 'hoan_tat'";
             
             $result = $conn->query($sql);
+            if (!$result) {
+                throw new Exception('Lỗi truy vấn doanh thu hôm nay: ' . $conn->error);
+            }
+            
             $data = $result->fetch_assoc();
+            // Convert to proper data types
+            $data['tong_doanh_thu'] = floatval($data['tong_doanh_thu']);
+            $data['tong_don_hang'] = intval($data['tong_don_hang']);
             break;
             
         case 'sanpham_ban_chay':
@@ -448,13 +507,22 @@ function handleLegacyRequests($conn, &$response) {
                     LIMIT 5";
             
             $result = $conn->query($sql);
+            if (!$result) {
+                throw new Exception('Lỗi truy vấn sản phẩm bán chạy: ' . $conn->error);
+            }
+            
             $data = [];
             while ($row = $result->fetch_assoc()) {
-                $data[] = $row;
+                $data[] = [
+                    'ten_hoa' => $row['ten_hoa'],
+                    'tong_so_luong_ban' => intval($row['tong_so_luong_ban']),
+                    'tong_doanh_thu' => floatval($row['tong_doanh_thu'])
+                ];
             }
             break;
             
         default:
+            $response['success'] = false;
             $response['message'] = 'Loại thống kê không hợp lệ';
             return;
     }
