@@ -93,10 +93,10 @@ class CustomerManager {
       );
     }
   }
-
   // Khởi tạo DataTable
   initDataTable() {
     this.customersTable = $("#customersTable").DataTable({
+      processing: true, // Enable processing indicator
       language: {
         decimal: "",
         emptyTable: "Không có dữ liệu trong bảng",

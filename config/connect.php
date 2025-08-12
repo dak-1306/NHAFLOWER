@@ -3,7 +3,7 @@
 $host = "localhost";
 $port = 3306;
 $user = "root";
-$password = "dang13062005";
+$password = "";
 $dbname = "nhaflower";
 
 // Create connection with error handling

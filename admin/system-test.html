@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8">
+    <title>NHAFLOWER Admin - System Test</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        body { font-family: 'Nunito', sans-serif; background: #f8f9fc; padding: 20px; }
+        .test-card { margin: 10px 0; }
+        .status-pass { color: #28a745; }
+        .status-fail { color: #dc3545; }
+        .status-testing { color: #ffc107; }
+        .page-header { background: linear-gradient(135deg, #e91e63, #f48fb1); color: white; padding: 20px; margin-bottom: 20px; border-radius: 8px; }
+    </style>
+</head>
+<body>
+    <div class="page-header">
+        <h1><i class="fas fa-cogs mr-3"></i>NHAFLOWER Admin System Test</h1>
+        <p class="mb-0">Comprehensive testing of all admin pages and APIs</p>
+    </div>
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card test-card">
+                    <div class="card-header">
+                        <h5><i class="fas fa-desktop mr-2"></i>Admin Pages Test</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="page-tests">
+                            <!-- Page tests will be populated here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card test-card">
+                    <div class="card-header">
+                        <h5><i class="fas fa-server mr-2"></i>API Endpoints Test</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="api-tests">
+                            <!-- API tests will be populated here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-3">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5><i class="fas fa-chart-line mr-2"></i>Test Results Summary</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="test-summary"></div>
+                        <div class="mt-3">
+                            <button class="btn btn-primary" onclick="runAllTests()">
+                                <i class="fas fa-play mr-1"></i>Run All Tests
+                            </button>
+                            <button class="btn btn-success ml-2" onclick="openWorkingPages()">
+                                <i class="fas fa-external-link-alt mr-1"></i>Open Working Pages
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        const adminPages = [
+            { name: 'Dashboard', url: 'index.html', icon: 'tachometer-alt' },
+            { name: 'Customers', url: 'customers.html', icon: 'users' },
+            { name: 'Products', url: 'products.html', icon: 'leaf' },
+            { name: 'Orders', url: 'orders.html', icon: 'shopping-cart' },
+            { name: 'Categories', url: 'categories.html', icon: 'tags' },
+            { name: 'Orders (Simple)', url: 'orders-simple.html', icon: 'shopping-cart' }
+        ];
+
+        const apiEndpoints = [
+            { name: 'Customers API', url: '../api/khach_hang/get_customers.php' },
+            { name: 'Products API', url: '../api/products.php' },
+            { name: 'Orders API', url: '../api/don_hang/get_all_donhang.php' },
+            { name: 'Categories API', url: '../api/categories.php' },
+            { name: 'Statistics API', url: '../api/api_thongke.php' }
+        ];
+
+        let testResults = {
+            pages: {},
+            apis: {},
+            summary: { total: 0, passed: 0, failed: 0 }
+        };
+
+        $(document).ready(function() {
+            initializeTests();
+        });
+
+        function initializeTests() {
+            // Initialize page tests
+            let pageHtml = '';
+            adminPages.forEach(page => {
+                pageHtml += `
+                    <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                        <span><i class="fas fa-${page.icon} mr-2"></i>${page.name}</span>
+                        <span id="page-${page.url}" class="status-testing">
+                            <i class="fas fa-spinner fa-spin mr-1"></i>Ready
+                        </span>
+                    </div>
+                `;
+            });
+            $('#page-tests').html(pageHtml);
+
+            // Initialize API tests
+            let apiHtml = '';
+            apiEndpoints.forEach(api => {
+                apiHtml += `
+                    <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                        <span><i class="fas fa-server mr-2"></i>${api.name}</span>
+                        <span id="api-${btoa(api.url)}" class="status-testing">
+                            <i class="fas fa-spinner fa-spin mr-1"></i>Ready
+                        </span>
+                    </div>
+                `;
+            });
+            $('#api-tests').html(apiHtml);
+
+            updateSummary();
+        }
+
+        function runAllTests() {
+            console.log('Starting comprehensive tests...');
+            testResults = { pages: {}, apis: {}, summary: { total: 0, passed: 0, failed: 0 } };
+            
+            // Test pages
+            adminPages.forEach(page => testPage(page));
+            
+            // Test APIs
+            setTimeout(() => {
+                apiEndpoints.forEach(api => testAPI(api));
+            }, 1000);
+
+            // Update summary after all tests
+            setTimeout(updateSummary, 5000);
+        }
+
+        function testPage(page) {
+            const elementId = `page-${page.url}`;
+            updateTestStatus(elementId, 'testing', 'Testing...');
+            
+            // Create a test iframe to load the page
+            const iframe = document.createElement('iframe');
+            iframe.style.display = 'none';
+            iframe.src = page.url;
+            
+            const timeout = setTimeout(() => {
+                testResults.pages[page.name] = false;
+                updateTestStatus(elementId, 'fail', 'Timeout');
+                document.body.removeChild(iframe);
+            }, 10000);
+            
+            iframe.onload = function() {
+                clearTimeout(timeout);
+                try {
+                    // Basic test - check if the page loaded without errors
+                    const doc = iframe.contentDocument || iframe.contentWindow.document;
+                    if (doc && doc.body && doc.body.innerHTML.length > 100) {
+                        testResults.pages[page.name] = true;
+                        updateTestStatus(elementId, 'pass', 'Pass');
+                    } else {
+                        testResults.pages[page.name] = false;
+                        updateTestStatus(elementId, 'fail', 'Empty/Error');
+                    }
+                } catch (e) {
+                    testResults.pages[page.name] = false;
+                    updateTestStatus(elementId, 'fail', 'Access Error');
+                }
+                setTimeout(() => document.body.removeChild(iframe), 1000);
+            };
+            
+            iframe.onerror = function() {
+                clearTimeout(timeout);
+                testResults.pages[page.name] = false;
+                updateTestStatus(elementId, 'fail', 'Load Error');
+                document.body.removeChild(iframe);
+            };
+            
+            document.body.appendChild(iframe);
+        }
+
+        function testAPI(api) {
+            const elementId = `api-${btoa(api.url)}`;
+            updateTestStatus(elementId, 'testing', 'Testing...');
+            
+            $.ajax({
+                url: api.url,
+                type: 'GET',
+                timeout: 10000,
+                success: function(data) {
+                    testResults.apis[api.name] = true;
+                    updateTestStatus(elementId, 'pass', 'Pass');
+                },
+                error: function(xhr) {
+                    testResults.apis[api.name] = false;
+                    const errorMsg = xhr.status === 404 ? '404' : xhr.status === 500 ? '500' : 'Error';
+                    updateTestStatus(elementId, 'fail', errorMsg);
+                }
+            });
+        }
+
+        function updateTestStatus(elementId, status, message) {
+            const element = $(`#${elementId}`);
+            const iconMap = {
+                'testing': 'fa-spinner fa-spin',
+                'pass': 'fa-check',
+                'fail': 'fa-times'
+            };
+            const classMap = {
+                'testing': 'status-testing',
+                'pass': 'status-pass', 
+                'fail': 'status-fail'
+            };
+            
+            element.html(`<i class="fas ${iconMap[status]} mr-1"></i>${message}`);
+            element.attr('class', classMap[status]);
+        }
+
+        function updateSummary() {
+            const pageCount = Object.keys(testResults.pages).length;
+            const apiCount = Object.keys(testResults.apis).length;
+            const passedPages = Object.values(testResults.pages).filter(r => r).length;
+            const passedApis = Object.values(testResults.apis).filter(r => r).length;
+            
+            const totalTests = pageCount + apiCount;
+            const totalPassed = passedPages + passedApis;
+            const totalFailed = totalTests - totalPassed;
+            
+            const summaryHtml = `
+                <div class="row text-center">
+                    <div class="col-md-4">
+                        <h3 class="text-primary">${totalTests}</h3>
+                        <p class="mb-0">Total Tests</p>
+                    </div>
+                    <div class="col-md-4">
+                        <h3 class="text-success">${totalPassed}</h3>
+                        <p class="mb-0">Passed</p>
+                    </div>
+                    <div class="col-md-4">
+                        <h3 class="text-danger">${totalFailed}</h3>
+                        <p class="mb-0">Failed</p>
+                    </div>
+                </div>
+                <div class="progress mt-3" style="height: 10px;">
+                    <div class="progress-bar bg-success" style="width: ${totalTests ? (totalPassed/totalTests)*100 : 0}%"></div>
+                </div>
+                <p class="text-center mt-2">
+                    <small>Pages: ${passedPages}/${pageCount} | APIs: ${passedApis}/${apiCount}</small>
+                </p>
+            `;
+            
+            $('#test-summary').html(summaryHtml);
+        }
+
+        function openWorkingPages() {
+            // Open working pages in new tabs
+            const workingPages = [
+                'customers.html',
+                'categories.html', 
+                'products.html',
+                'orders.html',
+                'orders-simple.html'
+            ];
+            
+            workingPages.forEach((page, index) => {
+                setTimeout(() => {
+                    window.open(page, `_blank_${index}`);
+                }, index * 500);
+            });
+        }
+
+        // Auto-run tests when page loads
+        setTimeout(runAllTests, 1000);
+    </script>
+</body>
+</html>
