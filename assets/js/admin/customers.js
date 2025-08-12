@@ -8,7 +8,7 @@
 class CustomerManager {
   constructor() {
     // Khôi phục relative URL
-    this.API_BASE_URL = "../api/khach_hang/";
+    this.API_BASE_URL = "../api/khach_hang.php";
     this.customersTable = null;
     this.init();
   }
@@ -63,7 +63,7 @@ class CustomerManager {
   async loadCustomers() {
     try {
       console.log("Loading customers...");
-      const response = await fetch(this.API_BASE_URL + "get_customers.php");
+      const response = await fetch(this.API_BASE_URL + "?action=get_all");
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -78,7 +78,7 @@ class CustomerManager {
         this.customersTable = null;
       }
 
-      this.displayCustomers(customers);
+      this.displayCustomers(customers.data);
       this.initDataTable();
     } catch (error) {
       console.error("Lỗi khi tải danh sách khách hàng:", error);
@@ -251,7 +251,7 @@ class CustomerManager {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
 
-      const accountResponse = await fetch("../api/tai_khoan/add_taikhoan.php", {
+      const accountResponse = await fetch("../api/tai_khoan.php?action=add", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

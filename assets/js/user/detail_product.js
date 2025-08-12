@@ -7,7 +7,7 @@
 
 class ProductDetailManager {
   constructor() {
-    this.API_BASE_URL = "../api/san_pham/";
+    this.API_BASE_URL = "../api/products.php";
     this.currentProduct = null;
     this.quantity = 1;
     this.isFavorite = false;
@@ -46,7 +46,7 @@ class ProductDetailManager {
       const mockProduct = this.getMockProductData(productId);
 
       // Uncomment dòng dưới khi có API thật
-      // const response = await fetch(`${this.API_BASE_URL}get_product.php?id=${productId}`);
+      // const response = await fetch(`${this.API_BASE_URL}?action=get_sanpham&id=${productId}`);
       // const product = await response.json();
 
       this.currentProduct = mockProduct;

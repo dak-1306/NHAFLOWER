@@ -45,11 +45,8 @@ class ProductList {
   async loadCategories() {
     try {
       console.log("Loading categories from API...");
-    try {
-      console.log("Loading categories from API...");
-
       const response = await $.ajax({
-        url: "/NHAFLOWER/api/products.php?action=get_categories",
+        url: "/NHAFLOWER/api/loai_hoa.php?action=get_all",
         method: "GET",
         dataType: "json",
       });
@@ -129,7 +126,7 @@ class ProductList {
       $("#loading").show();
 
       const response = await $.ajax({
-        url: "/NHAFLOWER/api/products.php?action=get_all_sanpham",
+        url: "/NHAFLOWER/api/products.php?action=get_all",
         method: "GET",
         dataType: "json",
       });
@@ -157,7 +154,7 @@ class ProductList {
   getCategorySlug(categoryId) {
     // Find category in loaded categories
     const category = this.categories.find(
-      (cat) => cat.id_loaihoa == categoryId
+      (cat) => Number(cat.id_loaihoa) === Number(categoryId)
     );
     if (category) {
       return this.createCategorySlug(category.ten_loai);
