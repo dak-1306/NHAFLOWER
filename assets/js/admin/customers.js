@@ -4,10 +4,8 @@
  * Author: NHAFLOWER Team
  * Created: 2025
  */
-
-class CustomerManager {  constructor() {
-    // Fixed URL to match actual API structure
-    this.API_BASE_URL = "../api/";
+// ...existing code...
+// Fixed URL to match actual API structure
 class CustomerManager {
   constructor() {
     // Khôi phục relative URL
@@ -65,7 +63,6 @@ class CustomerManager {
   async loadCustomers() {
     try {
       console.log("Loading customers...");
-      const response = await fetch(this.API_BASE_URL + "khach_hang.php?action=get");
       const response = await fetch(this.API_BASE_URL + "?action=get_all");
 
       if (!response.ok) {
@@ -92,8 +89,6 @@ class CustomerManager {
       }
 
       this.displayCustomers(customers);
-      this.initDataTable();    } catch (error) {
-      this.displayCustomers(customers.data);
       this.initDataTable();
     } catch (error) {
       console.error("Lỗi khi tải danh sách khách hàng:", error);
@@ -142,7 +137,8 @@ class CustomerManager {
 
   // Hiển thị danh sách khách hàng
   displayCustomers(customers) {
-    const tbody = document.getElementById("customersTableBody");    if (!customers || customers.length === 0) {
+    const tbody = document.getElementById("customersTableBody");
+    if (!customers || customers.length === 0) {
       // Avoid colspan to prevent DataTables issues
       tbody.innerHTML =
         '<tr><td class="text-center" style="padding: 20px;">Không có dữ liệu khách hàng</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>';
@@ -267,7 +263,6 @@ class CustomerManager {
       const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
 
       const accountResponse = await fetch("../api/tai_khoan.php?action=add", {
-      const accountResponse = await fetch("../api/tai_khoan.php?action=add", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -312,7 +307,7 @@ class CustomerManager {
       const controller2 = new AbortController();
       const timeoutId2 = setTimeout(() => controller2.abort(), 10000);
 
-      const apiUrl = this.API_BASE_URL + "khach_hang.php?action=add";
+      const apiUrl = this.API_BASE_URL + "?action=add";
       console.log("API URL:", apiUrl);
       console.log("Full URL:", window.location.origin + "/" + apiUrl);
 
@@ -399,7 +394,7 @@ class CustomerManager {
         this.API_BASE_URL + `khach_hang.php?action=get_by_id&id=${id}`
       );
       const result = await response.json();
-      
+
       let customer;
       if (result.success && result.data) {
         customer = result.data;
@@ -437,7 +432,8 @@ class CustomerManager {
       ngay_sinh: formData.get("ngay_sinh"),
     };
 
-    try {      const response = await fetch(
+    try {
+      const response = await fetch(
         this.API_BASE_URL + `khach_hang.php?action=update&id=${customerId}`,
         {
           method: "POST",
@@ -469,7 +465,8 @@ class CustomerManager {
       return;
     }
 
-    try {      const response = await fetch(
+    try {
+      const response = await fetch(
         this.API_BASE_URL + `khach_hang.php?action=delete&id=${id}`
       );
       const result = await response.json();
