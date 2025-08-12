@@ -1,3 +1,116 @@
+// =============================
+// SEARCH FUNCTIONALITY (copy from index.js)
+// =============================
+function initializeSearchFunctionality() {
+  const $searchInput = $(".search-input");
+  const $searchBtn = $(".search-btn");
+
+  // Xử lý sự kiện nhấn nút tìm kiếm
+  $searchBtn.on("click", function () {
+    handleSearch();
+  });
+
+  // Xử lý sự kiện nhấn Enter trong ô tìm kiếm
+  $searchInput.on("keypress", function (e) {
+    if (e.which === 13) {
+      // Enter key
+      handleSearch();
+    }
+  });
+
+  // Placeholder animation
+  $searchInput.on("focus", function () {
+    $(this).addClass("focused");
+  });
+
+  $searchInput.on("blur", function () {
+    if ($(this).val() === "") {
+      $(this).removeClass("focused");
+    }
+  });
+}
+
+function handleSearch() {
+  const searchTerm = $(".search-input").val().trim();
+
+  if (searchTerm === "") {
+    showNotification("Vui lòng nhập từ khóa tìm kiếm", "warning");
+    return;
+  }
+
+  // Yêu cầu đăng nhập để tìm kiếm
+  showNotification("Vui lòng đăng nhập để tìm kiếm sản phẩm", "info");
+  // Lưu từ khóa tìm kiếm để dùng sau khi đăng nhập
+  localStorage.setItem("pending_search", searchTerm);
+
+  setTimeout(() => {
+    window.location.href = "login.html";
+  }, 2000);
+}
+
+function showNotification(message, type = "info", duration = 3000) {
+  // Remove existing notifications
+  $(".notification-toast").remove();
+
+  // Determine notification class and icon
+  let notificationClass = "notification-info";
+  let iconClass = "fa-info-circle";
+
+  switch (type) {
+    case "success":
+      notificationClass = "notification-success";
+      iconClass = "fa-check-circle";
+      break;
+    case "error":
+      notificationClass = "notification-error";
+      iconClass = "fa-exclamation-circle";
+      break;
+    case "warning":
+      notificationClass = "notification-warning";
+      iconClass = "fa-exclamation-triangle";
+      break;
+    default:
+      notificationClass = "notification-info";
+      iconClass = "fa-info-circle";
+  }
+
+  // Create notification element
+  const notification = $(`
+    <div class="notification-toast ${notificationClass}">
+      <div class="notification-content">
+        <i class="fas ${iconClass}"></i>
+        <span class="notification-message">${message}</span>
+      </div>
+      <button class="notification-close">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+  `);
+
+  // Add to page
+  $("body").append(notification);
+
+  // Show with animation
+  setTimeout(() => {
+    notification.addClass("show");
+  }, 100);
+
+  // Auto hide
+  setTimeout(() => {
+    notification.removeClass("show");
+    setTimeout(() => {
+      notification.remove();
+    }, 300);
+  }, duration);
+
+  // Manual close
+  notification.find(".notification-close").on("click", function () {
+    notification.removeClass("show");
+    setTimeout(() => {
+      notification.remove();
+    }, 300);
+  });
+}
 /* JAVASCRIPT TÙY CHỈNH CHO TRANG HOME - NHAFLOWER (Sử dụng jQuery) */
 
 // Đợi trang và jQuery load xong trước khi chạy code
@@ -11,7 +124,12 @@ $(document).ready(function () {
   initializeMobileMenu();
 
   // XỬ LÝ TÌM KIẾM PENDING (nếu có)
-  handlePendingSearch();
+  if (
+    window.authManager &&
+    typeof window.authManager.handlePendingSearch === "function"
+  ) {
+    window.authManager.handlePendingSearch();
+  }
 });
 
 /* ===========================================
@@ -76,13 +194,15 @@ function viewMoreDeals() {
 // Logout function
 function logout() {
   if (confirm("Bạn có chắc chắn muốn đăng xuất?")) {
-    localStorage.removeItem("user_token");
-    localStorage.removeItem("user_data");
-    localStorage.removeItem("pending_search");
-    showNotification("Đã đăng xuất thành công!", "success");
-    setTimeout(() => {
-      window.location.href = "index.html";
-    }, 1500);
+    if (window.authManager && typeof window.authManager.logout === "function") {
+      window.authManager.logout();
+    } else {
+      // Fallback nếu AuthManager chưa load
+      localStorage.removeItem("user_token");
+      localStorage.removeItem("user_data");
+      localStorage.removeItem("pending_search");
+      window.location.href = "login.html";
+    }
   }
 }
 

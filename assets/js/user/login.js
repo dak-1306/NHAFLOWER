@@ -198,6 +198,19 @@ function submitLogin() {
         // Sử dụng AuthManager để đăng nhập
         window.authManager.login(response.data.token, response.data);
 
+        // Lưu thêm nhaflower_user cho các trang profile
+        localStorage.setItem(
+          "nhaflower_user",
+          JSON.stringify({
+            id_taikhoan: response.data.id_taikhoan,
+            email: response.data.email,
+            ten: response.data.ten || response.data.ho_ten || "",
+            sdt: response.data.sdt || "",
+            dia_chi: response.data.dia_chi || "",
+            ngay_sinh: response.data.ngay_sinh || "",
+          })
+        );
+
         showNotification("Đăng nhập thành công!", "success");
 
         // Sử dụng AuthManager để xử lý redirect
