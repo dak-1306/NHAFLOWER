@@ -333,6 +333,17 @@ function increaseQuantity() {
 }
 
 function addToCart() {
+  // Kiểm tra đăng nhập (dựa vào user_token và user_data)
+  if (
+    !localStorage.getItem("user_token") ||
+    !localStorage.getItem("user_data")
+  ) {
+    if (confirm("Bạn cần đăng nhập để mua hàng. Đăng nhập ngay?")) {
+      window.location.href = "login.html";
+    }
+    return;
+  }
+
   if (!productDetailManager.currentProduct) {
     alert("Đang tải thông tin sản phẩm...");
     return;

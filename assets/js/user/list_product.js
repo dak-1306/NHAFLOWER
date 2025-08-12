@@ -45,21 +45,25 @@ class ProductList {
   async loadCategories() {
     try {
       console.log("Loading categories from API...");
+    try {
+      console.log("Loading categories from API...");
 
       const response = await $.ajax({
-        url: "/NHAFLOWER/api/san_pham/get_categories.php",
+        url: "/NHAFLOWER/api/products.php?action=get_categories",
         method: "GET",
         dataType: "json",
       });
 
       console.log("Categories response:", response);
 
-      if (Array.isArray(response)) {
-        this.categories = response;
+      // Nếu API trả về dạng {success, data}
+      if (response.success && Array.isArray(response.data)) {
+        this.categories = response.data;
         console.log("Categories loaded successfully:", this.categories);
         this.renderFilterButtons();
-      } else {
-        console.warn("Categories API returned unexpected format");
+      } else if (Array.isArray(response)) {
+        this.categories = response;
+        this.renderFilterButtons();
         this.renderDefaultFilterButtons();
       }
     } catch (error) {
@@ -125,18 +129,18 @@ class ProductList {
       $("#loading").show();
 
       const response = await $.ajax({
-        url: "/NHAFLOWER/api/san_pham/get_all_sanpham.php",
+        url: "/NHAFLOWER/api/products.php?action=get_all_sanpham",
         method: "GET",
         dataType: "json",
       });
 
       // Check if data is array (direct format) or has success property
-      if (Array.isArray(response)) {
-        this.allProducts = response;
+      if (response.success && Array.isArray(response.data)) {
+        this.allProducts = response.data;
         this.products = [...this.allProducts];
         this.renderProducts();
-      } else if (response.success && response.data) {
-        this.allProducts = response.data;
+      } else if (Array.isArray(response)) {
+        this.allProducts = response;
         this.products = [...this.allProducts];
         this.renderProducts();
       } else {
@@ -429,6 +433,17 @@ function goToProductDetail(productId) {
 function addToCartFromList(productId) {
   // Prevent navigation when clicking add to cart button
   event.stopPropagation();
+
+  // Kiểm tra đăng nhập (dựa vào user_token và user_data)
+  if (
+    !localStorage.getItem("user_token") ||
+    !localStorage.getItem("user_data")
+  ) {
+    if (confirm("Bạn cần đăng nhập để mua hàng. Đăng nhập ngay?")) {
+      window.location.href = "login.html";
+    }
+    return;
+  }
 
   // Get product info from the global product list
   const productList = window.productListInstance;
