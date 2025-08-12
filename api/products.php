@@ -86,20 +86,18 @@ try {
                 $stmt = $conn->prepare($sql);
                 $stmt->bind_param("i", $id);
                 $stmt->execute();
-                $result = $stmt->get_result();
-                
-                if ($row = $result->fetch_assoc()) {
+                $result = $stmt->get_result();                if ($row = $result->fetch_assoc()) {
                     // Map field names to frontend expectations
                     $product = [
                         'id_sanpham' => $row['id_sanpham'],
-                        'ten_sanpham' => $row['ten_hoa'],
+                        'ten_sanpham' => $row['ten_hoa'], // Map ten_hoa -> ten_sanpham
                         'gia' => $row['gia'],
                         'mo_ta' => $row['mo_ta'],
-                        'so_luong_ton_kho' => $row['so_luong'],
-                        'id_danhmuc' => $row['id_loaihoa'],
+                        'so_luong_ton_kho' => $row['so_luong'], // Map so_luong -> so_luong_ton_kho
+                        'id_danhmuc' => $row['id_loaihoa'], // Map id_loaihoa -> id_danhmuc
                         'ten_danhmuc' => $row['ten_danhmuc'],
                         'hinh_anh' => $row['hinh_anh'],
-                        'trang_thai' => $row['trang_thai'] ?? 'active',
+                        'trang_thai' => 'active', // Default value since DB doesn't have this field
                         'id_khuyenmai' => $row['id_khuyenmai']
                     ];
                     sendResponse(true, 'Lấy thông tin sản phẩm thành công', $product);
@@ -115,19 +113,18 @@ try {
                 
                 $result = $conn->query($sql);
                 $products = [];
-                
-                while ($row = $result->fetch_assoc()) {
+                  while ($row = $result->fetch_assoc()) {
                     // Map field names to frontend expectations
                     $products[] = [
                         'id_sanpham' => $row['id_sanpham'],
-                        'ten_sanpham' => $row['ten_hoa'],
+                        'ten_sanpham' => $row['ten_hoa'], // Map ten_hoa -> ten_sanpham
                         'gia' => $row['gia'],
                         'mo_ta' => $row['mo_ta'],
-                        'so_luong_ton_kho' => $row['so_luong'],
-                        'id_danhmuc' => $row['id_loaihoa'],
+                        'so_luong_ton_kho' => $row['so_luong'], // Map so_luong -> so_luong_ton_kho
+                        'id_danhmuc' => $row['id_loaihoa'], // Map id_loaihoa -> id_danhmuc
                         'ten_danhmuc' => $row['ten_danhmuc'] ?: 'Chưa phân loại',
                         'hinh_anh' => $row['hinh_anh'],
-                        'trang_thai' => $row['trang_thai'] ?? 'active',
+                        'trang_thai' => 'active', // Default value since DB doesn't have this field
                         'id_khuyenmai' => $row['id_khuyenmai']
                     ];
                 }
@@ -180,16 +177,14 @@ try {
                     deleteFile($currentImage);
                     $newImage = null;
                 }
-                
-                // Update product
+                  // Update product
                 $sql = "UPDATE sanpham SET 
                             ten_hoa = ?, 
                             gia = ?, 
                             mo_ta = ?, 
                             so_luong = ?, 
                             id_loaihoa = ?, 
-                            hinh_anh = ?,
-                            trang_thai = ?
+                            hinh_anh = ?
                         WHERE id_sanpham = ?";
                 
                 $stmt = $conn->prepare($sql);
@@ -198,9 +193,8 @@ try {
                 $mo_ta = trim($_POST['mo_ta'] ?? '');
                 $so_luong = intval($_POST['so_luong_ton_kho']);
                 $id_danhmuc = !empty($_POST['id_danhmuc']) ? intval($_POST['id_danhmuc']) : null;
-                $trang_thai = $_POST['trang_thai'] ?? 'active';
                 
-                $stmt->bind_param("sdsiissi", $ten_sanpham, $gia, $mo_ta, $so_luong, $id_danhmuc, $newImage, $trang_thai, $id);
+                $stmt->bind_param("sdsiisi", $ten_sanpham, $gia, $mo_ta, $so_luong, $id_danhmuc, $newImage, $id);
                 
                 if ($stmt->execute()) {
                     sendResponse(true, 'Cập nhật sản phẩm thành công');
@@ -227,10 +221,9 @@ try {
                 if (isset($uploadResult['error'])) {
                     sendResponse(false, $uploadResult['error']);
                 }
-                
-                // Insert product
-                $sql = "INSERT INTO sanpham (ten_hoa, gia, mo_ta, so_luong, id_loaihoa, hinh_anh, trang_thai) 
-                        VALUES (?, ?, ?, ?, ?, ?, ?)";
+                  // Insert product
+                $sql = "INSERT INTO sanpham (ten_hoa, gia, mo_ta, so_luong, id_loaihoa, hinh_anh) 
+                        VALUES (?, ?, ?, ?, ?, ?)";
                 
                 $stmt = $conn->prepare($sql);
                 $ten_sanpham = trim($_POST['ten_sanpham']);
@@ -239,9 +232,8 @@ try {
                 $so_luong = intval($_POST['so_luong_ton_kho']);
                 $id_danhmuc = !empty($_POST['id_danhmuc']) ? intval($_POST['id_danhmuc']) : null;
                 $hinh_anh = $uploadResult['filename'];
-                $trang_thai = $_POST['trang_thai'] ?? 'active';
                 
-                $stmt->bind_param("sdsisis", $ten_sanpham, $gia, $mo_ta, $so_luong, $id_danhmuc, $hinh_anh, $trang_thai);
+                $stmt->bind_param("sdsiss", $ten_sanpham, $gia, $mo_ta, $so_luong, $id_danhmuc, $hinh_anh);
                 
                 if ($stmt->execute()) {
                     sendResponse(true, 'Thêm sản phẩm thành công');

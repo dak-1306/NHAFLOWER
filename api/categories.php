@@ -23,7 +23,7 @@ function sendResponse($success, $message, $data = null) {
 
 try {
     // Get all active categories
-    $sql = "SELECT id_loaihoa as id_danhmuc, ten_loai as ten_danhmuc FROM loaihoa ORDER BY ten_loai ASC";
+    $sql = "SELECT id_loaihoa, ten_loai FROM loaihoa ORDER BY ten_loai ASC";
     $result = $conn->query($sql);
     
     if ($result) {
@@ -31,8 +31,8 @@ try {
         
         while ($row = $result->fetch_assoc()) {
             $categories[] = [
-                'id_danhmuc' => $row['id_danhmuc'],
-                'ten_danhmuc' => $row['ten_danhmuc']
+                'id_loaihoa' => $row['id_loaihoa'], // Keep original field names for JavaScript
+                'ten_loai' => $row['ten_loai']      // Keep original field names for JavaScript
             ];
         }
         

@@ -81,14 +81,14 @@ function bindEvents() {
  * Load categories from API
  */
 function loadCategories() {
-    showLoading();
+    // Sử dụng API loai_hoa để có field names đúng với categories management
     
     $.ajax({
         url: '../api/loai_hoa/get_all_loaihoa.php',
         type: 'GET',
         dataType: 'json',
         success: function(data) {
-            // The API returns data directly, not wrapped in response object
+            // API này trả về data trực tiếp, không wrap trong response object
             if (Array.isArray(data)) {
                 displayCategories(data);
             } else {
@@ -98,9 +98,6 @@ function loadCategories() {
         error: function(xhr, status, error) {
             console.error('Error loading categories:', error);
             showError('Không thể tải dữ liệu danh mục. Vui lòng thử lại.');
-        },
-        complete: function() {
-            hideLoading();
         }
     });
 }
@@ -115,9 +112,7 @@ function displayCategories(categories) {
     if (!categories || categories.length === 0) {
         categoriesTable.draw();
         return;
-    }
-
-    // Add rows to DataTable
+    }    // Add rows to DataTable - sử dụng field names từ loai_hoa API
     categories.forEach(function(category) {
         const actions = `
             <div class="btn-group" role="group">
@@ -193,29 +188,52 @@ function saveCategory() {
     } else {
         apiUrl = '../api/loai_hoa/add_loaihoa.php';
         method = 'POST';
-    }
-
-    $.ajax({
+    }    $.ajax({
         url: apiUrl,
         type: method,
-        dataType: 'json',
-        contentType: 'application/json',
-        data: JSON.stringify(formData),
+        data: formData, // Send as form data, not JSON
         success: function(response) {
-            if (response.message && (response.message.includes('thành công') || response.message.includes('success'))) {
-                $('#categoryModal').modal('hide');
-                const message = isEditMode ? 'Cập nhật danh mục thành công!' : 'Thêm danh mục thành công!';
-                showSuccess(message);
-                loadCategories(); // Reload the table
-            } else if (response.error) {
-                showError('Lỗi: ' + response.error);
+            console.log('Server response:', response); // Debug log
+            
+            // Handle both old and new response formats
+            if (typeof response === 'string') {
+                if (response.includes('success')) {
+                    $('#categoryModal').modal('hide');
+                    const message = isEditMode ? 'Cập nhật danh mục thành công!' : 'Thêm danh mục thành công!';
+                    showSuccess(message);
+                    loadCategories();
+                } else {
+                    showError('Lỗi: ' + response);
+                }
+            } else if (typeof response === 'object') {
+                if (response.success) {
+                    $('#categoryModal').modal('hide');
+                    const message = isEditMode ? 'Cập nhật danh mục thành công!' : 'Thêm danh mục thành công!';
+                    showSuccess(message);
+                    loadCategories();
+                } else {
+                    showError('Lỗi: ' + (response.message || 'Có lỗi xảy ra'));
+                }
             } else {
-                showError('Có lỗi xảy ra khi lưu danh mục');
+                showError('Phản hồi không hợp lệ từ server');
             }
         },
         error: function(xhr, status, error) {
-            console.error('Error saving category:', error);
-            showError('Không thể lưu danh mục. Vui lòng thử lại.');
+            console.error('Error saving category:', xhr.responseText);
+            let errorMessage = 'Không thể lưu danh mục. ';
+            
+            if (xhr.responseText) {
+                try {
+                    const errorResponse = JSON.parse(xhr.responseText);
+                    errorMessage += errorResponse.message || xhr.responseText;
+                } catch (e) {
+                    errorMessage += xhr.responseText;
+                }
+            } else {
+                errorMessage += 'Vui lòng thử lại.';
+            }
+            
+            showError(errorMessage);
         }
     });
 }
@@ -312,20 +330,15 @@ function escapeHtml(text) {
  * Show loading state
  */
 function showLoading() {
-    $('#categoriesTableBody').html(`
-        <tr>
-            <td colspan="5" class="loading">
-                <i class="fas fa-spinner fa-spin mr-2"></i>Đang tải dữ liệu...
-            </td>
-        </tr>
-    `);
+    // DataTables sẽ tự xử lý loading state với "processing": true
+    // Không cần thêm hàng loading thủ công
 }
 
 /**
  * Hide loading state
  */
 function hideLoading() {
-    // Loading will be hidden when data is displayed
+    // DataTables sẽ tự ẩn loading state
 }
 
 /**

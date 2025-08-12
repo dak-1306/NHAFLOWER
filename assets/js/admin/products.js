@@ -1,5 +1,5 @@
 $(document).ready(function() {
-    // Initialize DataTable
+    // Initialize DataTable với empty tbody
     var productsTable = $('#productsTable').DataTable({
         "language": {
             "sProcessing": "Đang xử lý...",
@@ -18,6 +18,7 @@ $(document).ready(function() {
         },
         "pageLength": 10,
         "responsive": true,
+        "processing": true, // Hiển thị loading indicator của DataTables
         "columnDefs": [
             {
                 "targets": [1], // Image column
@@ -99,37 +100,32 @@ $(document).ready(function() {
             error: function(xhr, status, error) {
                 console.error('Error loading products:', error);
                 showAlert('error', 'Không thể tải danh sách sản phẩm. Vui lòng thử lại.');
-                
-                // Show empty state in table
-                productsTable.clear();
-                productsTable.row.add([
-                    '', '', '', '', '', '', '',
-                    '<td colspan="8" class="text-center text-muted">Không thể tải dữ liệu</td>'
-                ]);
-                productsTable.draw();
             }
         });
-    }    // Load categories for dropdown
+    }
+
+    // Load categories for dropdown
     function loadCategories() {
         $.ajax({
-            url: '../api/categories.php',
+            url: '../api/loai_hoa/get_all_loaihoa.php',
             type: 'GET',
             dataType: 'json',
-            success: function(response) {                if (response.success && response.data) {
+            success: function(response) {
+                if (response.success && response.data) {
                     var categoryOptions = '<option value="">Chọn danh mục</option>';
                     $.each(response.data, function(index, category) {
-                        categoryOptions += `<option value="${category.id_danhmuc}">${category.ten_danhmuc}</option>`;
+                        categoryOptions += `<option value="${category.id_loaihoa}">${category.ten_loai}</option>`;
                     });
                     
-                    $('select[name="id_danhmuc"]').html(categoryOptions);
+                    $('select[name="id_loaihoa"]').html(categoryOptions);
                 } else {
                     console.log('No categories found or error loading categories');
-                    $('select[name="id_danhmuc"]').html('<option value="">Không có danh mục</option>');
+                    $('select[name="id_loaihoa"]').html('<option value="">Không có danh mục</option>');
                 }
             },
             error: function(xhr, status, error) {
                 console.error('Error loading categories:', error);
-                $('select[name="id_danhmuc"]').html('<option value="">Lỗi tải danh mục</option>');
+                $('select[name="id_loaihoa"]').html('<option value="">Lỗi tải danh mục</option>');
             }
         });
     }
@@ -142,13 +138,12 @@ $(document).ready(function() {
 
         var formData = new FormData();
         
-        // Get form data
-        formData.append('ten_sanpham', $('input[name="ten_sanpham"]').val());
-        formData.append('id_danhmuc', $('select[name="id_danhmuc"]').val());
+        // Get form data - sử dụng đúng tên fields
+        formData.append('ten_hoa', $('input[name="ten_hoa"]').val());
+        formData.append('id_loaihoa', $('select[name="id_loaihoa"]').val());
         formData.append('gia', $('input[name="gia"]').val());
-        formData.append('so_luong_ton_kho', $('input[name="so_luong_ton_kho"]').val());
+        formData.append('so_luong', $('input[name="so_luong"]').val());
         formData.append('mo_ta', $('textarea[name="mo_ta"]').val());
-        formData.append('trang_thai', $('select[name="trang_thai"]').val());
         
         // Add image file
         var imageFile = $('#productImageInput')[0].files[0];
@@ -371,16 +366,6 @@ $(document).ready(function() {
             isValid = false;
         }
         
-        // Validate image for add form
-        if (formSelector === '#addProductForm') {
-            var imageFile = $('#productImageInput')[0].files[0];
-            if (!imageFile) {
-                $('#imageUploadArea').addClass('border-danger');
-                $('#imageUploadArea').after('<div class="invalid-feedback d-block">Vui lòng chọn hình ảnh sản phẩm</div>');
-                isValid = false;
-            }
-        }
-        
         return isValid;
     }
 
@@ -401,10 +386,8 @@ $(document).ready(function() {
     function getStatusBadge(status, stock) {
         if (parseInt(stock) === 0) {
             return '<span class="badge status-out-of-stock">Hết hàng</span>';
-        } else if (status === 'active') {
-            return '<span class="badge status-active">Hoạt động</span>';
         } else {
-            return '<span class="badge status-inactive">Không hoạt động</span>';
+            return '<span class="badge status-active">Có sẵn</span>';
         }
     }
 
