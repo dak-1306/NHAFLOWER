@@ -279,49 +279,53 @@ function initTopProductsChart() {
         
         const ctx = canvas.getContext('2d');
     
-    topProductsChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: [],
-            datasets: [{
-                label: 'Số lượng bán',
-                data: [],
-                backgroundColor: colors.primary,
-                borderColor: colors.primaryDark,
-                borderWidth: 1,
-                borderRadius: 4,
-                borderSkipped: false
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    display: false
-                }
+        topProductsChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Số lượng bán',
+                    data: [],
+                    backgroundColor: colors.primary,
+                    borderColor: colors.primaryDark,
+                    borderWidth: 1,
+                    borderRadius: 4,
+                    borderSkipped: false
+                }]
             },
-            scales: {
-                x: {
-                    grid: {
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
                         display: false
-                    },
-                    ticks: {
-                        color: '#858796'
                     }
                 },
-                y: {
-                    grid: {
-                        color: '#e3e6f0'
+                scales: {
+                    x: {
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            color: '#858796'
+                        }
                     },
-                    ticks: {
-                        color: '#858796',
-                        beginAtZero: true
+                    y: {
+                        grid: {
+                            color: '#e3e6f0'
+                        },
+                        ticks: {
+                            color: '#858796',
+                            beginAtZero: true
+                        }
                     }
                 }
             }
-        }
-    });
+        });
+    } catch (error) {
+        console.error('Error initializing top products chart:', error);
+        showError('Không thể khởi tạo biểu đồ sản phẩm bán chạy');
+    }
 }
 
 /**

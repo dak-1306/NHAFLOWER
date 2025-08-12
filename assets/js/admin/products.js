@@ -61,10 +61,9 @@ $(document).ready(function() {
                     productsTable.clear();
                     
                     if (response.data && response.data.length > 0) {
-                        $.each(response.data, function(index, product) {
-                            var statusBadge = getStatusBadge(product.trang_thai, product.so_luong_ton_kho);
+                        $.each(response.data, function(index, product) {                            var statusBadge = getStatusBadge(product.trang_thai, product.so_luong_ton_kho);
                             var imageHtml = product.hinh_anh ? 
-                                `<img src="../uploads/products/${product.hinh_anh}" class="product-image-preview" alt="${product.ten_sanpham}">` :
+                                `<img src="../assets/img/products/${product.hinh_anh}" class="product-image-preview" alt="${product.ten_sanpham}">` :
                                 `<div class="product-image-preview d-flex align-items-center justify-content-center bg-light"><i class="fas fa-image text-muted"></i></div>`;
                             
                             var priceFormatted = new Intl.NumberFormat('vi-VN', {
@@ -203,11 +202,10 @@ $(document).ready(function() {
                     $('#editProductStock').val(product.so_luong_ton_kho);
                     $('#editProductDescription').val(product.mo_ta);
                     $('#editProductStatus').val(product.trang_thai);
-                    
-                    // Show current image
+                      // Show current image
                     if (product.hinh_anh) {
                         $('#editImagePreview').html(`
-                            <img id="editPreviewImg" src="../uploads/products/${product.hinh_anh}" class="img-thumbnail" style="max-width: 200px;">
+                            <img id="editPreviewImg" src="../assets/img/products/${product.hinh_anh}" class="img-thumbnail" style="max-width: 200px;">
                             <button type="button" class="btn btn-sm btn-danger ml-2" onclick="removeCurrentImage()">
                                 <i class="fas fa-times"></i> Xóa hình hiện tại
                             </button>

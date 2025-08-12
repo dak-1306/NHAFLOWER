@@ -36,12 +36,12 @@ function initializeCategoriesTable() {
         orderable: false,
         searchable: false,
       },
-    ],
-    drawCallback: function (settings) {
+    ],    drawCallback: function (settings) {
       // Re-initialize tooltips after table draw
       $('[data-toggle="tooltip"]').tooltip();
     },
   });
+}
 
 /**
  * Bind event handlers
@@ -187,23 +187,26 @@ function saveCategory() {
   const categoryId = $("#categoryId").val();
   const categoryName = $("#categoryName").val().trim();
   const categoryDescription = $("#categoryDescription").val().trim();
-
   // Validate input
   if (!validateCategoryName(categoryName)) {
     return;
   }
 
-    const formData = {
-        ten_loai: categoryName,
-        mo_ta: categoryDescription
-    };    let apiUrl, method;
-    if (isEditMode) {
-        apiUrl = '../api/loai_hoa.php?action=update&id=' + categoryId;
-        method = 'POST';
-    } else {
-        apiUrl = '../api/loai_hoa.php?action=add';
-        method = 'POST';
-    }$.ajax({
+  const formData = {
+    ten_loai: categoryName,
+    mo_ta: categoryDescription
+  };
+
+  let apiUrl, method;
+  if (isEditMode) {
+    apiUrl = '../api/loai_hoa.php?action=update&id=' + categoryId;
+    method = 'POST';
+  } else {
+    apiUrl = '../api/loai_hoa.php?action=add';
+    method = 'POST';
+  }
+
+  $.ajax({
         url: apiUrl,
         type: method,
         data: formData, // Send as form data, not JSON

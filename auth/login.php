@@ -20,7 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 }
 
 // Include database connection
-include_once(__DIR__ . "/../config/connect.php");
+include_once(__DIR__ . "/../api/config/connection.php");
 
 // Get input data
 $input = file_get_contents("php://input");

@@ -4,7 +4,7 @@
  * Handles Excel and PDF export functionality for reports
  */
 
-require_once '../config/connect.php';
+require_once __DIR__ . '/config/connection.php';
 
 function fetchReportData($conn, $reportType) {
     $data = [];
@@ -304,11 +304,10 @@ try {
     $action = $_GET['action'] ?? '';
     $format = $_GET['format'] ?? 'excel';
     $reportType = $_GET['report'] ?? 'overview';
-    
-    if ($action !== 'export') {
+      if ($action !== 'export') {
         throw new Exception('Invalid action');
     }    // Get data from API (reuse existing logic)
-    require_once '../config/connect.php';
+    require_once __DIR__ . '/config/connection.php';
     
     // Fetch actual data based on report type
     $data = fetchReportData($conn, $reportType);

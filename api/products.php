@@ -4,7 +4,7 @@ header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE');
 header('Access-Control-Allow-Headers: Content-Type, Authorization');
 
-include_once '../config/connect.php';
+include_once __DIR__ . '/config/connection.php';
 
 // Function to send JSON response
 function sendResponse($success, $message, $data = null) {
@@ -91,13 +91,15 @@ try {
                     $product = [
                         'id_sanpham' => $row['id_sanpham'],
                         'ten_hoa' => $row['ten_hoa'],
+                        'ten_sanpham' => $row['ten_hoa'], // Add mapping for JavaScript compatibility
                         'gia' => $row['gia'],
                         'mo_ta' => $row['mo_ta'],
-                        'so_luong_ton_kho' => $row['so_luong'],
+                        'so_luong' => $row['so_luong'],
+                        'so_luong_ton_kho' => $row['so_luong'], // Map both field names
                         'id_loaihoa' => $row['id_loaihoa'],
                         'ten_danhmuc' => $row['ten_danhmuc'],
                         'hinh_anh' => $row['hinh_anh'],
-                        'trang_thai' => 'active',
+                        'trang_thai' => $row['trang_thai'] ?: 'active', // Use actual database value
                         'id_khuyenmai' => $row['id_khuyenmai']
                     ];
                     sendResponse(true, 'Lấy thông tin sản phẩm thành công', $product);
@@ -112,19 +114,20 @@ try {
                         ORDER BY s.id_sanpham DESC";
                 
                 $result = $conn->query($sql);
-                $products = [];
-                  while ($row = $result->fetch_assoc()) {
+                $products = [];                while ($row = $result->fetch_assoc()) {
                     // Map field names to frontend expectations
                     $products[] = [
                         'id_sanpham' => $row['id_sanpham'],
                         'ten_hoa' => $row['ten_hoa'],
+                        'ten_sanpham' => $row['ten_hoa'], // Add mapping for JavaScript compatibility
                         'gia' => $row['gia'],
                         'mo_ta' => $row['mo_ta'],
-                        'so_luong_ton_kho' => $row['so_luong'],
+                        'so_luong' => $row['so_luong'],
+                        'so_luong_ton_kho' => $row['so_luong'], // Map both field names
                         'id_loaihoa' => $row['id_loaihoa'],
                         'ten_danhmuc' => $row['ten_danhmuc'] ?: 'Chưa phân loại',
                         'hinh_anh' => $row['hinh_anh'],
-                        'trang_thai' => 'active',
+                        'trang_thai' => $row['trang_thai'] ?: 'active', // Use actual database value
                         'id_khuyenmai' => $row['id_khuyenmai']
                     ];
                 }

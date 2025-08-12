@@ -18,7 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit(0);
 }
 
-include_once("../config/connect.php");
+include_once __DIR__ . '/config/connection.php';
 
 $action = $_GET['action'] ?? '';
 $response = ['success' => false, 'message' => '', 'data' => null];

@@ -11,7 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 // Include database connection
-include_once(__DIR__ . "/../config/connect.php");
+include_once(__DIR__ . "/../api/config/connection.php");
 
 // Get method
 $method = $_SERVER['REQUEST_METHOD'];

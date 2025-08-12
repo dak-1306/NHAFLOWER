@@ -1003,10 +1003,9 @@
                 $.each(response.data, function (index, product) {
                   var statusBadge = getStatusBadge(
                     product.status,
-                    product.so_luong
-                  );
+                    product.so_luong                  );
                   var imageHtml = product.hinh_anh
-                    ? `<img src="../uploads/products/${product.hinh_anh}" class="product-image-preview" alt="${product.ten_hoa}">`
+                    ? `<img src="../assets/img/products/${product.hinh_anh}" class="product-image-preview" alt="${product.ten_hoa}">`
                     : `<div class="product-image-preview d-flex align-items-center justify-content-center bg-light"><i class="fas fa-image text-muted"></i></div>`;
 
                   var priceFormatted = new Intl.NumberFormat("vi-VN", {

@@ -58,8 +58,7 @@ class CustomerManager {
     setTimeout(() => {
       $(".alert-custom").fadeOut();
     }, 3000);
-  }
-  // Tải danh sách khách hàng
+  }  // Tải danh sách khách hàng
   async loadCustomers() {
     try {
       console.log("Loading customers...");
@@ -69,8 +68,21 @@ class CustomerManager {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      const result = await response.json();
-      console.log("Customers API response:", result);
+      // Get the raw text first to debug JSON parsing issues
+      const responseText = await response.text();
+      console.log("Raw API response:", responseText);
+
+      // Try to parse JSON
+      let result;
+      try {
+        result = JSON.parse(responseText);
+      } catch (jsonError) {
+        console.error("JSON Parse Error:", jsonError);
+        console.error("Response was:", responseText);
+        throw new Error(`Invalid JSON response: ${jsonError.message}. Response: ${responseText.substring(0, 200)}...`);
+      }
+
+      console.log("Parsed API response:", result);
 
       // Check if the API response has success and data properties
       let customers;
