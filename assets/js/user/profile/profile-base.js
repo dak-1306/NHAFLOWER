@@ -38,16 +38,8 @@ class BaseProfileManager {
       userData.ten || userData.email || "Người dùng NHAFLOWER"
     );
     $("#profileEmail").text(userData.email || "");
-    // Load avatar từ localStorage nếu có, không thì dùng mặc định
-    const savedAvatar = localStorage.getItem("nhaflower_avatar");
-    if (savedAvatar) {
-      $("#profileAvatar").attr("src", savedAvatar);
-    } else {
-      $("#profileAvatar").attr(
-        "src",
-        "../../assets/img/user/default-avatar.png"
-      );
-    }
+    // Luôn dùng avatar mặc định
+    $("#profileAvatar").attr("src", "../../assets/img/user/default-avatar.png");
   }
 
   /**
@@ -151,28 +143,5 @@ class BaseProfileManager {
     }
   }
 
-  /**
-   * Change avatar function
-   */
-  changeAvatar() {
-    const input = document.createElement("input");
-    input.type = "file";
-    input.accept = "image/*";
-
-    input.onchange = function (e) {
-      const file = e.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = function (e) {
-          const base64 = e.target.result;
-          $("#profileAvatar").attr("src", base64);
-          // Lưu avatar vào localStorage
-          localStorage.setItem("nhaflower_avatar", base64);
-        };
-        reader.readAsDataURL(file);
-      }
-    };
-
-    input.click();
-  }
+  // Đã loại bỏ chức năng thêm avatar
 }
