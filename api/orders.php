@@ -56,65 +56,62 @@ function handleGetOrders($conn, &$response) {
     $filters = [];
     $params = [];
     $types = '';
-    
-    // Build base query
+      // Build base query
     $sql = "SELECT 
-                dh.ma_don_hang,
-                dh.ma_khach_hang,
-                dh.ngay_dat_hang,
-                dh.tong_tien,
-                dh.trang_thai_don_hang,
-                dh.trang_thai_thanh_toan,
-                dh.phuong_thuc_thanh_toan,
-                dh.dia_chi_giao_hang,
-                dh.ghi_chu,
-                kh.ten_khach_hang,
-                kh.email,
-                kh.so_dien_thoai
-            FROM don_hang dh
-            LEFT JOIN khach_hang kh ON dh.ma_khach_hang = kh.ma_khach_hang";
-    
-    // Apply filters
+                dh.id_donhang,
+                dh.id_khachhang,
+                dh.ngay_dat,
+                dh.trang_thai,
+                dh.dia_chi_giao,
+                kh.ten,
+                kh.sdt,
+                COALESCE(SUM(ct.so_luong * ct.don_gia), 0) as tong_tien
+            FROM donhang dh
+            LEFT JOIN khachhang kh ON dh.id_khachhang = kh.id_khachhang
+            LEFT JOIN chitietdonhang ct ON dh.id_donhang = ct.id_donhang";
+      // Apply filters
     if (!empty($_GET['status'])) {
-        $filters[] = "dh.trang_thai_don_hang = ?";
+        $filters[] = "dh.trang_thai = ?";
         $params[] = $_GET['status'];
         $types .= 's';
     }
     
     if (!empty($_GET['date_from'])) {
-        $filters[] = "DATE(dh.ngay_dat_hang) >= ?";
+        $filters[] = "DATE(dh.ngay_dat) >= ?";
         $params[] = $_GET['date_from'];
         $types .= 's';
     }
     
     if (!empty($_GET['date_to'])) {
-        $filters[] = "DATE(dh.ngay_dat_hang) <= ?";
+        $filters[] = "DATE(dh.ngay_dat) <= ?";
         $params[] = $_GET['date_to'];
         $types .= 's';
     }
     
     if (!empty($_GET['customer_id'])) {
-        $filters[] = "dh.ma_khach_hang = ?";
+        $filters[] = "dh.id_khachhang = ?";
         $params[] = $_GET['customer_id'];
         $types .= 'i';
     }
     
     if (!empty($_GET['search'])) {
-        $filters[] = "(kh.ten_khach_hang LIKE ? OR dh.ma_don_hang LIKE ? OR kh.email LIKE ?)";
+        $filters[] = "(kh.ten LIKE ? OR dh.id_donhang LIKE ? OR kh.sdt LIKE ?)";
         $searchTerm = '%' . $_GET['search'] . '%';
         $params[] = $searchTerm;
         $params[] = $searchTerm;
         $params[] = $searchTerm;
         $types .= 'sss';
     }
-    
-    // Add WHERE clause if filters exist
+      // Add WHERE clause if filters exist
     if (!empty($filters)) {
         $sql .= " WHERE " . implode(" AND ", $filters);
     }
     
+    // Add GROUP BY to aggregate order details
+    $sql .= " GROUP BY dh.id_donhang, dh.id_khachhang, dh.ngay_dat, dh.trang_thai, dh.dia_chi_giao, kh.ten, kh.sdt";
+    
     // Add ORDER BY
-    $sql .= " ORDER BY dh.ngay_dat_hang DESC";
+    $sql .= " ORDER BY dh.ngay_dat DESC";
     
     // Add LIMIT if specified
     if (!empty($_GET['limit'])) {
@@ -130,11 +127,20 @@ function handleGetOrders($conn, &$response) {
     }
     
     $stmt->execute();
-    $result = $stmt->get_result();
-    $orders = [];
+    $result = $stmt->get_result();    $orders = [];
     
     while ($row = $result->fetch_assoc()) {
-        $orders[] = $row;
+        // Format the data to match frontend expectations
+        $orders[] = [
+            'id_donhang' => $row['id_donhang'],
+            'id_khachhang' => $row['id_khachhang'],
+            'ngay_dat' => $row['ngay_dat'],
+            'trang_thai' => $row['trang_thai'],
+            'dia_chi_giao' => $row['dia_chi_giao'],
+            'ten_khachhang' => $row['ten'], // Map 'ten' to 'ten_khachhang'
+            'sdt' => $row['sdt'],
+            'tong_tien' => floatval($row['tong_tien'])
+        ];
     }
     
     $response['success'] = true;

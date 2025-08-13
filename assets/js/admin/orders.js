@@ -3,6 +3,9 @@
  * Quản lý đơn hàng cho admin panel
  */
 
+console.log("=== ORDERS.JS LOADED - VERSION 20250814002 ===");
+console.log("API Endpoint will be: ../api/orders.php");
+
 let ordersTable;
 let currentFilters = {};
 
@@ -87,9 +90,10 @@ function bindEvents() {
  */
 function loadOrders() {
     console.log("Loading orders...");
+    console.log("API URL being called:", '../api/orders.php?action=get');
     
     $.ajax({
-        url: '../api/don_hang.php?action=get',
+        url: '../api/orders.php?action=get',
         type: 'GET',
         dataType: 'json',
         data: currentFilters,
@@ -139,7 +143,7 @@ function displayOrders(orders) {
     const statusBadge = getStatusBadge(order.trang_thai || "cho");
     const paymentBadge = getPaymentBadge("pending");
     const formattedDate = formatDate(order.ngay_dat);
-    const formattedTotal = formatCurrency(0); // Default since we don't have total calculation
+    const formattedTotal = formatCurrency(order.tong_tien || 0);
 
     const actions = `
             <div class="btn-group" role="group">
