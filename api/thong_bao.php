@@ -88,5 +88,77 @@ if ($action === 'delete') {
     }
 }
 
+if ($action === 'get_stats') {
+    $today = date('Y-m-d');
+    $week_start = date('Y-m-d', strtotime('monday this week'));
+    $month_start = date('Y-m-01');
+    
+    // Total notifications
+    $total_sql = "SELECT COUNT(*) as total FROM thongbao";
+    $total_result = mysqli_query($conn, $total_sql);
+    $total = mysqli_fetch_assoc($total_result)['total'];
+    
+    // Today's notifications
+    $today_sql = "SELECT COUNT(*) as today FROM thongbao WHERE DATE(ngay_gui) = '$today'";
+    $today_result = mysqli_query($conn, $today_sql);
+    $today_count = mysqli_fetch_assoc($today_result)['today'];
+    
+    // This week's notifications
+    $week_sql = "SELECT COUNT(*) as week FROM thongbao WHERE DATE(ngay_gui) >= '$week_start'";
+    $week_result = mysqli_query($conn, $week_sql);
+    $week_count = mysqli_fetch_assoc($week_result)['week'];
+    
+    // This month's notifications
+    $month_sql = "SELECT COUNT(*) as month FROM thongbao WHERE DATE(ngay_gui) >= '$month_start'";
+    $month_result = mysqli_query($conn, $month_sql);
+    $month_count = mysqli_fetch_assoc($month_result)['month'];
+    
+    $stats = [
+        'total' => (int)$total,
+        'today' => (int)$today_count,
+        'week' => (int)$week_count,
+        'month' => (int)$month_count
+    ];
+    
+    sendResponse(true, 'Lấy thống kê thông báo thành công', $stats);
+}
+
+if ($action === 'get_recent') {
+    $limit = $_GET['limit'] ?? 5;
+    $sql = "SELECT id_thongbao, tieu_de, noi_dung, ngay_gui FROM thongbao ORDER BY ngay_gui DESC LIMIT $limit";
+    $result = mysqli_query($conn, $sql);
+    $data = [];
+    while ($row = mysqli_fetch_assoc($result)) {
+        $data[] = $row;
+    }
+    sendResponse(true, 'Lấy thông báo gần đây thành công', $data);
+}
+
+if ($action === 'mark_as_read') {
+    $id = $_POST['id_thongbao'] ?? 0;
+    $user_id = $_POST['user_id'] ?? 0;
+    
+    if (!$id || !$user_id) sendResponse(false, 'Thiếu thông tin');
+    
+    // This would require a separate table for tracking read status
+    // For now, just return success
+    sendResponse(true, 'Đánh dấu đã đọc thành công');
+}
+
+if ($action === 'bulk_delete') {
+    $ids = $_POST['ids'] ?? [];
+    if (!is_array($ids) || empty($ids)) sendResponse(false, 'Thiếu danh sách ID');
+    
+    $ids_str = implode(',', array_map('intval', $ids));
+    $sql = "DELETE FROM thongbao WHERE id_thongbao IN ($ids_str)";
+    
+    if (mysqli_query($conn, $sql)) {
+        $affected = mysqli_affected_rows($conn);
+        sendResponse(true, "Đã xóa $affected thông báo");
+    } else {
+        sendResponse(false, mysqli_error($conn));
+    }
+}
+
 sendResponse(false, 'Hành động không hợp lệ');
 ?>

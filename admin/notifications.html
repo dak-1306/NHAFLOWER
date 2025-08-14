@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <title>NHAFLOWER - Quản lý Thông báo</title>
+
+    <!-- Custom fonts -->
+    <link href="../assets/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css" />
+    <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet" />    <!-- Custom styles -->
+    <link href="../assets/css/admin/sb-admin-2.min.css" rel="stylesheet" />
+    <link href="../assets/css/admin/custom-admin.css" rel="stylesheet" />
+    
+    <!-- Notification-specific styles -->
+    <link href="../assets/css/admin/notifications.css" rel="stylesheet" />
+
+    <!-- SweetAlert2 -->
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.32/dist/sweetalert2.min.css" rel="stylesheet">
+
+    <!-- DataTables -->
+    <link href="../assets/vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
+
+    <style>
+        .notification-card {
+            border: none;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+            transition: all 0.3s;
+        }
+        
+        .notification-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0.25rem 2rem 0 rgba(58, 59, 69, 0.2);
+        }
+        
+        .notification-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #e91e63, #f48fb1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+        }
+        
+        .notification-stats {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            padding: 20px;
+            color: white;
+        }
+        
+        .btn-notification {
+            background: linear-gradient(135deg, #e91e63, #ad1457);
+            border: none;
+            border-radius: 25px;
+            padding: 8px 20px;
+            color: white;
+            transition: all 0.3s;
+        }
+        
+        .btn-notification:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 5px 15px rgba(233, 30, 99, 0.4);
+            color: white;
+        }
+        
+        .notification-item {
+            border-left: 4px solid #e91e63;
+            background: #fff;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            padding: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+        }
+        
+        .notification-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        
+        .notification-time {
+            color: #6c757d;
+            font-size: 0.85em;
+        }
+        
+        .notification-priority-high {
+            border-left-color: #dc3545;
+        }
+        
+        .notification-priority-medium {
+            border-left-color: #ffc107;
+        }
+        
+        .notification-priority-low {
+            border-left-color: #28a745;
+        }
+        
+        .table th {
+            border-top: none;
+            background-color: #f8f9fa;
+            font-weight: 600;
+            color: #5a5c69;
+        }
+        
+        .btn-sm {
+            border-radius: 15px;
+            padding: 0.25rem 0.8rem;
+        }
+        
+        .modal-header {
+            background: linear-gradient(135deg, #e91e63, #f48fb1);
+            color: white;
+            border-radius: 0.375rem 0.375rem 0 0;
+        }
+        
+        .form-control:focus {
+            border-color: #e91e63;
+            box-shadow: 0 0 0 0.2rem rgba(233, 30, 99, 0.25);
+        }
+        
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+        }
+    </style>
+</head>
+
+<body id="page-top">
+    <div id="wrapper">
+        <!-- Sidebar -->
+        <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
+                <div class="sidebar-brand-icon rotate-n-15">
+                    <i class="fas fa-seedling"></i>
+                </div>
+                <div class="sidebar-brand-text mx-3">NHAFLOWER</div>
+            </a>
+
+            <hr class="sidebar-divider my-0" />
+
+            <li class="nav-item">
+                <a class="nav-link" href="index.html">
+                    <i class="fas fa-fw fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+
+            <hr class="sidebar-divider" />
+            <div class="sidebar-heading">Quản lý chính</div>
+
+            <li class="nav-item">
+                <a class="nav-link" href="customers.html">
+                    <i class="fas fa-fw fa-users"></i>
+                    <span>Khách hàng</span>
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="products.html">
+                    <i class="fas fa-fw fa-leaf"></i>
+                    <span>Sản phẩm</span>
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="orders.html">
+                    <i class="fas fa-fw fa-shopping-cart"></i>
+                    <span>Đơn hàng</span>
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="categories.html">
+                    <i class="fas fa-fw fa-tags"></i>
+                    <span>Danh mục</span>
+                </a>
+            </li>
+
+            <hr class="sidebar-divider" />
+            <div class="sidebar-heading">Báo cáo & Thống kê</div>
+
+            <li class="nav-item">
+                <a class="nav-link" href="charts.html">
+                    <i class="fas fa-fw fa-chart-area"></i>
+                    <span>Biểu đồ</span>
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="reports.html">
+                    <i class="fas fa-fw fa-file-alt"></i>
+                    <span>Báo cáo</span>
+                </a>
+            </li>
+
+            <hr class="sidebar-divider" />
+            <div class="sidebar-heading">Hệ thống</div>
+
+            <li class="nav-item active">
+                <a class="nav-link" href="notifications.html">
+                    <i class="fas fa-fw fa-bell"></i>
+                    <span>Thông báo</span>
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseSettings">
+                    <i class="fas fa-fw fa-cog"></i>
+                    <span>Cài đặt</span>
+                </a>
+                <div id="collapseSettings" class="collapse" aria-labelledby="headingSettings" data-parent="#accordionSidebar">
+                    <div class="bg-white py-2 collapse-inner rounded">
+                        <h6 class="collapse-header">Cài đặt hệ thống:</h6>
+                        <a class="collapse-item" href="settings-general.html">Chung</a>
+                        <a class="collapse-item" href="settings-payment.html">Thanh toán</a>
+                        <a class="collapse-item" href="settings-shipping.html">Vận chuyển</a>
+                    </div>
+                </div>
+            </li>
+
+            <hr class="sidebar-divider d-none d-md-block" />
+            <div class="text-center d-none d-md-inline">
+                <button class="rounded-circle border-0" id="sidebarToggle"></button>
+            </div>
+        </ul>
+
+        <!-- Content Wrapper -->
+        <div id="content-wrapper" class="d-flex flex-column">
+            <div id="content">
+                <!-- Topbar -->
+                <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+                    <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+                        <i class="fa fa-bars"></i>
+                    </button>
+
+                    <form class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
+                        <div class="input-group">
+                            <input type="text" class="form-control bg-light border-0 small" placeholder="Tìm kiếm thông báo..." />
+                            <div class="input-group-append">
+                                <button class="btn btn-primary" type="button">
+                                    <i class="fas fa-search fa-sm"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+
+                    <ul class="navbar-nav ml-auto">
+                        <li class="nav-item dropdown no-arrow mx-1">
+                            <a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button" data-toggle="dropdown">
+                                <i class="fas fa-bell fa-fw"></i>
+                                <span class="badge badge-danger badge-counter" id="notificationCounter">3+</span>
+                            </a>
+                        </li>
+
+                        <div class="topbar-divider d-none d-sm-block"></div>
+
+                        <li class="nav-item dropdown no-arrow">
+                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown">
+                                <span class="mr-2 d-none d-lg-inline text-gray-600 small">Admin NHAFLOWER</span>
+                                <img class="img-profile rounded-circle" src="../assets/img/admin/undraw_profile.svg" />
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
+                                <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
+                                    <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    Đăng xuất
+                                </a>
+                            </div>
+                        </li>
+                    </ul>
+                </nav>
+
+                <!-- Page Content -->
+                <div class="container-fluid">
+                    <!-- Page Heading -->
+                    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                        <h1 class="h3 mb-0 text-gray-800">
+                            <i class="fas fa-bell mr-2 text-primary"></i>Quản lý Thông báo
+                        </h1>
+                        <div>
+                            <button class="btn btn-notification" data-toggle="modal" data-target="#addNotificationModal">
+                                <i class="fas fa-plus fa-sm mr-1"></i>Tạo thông báo mới
+                            </button>
+                            <button class="btn btn-outline-primary ml-2" onclick="refreshNotifications()">
+                                <i class="fas fa-sync-alt fa-sm mr-1"></i>Làm mới
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Statistics Cards -->
+                    <div class="row mb-4">
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card notification-card h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                                Tổng thông báo
+                                            </div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="totalNotifications">0</div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-bell fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card notification-card h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                                Hôm nay
+                                            </div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="todayNotifications">0</div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-calendar-day fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card notification-card h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                                Tuần này
+                                            </div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="weekNotifications">0</div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-calendar-week fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card notification-card h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                                Tháng này
+                                            </div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="monthNotifications">0</div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-calendar-alt fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Notifications Table -->
+                    <div class="card notification-card">
+                        <div class="card-header d-flex align-items-center">
+                            <div class="notification-icon mr-3">
+                                <i class="fas fa-list"></i>
+                            </div>
+                            <div>
+                                <h6 class="m-0 font-weight-bold text-primary">Danh sách Thông báo</h6>
+                                <small class="text-muted">Quản lý tất cả thông báo hệ thống</small>
+                            </div>
+                        </div>
+                        <div class="card-body" style="position: relative;">
+                            <div class="loading-overlay" id="tableLoading" style="display: none;">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="sr-only">Đang tải...</span>
+                                </div>
+                            </div>
+                            
+                            <div class="table-responsive">
+                                <table class="table table-bordered" id="notificationsTable">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Tiêu đề</th>
+                                            <th>Nội dung</th>
+                                            <th>Ngày gửi</th>
+                                            <th>Trạng thái</th>
+                                            <th>Thao tác</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="notificationsTableBody">
+                                        <!-- Data will be loaded here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <footer class="sticky-footer bg-white">
+                <div class="container my-auto">
+                    <div class="copyright text-center my-auto">
+                        <span>Copyright &copy; NHAFLOWER 2025</span>
+                    </div>
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Add Notification Modal -->
+    <div class="modal fade" id="addNotificationModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-plus mr-2"></i>Tạo thông báo mới
+                    </h5>
+                    <button type="button" class="close text-white" data-dismiss="modal">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="addNotificationForm">
+                        <div class="form-group">
+                            <label for="notificationTitle" class="font-weight-bold">Tiêu đề thông báo</label>
+                            <input type="text" class="form-control" id="notificationTitle" required maxlength="200" placeholder="Nhập tiêu đề thông báo">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="notificationContent" class="font-weight-bold">Nội dung thông báo</label>
+                            <textarea class="form-control" id="notificationContent" rows="5" required placeholder="Nhập nội dung chi tiết của thông báo"></textarea>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="notificationPriority" class="font-weight-bold">Mức độ ưu tiên</label>
+                                    <select class="form-control" id="notificationPriority">
+                                        <option value="low">Thấp</option>
+                                        <option value="medium" selected>Trung bình</option>
+                                        <option value="high">Cao</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="notificationType" class="font-weight-bold">Loại thông báo</label>
+                                    <select class="form-control" id="notificationType">
+                                        <option value="system">Hệ thống</option>
+                                        <option value="promotion">Khuyến mãi</option>
+                                        <option value="order">Đơn hàng</option>
+                                        <option value="product">Sản phẩm</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="sendImmediately" checked>
+                                <label class="form-check-label" for="sendImmediately">
+                                    Gửi ngay lập tức
+                                </label>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
+                    <button type="button" class="btn btn-notification" onclick="saveNotification()">
+                        <i class="fas fa-save mr-1"></i>Lưu thông báo
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Notification Modal -->
+    <div class="modal fade" id="editNotificationModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-edit mr-2"></i>Chỉnh sửa thông báo
+                    </h5>
+                    <button type="button" class="close text-white" data-dismiss="modal">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="editNotificationForm">
+                        <input type="hidden" id="editNotificationId">
+                        <div class="form-group">
+                            <label for="editNotificationTitle" class="font-weight-bold">Tiêu đề thông báo</label>
+                            <input type="text" class="form-control" id="editNotificationTitle" required maxlength="200">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="editNotificationContent" class="font-weight-bold">Nội dung thông báo</label>
+                            <textarea class="form-control" id="editNotificationContent" rows="5" required></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
+                    <button type="button" class="btn btn-notification" onclick="updateNotification()">
+                        <i class="fas fa-save mr-1"></i>Cập nhật
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Logout Modal -->
+    <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Xác nhận đăng xuất</h5>
+                    <button class="close" type="button" data-dismiss="modal">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">Bạn có chắc chắn muốn đăng xuất khỏi phiên làm việc hiện tại không?</div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Hủy</button>
+                    <a class="btn btn-primary" href="../auth/logout.php">Đăng xuất</a>
+                </div>
+            </div>
+        </div>
+    </div>    <!-- Scripts -->
+    <!-- Load jQuery first -->
+    <script src="../assets/vendor/jquery/jquery.min.js"></script>
+    
+    <!-- Core Bootstrap and admin scripts -->
+    <script src="../assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="../assets/vendor/jquery-easing/jquery.easing.min.js"></script>
+    <script src="../assets/js/admin/sb-admin-2.min.js"></script>
+    
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.32/dist/sweetalert2.all.min.js"></script>
+    
+    <!-- DataTables -->
+    <script src="../assets/vendor/datatables/jquery.dataTables.min.js"></script>
+    <script src="../assets/vendor/datatables/dataTables.bootstrap4.min.js"></script>
+    
+    <!-- Notification System (Global) -->
+    <script src="../assets/js/common/notification-system.js"></script>
+    
+    <!-- Custom notification management script -->
+    <script src="../assets/js/admin/notifications.js"></script>
+    
+    <!-- Initialize after all scripts loaded -->
+    <script>
+        console.log('🔔 NHAFLOWER Admin Notifications loading...');
+        
+        // Check if jQuery is loaded
+        if (typeof $ === 'undefined') {
+            console.error('❌ jQuery is not loaded!');
+            alert('Lỗi: jQuery không được tải. Trang không thể hoạt động.');
+        } else {
+            console.log('✅ jQuery loaded:', $.fn.jquery);
+        }
+        
+        // Check if DataTables is loaded
+        if (typeof $.fn.DataTable === 'undefined') {
+            console.error('❌ DataTables is not loaded!');
+        } else {
+            console.log('✅ DataTables loaded');
+        }
+        
+        // Check if SweetAlert2 is loaded
+        if (typeof Swal === 'undefined') {
+            console.error('❌ SweetAlert2 is not loaded!');
+        } else {
+            console.log('✅ SweetAlert2 loaded');
+        }
+        
+        console.log('🚀 All scripts loaded, initializing page...');
+    </script>
+</body>
+</html>

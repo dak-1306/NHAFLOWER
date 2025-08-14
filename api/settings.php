@@ -125,8 +125,18 @@ function saveSettingsByCategory($conn, $category, &$response) {
     try {
         $conn->begin_transaction();
         
-        // Get settings data
-        $settings = $_POST['settings'] ?? [];
+        // Get settings data - handle both JSON string and array formats
+        $settings = [];
+        
+        if (isset($_POST['settings'])) {
+            if (is_string($_POST['settings'])) {
+                // JSON string format
+                $settings = json_decode($_POST['settings'], true);
+            } else if (is_array($_POST['settings'])) {
+                // Array format (from FormData)
+                $settings = $_POST['settings'];
+            }
+        }
         
         if (empty($settings)) {
             throw new Exception('Không có dữ liệu cài đặt để lưu');
@@ -165,9 +175,9 @@ function saveSettingWithCategory($conn, $key, $value, $category) {
 
 // Get default settings by category
 function getDefaultSettings($category) {
-    $defaults = [
-        'general' => [
+    $defaults = [        'general' => [
             'site_name' => 'NHAFLOWER',
+            'site_slogan' => 'Hoa tươi - Tình yêu thương',
             'site_description' => 'Cửa hàng hoa tươi',
             'admin_email' => 'admin@nhaflower.com',
             'phone' => '',
@@ -177,6 +187,9 @@ function getDefaultSettings($category) {
             'primary_color' => '#007bff',
             'secondary_color' => '#6c757d',
             'products_per_page' => '12',
+            'show_stock' => '1',
+            'show_reviews' => '1',
+            'show_wishlist' => '1',
             'meta_title' => '',
             'meta_description' => '',
             'meta_keywords' => '',

@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NHAFLOWER - Cài đặt thông báo</title>
+
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N"
+      crossorigin="anonymous"
+    />
+    <link
+      href="../../assets/vendor/bootstrap/css/bootstrap.min.css"
+      rel="stylesheet"
+      onerror="console.warn('Local Bootstrap CSS not available, using CDN')"
+    />
+
+    <!-- Font Awesome -->
+    <link
+      href="../../assets/vendor/fontawesome-free/css/all.min.css"
+      rel="stylesheet"
+    />
+
+    <!-- Custom CSS -->
+    <link
+      rel="stylesheet"
+      href="../../assets/css/user/profile/profile-base.css"
+    />
+    <link
+      rel="stylesheet"
+      href="../../assets/css/admin/notifications.css"
+    />
+    <link rel="stylesheet" href="../../assets/css/user/common.css" />
+    
+    <!-- SweetAlert2 -->
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.32/dist/sweetalert2.min.css" rel="stylesheet">
+    
+    <style>
+      .preference-card {
+        border: none;
+        box-shadow: 0 0.125rem 1rem 0 rgba(58, 59, 69, 0.1);
+        border-radius: 12px;
+        margin-bottom: 20px;
+        transition: all 0.3s ease;
+      }
+      
+      .preference-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 0.25rem 1.5rem 0 rgba(58, 59, 69, 0.15);
+      }
+      
+      .preference-icon {
+        width: 50px;
+        height: 50px;
+        background: linear-gradient(135deg, #e91e63, #f48fb1);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 20px;
+        margin-right: 15px;
+      }
+      
+      .custom-switch {
+        padding-left: 2.25rem;
+      }
+      
+      .custom-switch .custom-control-label::before {
+        left: -2.25rem;
+        width: 1.75rem;
+        pointer-events: all;
+        border-radius: 0.5rem;
+        background-color: #dee2e6;
+      }
+      
+      .custom-switch .custom-control-label::after {
+        top: calc(0.25rem + 2px);
+        left: calc(-2.25rem + 2px);
+        width: calc(1rem - 4px);
+        height: calc(1rem - 4px);
+        background-color: #adb5bd;
+        border-radius: 0.5rem;
+        transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out, -webkit-transform 0.15s ease-in-out;
+        transition: transform 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+        transition: transform 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out, -webkit-transform 0.15s ease-in-out;
+      }
+      
+      .custom-switch .custom-control-input:checked ~ .custom-control-label::before {
+        background-color: #e91e63;
+        border-color: #e91e63;
+      }
+      
+      .custom-switch .custom-control-input:checked ~ .custom-control-label::after {
+        background-color: #fff;
+        -webkit-transform: translateX(0.75rem);
+        transform: translateX(0.75rem);
+      }
+      
+      .notification-time-selector {
+        background: #f8f9fa;
+        border-radius: 8px;
+        padding: 15px;
+        margin-top: 10px;
+      }
+      
+      .time-button {
+        margin: 2px;
+        border-radius: 20px;
+        padding: 5px 15px;
+        font-size: 12px;
+      }
+      
+      .time-button.active {
+        background-color: #e91e63;
+        border-color: #e91e63;
+      }
+      
+      .frequency-selector {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+        gap: 10px;
+        margin-top: 10px;
+      }
+      
+      .frequency-option {
+        padding: 10px;
+        border: 2px solid #e9ecef;
+        border-radius: 8px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+      
+      .frequency-option:hover {
+        border-color: #e91e63;
+        background-color: #fef7f7;
+      }
+      
+      .frequency-option.active {
+        border-color: #e91e63;
+        background-color: #e91e63;
+        color: white;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-custom fixed-top">
+      <div class="container">
+        <div class="navbar-nav mr-auto">
+          <a class="nav-link-custom" href="../home.html">Home</a>
+          <a class="nav-link-custom" href="../list_product.html">Danh sách</a>
+        </div>
+
+        <div class="navbar-brand-logo">
+          <img
+            src="../../assets/img/user/logo_NHAFLOWER.png"
+            alt="NHAFLOWER"
+            class="brand-circle-logo"
+          />
+        </div>
+
+        <div class="navbar-nav ml-auto">
+          <div class="nav-icon-wrapper">
+            <div
+              class="user-avatar"
+              title="Trang cá nhân"
+              onclick="window.location.href='dashboard.html'"
+            >
+              <i class="fas fa-user"></i>
+            </div>
+          </div>
+          <div class="nav-icon-wrapper">
+            <i
+              class="fas fa-shopping-bag nav-icon"
+              title="Giỏ hàng"
+              onclick="window.location.href='../shopping_cart.html'"
+            ></i>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <div class="row profile-container">
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+          <div id="sidebar-container"></div>
+        </div>
+
+        <!-- Notification Preferences Content -->
+        <div class="col-lg-8">
+          <div class="content-card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+              <h3>
+                <i class="fas fa-cog text-primary"></i> Cài đặt thông báo
+              </h3>
+              <div class="notification-actions">
+                <button class="btn btn-success btn-sm mr-2" onclick="saveAllPreferences()">
+                  <i class="fas fa-save"></i> Lưu cài đặt
+                </button>
+                <button class="btn btn-secondary btn-sm" onclick="resetToDefaults()">
+                  <i class="fas fa-undo"></i> Mặc định
+                </button>
+              </div>
+            </div>
+            <div class="card-body">
+              
+              <!-- Email Notifications -->
+              <div class="preference-card">
+                <div class="card-body">
+                  <div class="d-flex align-items-start">
+                    <div class="preference-icon">
+                      <i class="fas fa-envelope"></i>
+                    </div>
+                    <div class="flex-grow-1">
+                      <h6 class="font-weight-bold mb-2">Thông báo Email</h6>
+                      <p class="text-muted mb-3">Nhận thông báo qua email về đơn hàng và khuyến mãi</p>
+                      
+                      <div class="custom-control custom-switch mb-3">
+                        <input type="checkbox" class="custom-control-input" id="emailNotifications" checked>
+                        <label class="custom-control-label" for="emailNotifications">Bật thông báo email</label>
+                      </div>
+                      
+                      <div id="emailPreferences" style="margin-left: 20px;">
+                        <div class="form-check mb-2">
+                          <input class="form-check-input" type="checkbox" id="emailOrderUpdates" checked>
+                          <label class="form-check-label text-sm" for="emailOrderUpdates">
+                            Cập nhật trạng thái đơn hàng
+                          </label>
+                        </div>
+                        <div class="form-check mb-2">
+                          <input class="form-check-input" type="checkbox" id="emailPromotions" checked>
+                          <label class="form-check-label text-sm" for="emailPromotions">
+                            Thông tin khuyến mãi và ưu đãi
+                          </label>
+                        </div>
+                        <div class="form-check mb-2">
+                          <input class="form-check-input" type="checkbox" id="emailNewProducts">
+                          <label class="form-check-label text-sm" for="emailNewProducts">
+                            Sản phẩm mới và xu hướng
+                          </label>
+                        </div>
+                        <div class="form-check mb-2">
+                          <input class="form-check-input" type="checkbox" id="emailWeeklyDigest">
+                          <label class="form-check-label text-sm" for="emailWeeklyDigest">
+                            Tổng hợp hàng tuần
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Push Notifications -->
+              <div class="preference-card">
+                <div class="card-body">
+                  <div class="d-flex align-items-start">
+                    <div class="preference-icon" style="background: linear-gradient(135deg, #28a745, #20c997);">
+                      <i class="fas fa-bell"></i>
+                    </div>
+                    <div class="flex-grow-1">
+                      <h6 class="font-weight-bold mb-2">Thông báo trên Web</h6>
+                      <p class="text-muted mb-3">Hiển thị thông báo ngay trên website khi bạn đang truy cập</p>
+                      
+                      <div class="custom-control custom-switch mb-3">
+                        <input type="checkbox" class="custom-control-input" id="pushNotifications" checked>
+                        <label class="custom-control-label" for="pushNotifications">Bật thông báo web</label>
+                      </div>
+                      
+                      <div id="pushPreferences" style="margin-left: 20px;">
+                        <div class="form-check mb-2">
+                          <input class="form-check-input" type="checkbox" id="pushOrderUpdates" checked>
+                          <label class="form-check-label text-sm" for="pushOrderUpdates">
+                            Cập nhật đơn hàng
+                          </label>
+                        </div>
+                        <div class="form-check mb-2">
+                          <input class="form-check-input" type="checkbox" id="pushPromotions" checked>
+                          <label class="form-check-label text-sm" for="pushPromotions">
+                            Khuyến mãi đặc biệt
+                          </label>
+                        </div>
+                        <div class="form-check mb-2">
+                          <input class="form-check-input" type="checkbox" id="pushDeliveryUpdates" checked>
+                          <label class="form-check-label text-sm" for="pushDeliveryUpdates">
+                            Thông tin giao hàng
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- SMS Notifications -->
+              <div class="preference-card">
+                <div class="card-body">
+                  <div class="d-flex align-items-start">
+                    <div class="preference-icon" style="background: linear-gradient(135deg, #ffc107, #fd7e14);">
+                      <i class="fas fa-sms"></i>
+                    </div>
+                    <div class="flex-grow-1">
+                      <h6 class="font-weight-bold mb-2">Thông báo SMS</h6>
+                      <p class="text-muted mb-3">Nhận tin nhắn SMS cho các thông báo quan trọng</p>
+                      
+                      <div class="custom-control custom-switch mb-3">
+                        <input type="checkbox" class="custom-control-input" id="smsNotifications">
+                        <label class="custom-control-label" for="smsNotifications">Bật thông báo SMS</label>
+                      </div>
+                      
+                      <div id="smsPreferences" style="margin-left: 20px; display: none;">
+                        <div class="form-group mb-3">
+                          <label class="text-sm font-weight-bold">Số điện thoại nhận SMS</label>
+                          <input type="tel" class="form-control form-control-sm" id="smsPhoneNumber" placeholder="0901234567">
+                        </div>
+                        <div class="form-check mb-2">
+                          <input class="form-check-input" type="checkbox" id="smsOrderConfirm" checked>
+                          <label class="form-check-label text-sm" for="smsOrderConfirm">
+                            Xác nhận đơn hàng
+                          </label>
+                        </div>
+                        <div class="form-check mb-2">
+                          <input class="form-check-input" type="checkbox" id="smsDeliveryStatus" checked>
+                          <label class="form-check-label text-sm" for="smsDeliveryStatus">
+                            Trạng thái giao hàng
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Notification Frequency -->
+              <div class="preference-card">
+                <div class="card-body">
+                  <div class="d-flex align-items-start">
+                    <div class="preference-icon" style="background: linear-gradient(135deg, #6f42c1, #e83e8c);">
+                      <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="flex-grow-1">
+                      <h6 class="font-weight-bold mb-2">Tần suất thông báo</h6>
+                      <p class="text-muted mb-3">Tùy chỉnh tần suất nhận thông báo khuyến mãi</p>
+                      
+                      <div class="frequency-selector">
+                        <div class="frequency-option active" data-frequency="realtime">
+                          <i class="fas fa-bolt d-block mb-2"></i>
+                          <div class="text-sm">Ngay lập tức</div>
+                        </div>
+                        <div class="frequency-option" data-frequency="daily">
+                          <i class="fas fa-calendar-day d-block mb-2"></i>
+                          <div class="text-sm">Hàng ngày</div>
+                        </div>
+                        <div class="frequency-option" data-frequency="weekly">
+                          <i class="fas fa-calendar-week d-block mb-2"></i>
+                          <div class="text-sm">Hàng tuần</div>
+                        </div>
+                        <div class="frequency-option" data-frequency="monthly">
+                          <i class="fas fa-calendar-alt d-block mb-2"></i>
+                          <div class="text-sm">Hàng tháng</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Quiet Hours -->
+              <div class="preference-card">
+                <div class="card-body">
+                  <div class="d-flex align-items-start">
+                    <div class="preference-icon" style="background: linear-gradient(135deg, #6c757d, #495057);">
+                      <i class="fas fa-moon"></i>
+                    </div>
+                    <div class="flex-grow-1">
+                      <h6 class="font-weight-bold mb-2">Giờ yên tĩnh</h6>
+                      <p class="text-muted mb-3">Không nhận thông báo trong khoảng thời gian này</p>
+                      
+                      <div class="custom-control custom-switch mb-3">
+                        <input type="checkbox" class="custom-control-input" id="quietHours">
+                        <label class="custom-control-label" for="quietHours">Bật giờ yên tĩnh</label>
+                      </div>
+                      
+                      <div id="quietHoursSettings" style="margin-left: 20px; display: none;">
+                        <div class="row">
+                          <div class="col-md-6">
+                            <div class="form-group">
+                              <label class="text-sm font-weight-bold">Từ giờ</label>
+                              <input type="time" class="form-control form-control-sm" id="quietStartTime" value="22:00">
+                            </div>
+                          </div>
+                          <div class="col-md-6">
+                            <div class="form-group">
+                              <label class="text-sm font-weight-bold">Đến giờ</label>
+                              <input type="time" class="form-control form-control-sm" id="quietEndTime" value="08:00">
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Notification Preview -->
+              <div class="preference-card">
+                <div class="card-body">
+                  <div class="d-flex align-items-start">
+                    <div class="preference-icon" style="background: linear-gradient(135deg, #17a2b8, #138496);">
+                      <i class="fas fa-eye"></i>
+                    </div>
+                    <div class="flex-grow-1">
+                      <h6 class="font-weight-bold mb-2">Xem trước thông báo</h6>
+                      <p class="text-muted mb-3">Kiểm tra giao diện thông báo sẽ hiển thị</p>
+                      
+                      <div class="btn-group" role="group">
+                        <button class="btn btn-outline-primary btn-sm" onclick="previewEmailNotification()">
+                          <i class="fas fa-envelope mr-1"></i>Email
+                        </button>
+                        <button class="btn btn-outline-success btn-sm" onclick="previewPushNotification()">
+                          <i class="fas fa-bell mr-1"></i>Web
+                        </button>
+                        <button class="btn btn-outline-warning btn-sm" onclick="previewSMSNotification()">
+                          <i class="fas fa-sms mr-1"></i>SMS
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../../assets/vendor/jquery/jquery.min.js"></script>
+    <script src="../../assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.32/dist/sweetalert2.all.min.js"></script>
+    
+    <script src="../../assets/js/user/profile/profile-base.js"></script>
+    <script src="../../assets/js/user/profile/sidebar-loader.js"></script>
+    
+    <script>
+      $(document).ready(function() {
+        console.log('Notification Preferences page loading...');
+        
+        const userData = JSON.parse(localStorage.getItem("nhaflower_user") || "null");
+        const baseManager = new BaseProfileManager();
+        baseManager.updateSidebarInfo(userData);
+        
+        // Load user preferences
+        loadNotificationPreferences();
+        
+        // Setup event listeners
+        setupEventListeners();
+        
+        console.log('Notification Preferences loaded successfully!');
+      });
+      
+      function setupEventListeners() {
+        // Main notification toggles
+        $('#emailNotifications').change(function() {
+          $('#emailPreferences').toggle(this.checked);
+        });
+        
+        $('#pushNotifications').change(function() {
+          $('#pushPreferences').toggle(this.checked);
+        });
+        
+        $('#smsNotifications').change(function() {
+          $('#smsPreferences').toggle(this.checked);
+        });
+        
+        $('#quietHours').change(function() {
+          $('#quietHoursSettings').toggle(this.checked);
+        });
+        
+        // Frequency selector
+        $('.frequency-option').click(function() {
+          $('.frequency-option').removeClass('active');
+          $(this).addClass('active');
+        });
+      }
+      
+      function loadNotificationPreferences() {
+        // Load from localStorage or API
+        const preferences = JSON.parse(localStorage.getItem('nhaflower_notification_preferences') || '{}');
+        
+        // Apply saved preferences
+        $('#emailNotifications').prop('checked', preferences.emailNotifications !== false);
+        $('#pushNotifications').prop('checked', preferences.pushNotifications !== false);
+        $('#smsNotifications').prop('checked', preferences.smsNotifications === true);
+        $('#quietHours').prop('checked', preferences.quietHours === true);
+        
+        // Sub preferences
+        $('#emailOrderUpdates').prop('checked', preferences.emailOrderUpdates !== false);
+        $('#emailPromotions').prop('checked', preferences.emailPromotions !== false);
+        $('#emailNewProducts').prop('checked', preferences.emailNewProducts === true);
+        $('#emailWeeklyDigest').prop('checked', preferences.emailWeeklyDigest === true);
+        
+        $('#pushOrderUpdates').prop('checked', preferences.pushOrderUpdates !== false);
+        $('#pushPromotions').prop('checked', preferences.pushPromotions !== false);
+        $('#pushDeliveryUpdates').prop('checked', preferences.pushDeliveryUpdates !== false);
+        
+        $('#smsOrderConfirm').prop('checked', preferences.smsOrderConfirm !== false);
+        $('#smsDeliveryStatus').prop('checked', preferences.smsDeliveryStatus !== false);
+        
+        if (preferences.smsPhoneNumber) {
+          $('#smsPhoneNumber').val(preferences.smsPhoneNumber);
+        }
+        
+        if (preferences.quietStartTime) {
+          $('#quietStartTime').val(preferences.quietStartTime);
+        }
+        
+        if (preferences.quietEndTime) {
+          $('#quietEndTime').val(preferences.quietEndTime);
+        }
+        
+        if (preferences.frequency) {
+          $('.frequency-option').removeClass('active');
+          $(`.frequency-option[data-frequency="${preferences.frequency}"]`).addClass('active');
+        }
+        
+        // Trigger change events to show/hide sections
+        $('#emailNotifications').trigger('change');
+        $('#pushNotifications').trigger('change');
+        $('#smsNotifications').trigger('change');
+        $('#quietHours').trigger('change');
+      }
+      
+      function saveAllPreferences() {
+        const preferences = {
+          emailNotifications: $('#emailNotifications').prop('checked'),
+          emailOrderUpdates: $('#emailOrderUpdates').prop('checked'),
+          emailPromotions: $('#emailPromotions').prop('checked'),
+          emailNewProducts: $('#emailNewProducts').prop('checked'),
+          emailWeeklyDigest: $('#emailWeeklyDigest').prop('checked'),
+          
+          pushNotifications: $('#pushNotifications').prop('checked'),
+          pushOrderUpdates: $('#pushOrderUpdates').prop('checked'),
+          pushPromotions: $('#pushPromotions').prop('checked'),
+          pushDeliveryUpdates: $('#pushDeliveryUpdates').prop('checked'),
+          
+          smsNotifications: $('#smsNotifications').prop('checked'),
+          smsPhoneNumber: $('#smsPhoneNumber').val(),
+          smsOrderConfirm: $('#smsOrderConfirm').prop('checked'),
+          smsDeliveryStatus: $('#smsDeliveryStatus').prop('checked'),
+          
+          quietHours: $('#quietHours').prop('checked'),
+          quietStartTime: $('#quietStartTime').val(),
+          quietEndTime: $('#quietEndTime').val(),
+          
+          frequency: $('.frequency-option.active').data('frequency') || 'realtime',
+          
+          lastUpdated: new Date().toISOString()
+        };
+        
+        // Save to localStorage (in production, send to API)
+        localStorage.setItem('nhaflower_notification_preferences', JSON.stringify(preferences));
+        
+        Swal.fire({
+          icon: 'success',
+          title: 'Đã lưu!',
+          text: 'Cài đặt thông báo của bạn đã được lưu thành công.',
+          timer: 2000,
+          timerProgressBar: true,
+          showConfirmButton: false
+        });
+      }
+      
+      function resetToDefaults() {
+        Swal.fire({
+          title: 'Khôi phục mặc định?',
+          text: 'Tất cả cài đặt thông báo sẽ được đặt về mặc định.',
+          icon: 'question',
+          showCancelButton: true,
+          confirmButtonColor: '#e91e63',
+          cancelButtonColor: '#6c757d',
+          confirmButtonText: 'Khôi phục',
+          cancelButtonText: 'Hủy'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            // Reset all settings to default
+            localStorage.removeItem('nhaflower_notification_preferences');
+            
+            // Reset form
+            $('#emailNotifications').prop('checked', true);
+            $('#pushNotifications').prop('checked', true);
+            $('#smsNotifications').prop('checked', false);
+            $('#quietHours').prop('checked', false);
+            
+            $('#emailOrderUpdates').prop('checked', true);
+            $('#emailPromotions').prop('checked', true);
+            $('#emailNewProducts').prop('checked', false);
+            $('#emailWeeklyDigest').prop('checked', false);
+            
+            $('#pushOrderUpdates').prop('checked', true);
+            $('#pushPromotions').prop('checked', true);
+            $('#pushDeliveryUpdates').prop('checked', true);
+            
+            $('#smsOrderConfirm').prop('checked', true);
+            $('#smsDeliveryStatus').prop('checked', true);
+            
+            $('#smsPhoneNumber').val('');
+            $('#quietStartTime').val('22:00');
+            $('#quietEndTime').val('08:00');
+            
+            $('.frequency-option').removeClass('active');
+            $('.frequency-option[data-frequency="realtime"]').addClass('active');
+            
+            // Trigger change events
+            $('#emailNotifications').trigger('change');
+            $('#pushNotifications').trigger('change');
+            $('#smsNotifications').trigger('change');
+            $('#quietHours').trigger('change');
+            
+            Swal.fire({
+              icon: 'success',
+              title: 'Đã khôi phục!',
+              text: 'Cài đặt đã được khôi phục về mặc định.',
+              timer: 2000,
+              timerProgressBar: true,
+              showConfirmButton: false
+            });
+          }
+        });
+      }
+      
+      function previewEmailNotification() {
+        Swal.fire({
+          title: 'Xem trước Email',
+          html: `
+            <div style="max-width: 400px; margin: 0 auto; text-align: left;">
+              <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; border-left: 4px solid #e91e63;">
+                <div style="font-weight: bold; color: #2c3e50; margin-bottom: 8px;">
+                  <i class="fas fa-shopping-cart" style="color: #e91e63; margin-right: 8px;"></i>
+                  Đơn hàng #NH2025001 đã được xác nhận
+                </div>
+                <div style="color: #6c757d; font-size: 14px; margin-bottom: 10px;">
+                  Cảm ơn bạn đã đặt hàng tại NHAFLOWER! Đơn hàng của bạn đang được chuẩn bị.
+                </div>
+                <div style="color: #6c757d; font-size: 12px;">
+                  <i class="fas fa-clock" style="margin-right: 4px;"></i>
+                  2 phút trước
+                </div>
+              </div>
+            </div>
+          `,
+          icon: 'info',
+          confirmButtonText: 'Đóng',
+          confirmButtonColor: '#e91e63'
+        });
+      }
+      
+      function previewPushNotification() {
+        // Create a mock notification toast
+        const notification = $(`
+          <div class="alert alert-info alert-dismissible fade show" style="position: fixed; top: 20px; right: 20px; z-index: 9999; min-width: 350px; border-left: 4px solid #e91e63;">
+            <div class="d-flex align-items-start">
+              <div style="width: 40px; height: 40px; background: #e91e63; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; margin-right: 12px;">
+                <i class="fas fa-gift"></i>
+              </div>
+              <div>
+                <div style="font-weight: bold;">🎉 Khuyến mãi đặc biệt!</div>
+                <div style="font-size: 14px;">Giảm 20% cho tất cả hoa hồng. Áp dụng từ hôm nay!</div>
+                <div style="font-size: 12px; color: #6c757d; margin-top: 4px;">Vừa xong</div>
+              </div>
+            </div>
+            <button type="button" class="close" data-dismiss="alert">
+              <span>&times;</span>
+            </button>
+          </div>
+        `);
+        
+        $('body').append(notification);
+        
+        setTimeout(() => {
+          notification.fadeOut(() => notification.remove());
+        }, 5000);
+      }
+      
+      function previewSMSNotification() {
+        Swal.fire({
+          title: 'Xem trước SMS',
+          html: `
+            <div style="max-width: 300px; margin: 0 auto;">
+              <div style="background: #e3f2fd; padding: 15px; border-radius: 18px; text-align: left; font-family: monospace; font-size: 14px; line-height: 1.4;">
+                <div style="font-weight: bold; margin-bottom: 8px;">NHAFLOWER</div>
+                <div>Đơn hàng #NH2025001 đang được giao đến địa chỉ của bạn. Dự kiến giao hàng trong 30 phút.</div>
+                <div style="font-size: 12px; color: #666; margin-top: 8px;">15:30</div>
+              </div>
+            </div>
+          `,
+          icon: 'info',
+          confirmButtonText: 'Đóng',
+          confirmButtonColor: '#e91e63'
+        });
+      }
+    </script>
+  </body>
+</html>

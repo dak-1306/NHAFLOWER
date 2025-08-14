@@ -7,6 +7,11 @@ $(document).ready(function () {
     console.log("General Settings page initializing...");
     loadSettings();
     setupEventListeners();
+    
+    // Show page ready indicator
+    setTimeout(function() {
+        console.log("Settings page fully loaded and ready");
+    }, 1000);
 });
 
 /**
@@ -58,18 +63,20 @@ function loadSettings() {
     console.log("Loading settings...");
     
     $.ajax({
-        url: '../api/settings.php',
+        url: '../api/settings.php?category=general',
         method: 'GET',
-        data: { action: 'get_general' },
         dataType: 'json',
         success: function(response) {
+            console.log('Load settings response:', response);
             if (response.success) {
+                console.log('Populating form with data:', response.data);
                 populateForm(response.data);
             } else {
                 console.error('Error loading settings:', response.message);
             }
         },
         error: function(xhr, status, error) {
+            console.error('Load settings AJAX error:', xhr.responseText);
             console.error('Error loading settings:', error);
             // Load default settings if API fails
             loadDefaultSettings();
@@ -81,35 +88,39 @@ function loadSettings() {
  * Populate form with settings data
  */
 function populateForm(data) {
-    if (data.website) {
-        $('#storeName').val(data.website.name || 'NHAFLOWER');
-        $('#storeSlogan').val(data.website.slogan || 'Hoa tươi - Tình yêu thương');
-        $('#storeDescription').val(data.website.description || '');
-        $('#contactEmail').val(data.website.email || '');
-        $('#contactPhone').val(data.website.phone || '');
-        $('#storeAddress').val(data.website.address || '');
-    }
+    // Website settings
+    $('#storeName').val(data.site_name || 'NHAFLOWER');
+    $('#storeSlogan').val(data.site_slogan || 'Hoa tươi - Tình yêu thương');
+    $('#storeDescription').val(data.site_description || '');
+    $('#contactEmail').val(data.admin_email || '');
+    $('#contactPhone').val(data.phone || '');
+    $('#storeAddress').val(data.address || '');
     
-    if (data.display) {
-        $('#colorTheme').val(data.display.theme || 'pink');
-        $('#productsPerPage').val(data.display.products_per_page || '12');
-        $('#showStock').prop('checked', data.display.show_stock !== false);
-        $('#showReviews').prop('checked', data.display.show_reviews !== false);
-        $('#showWishlist').prop('checked', data.display.show_wishlist !== false);
-    }
+    // Display settings
+    $('#colorTheme').val(data.primary_color === '#e91e63' ? 'pink' : 'blue');
+    $('#productsPerPage').val(data.products_per_page || '12');
+    $('#showStock').prop('checked', data.show_stock !== 'false');
+    $('#showReviews').prop('checked', data.show_reviews !== 'false');
+    $('#showWishlist').prop('checked', data.show_wishlist !== 'false');
     
-    if (data.seo) {
-        $('#metaTitle').val(data.seo.title || '');
-        $('#metaDescription').val(data.seo.description || '');
-        $('#metaKeywords').val(data.seo.keywords || '');
-    }
+    // SEO settings
+    $('#metaTitle').val(data.meta_title || '');
+    $('#metaDescription').val(data.meta_description || '');
+    $('#metaKeywords').val(data.meta_keywords || '');
     
-    if (data.security) {
-        $('#sessionTimeout').val(data.security.session_timeout || 30);
-        $('#maxLoginAttempts').val(data.security.max_login_attempts || 5);
-        $('#enableTwoFactor').prop('checked', data.security.two_factor === true);
-        $('#forceHttps').prop('checked', data.security.force_https !== false);
-        $('#enableMaintenanceMode').prop('checked', data.security.maintenance_mode === true);
+    // Security settings
+    $('#sessionTimeout').val(data.session_timeout || 30);
+    $('#maxLoginAttempts').val(data.max_login_attempts || 5);
+    $('#enableTwoFactor').prop('checked', data.enable_2fa === '1');
+    $('#forceHttps').prop('checked', data.force_https === '1');
+    $('#enableMaintenanceMode').prop('checked', data.maintenance_mode === '1');
+    
+    // Update logo/favicon previews if paths exist
+    if (data.logo_path) {
+        $('#logoPreview').attr('src', '../' + data.logo_path);
+    }
+    if (data.favicon_path) {
+        $('#faviconPreview').attr('src', '../' + data.favicon_path);
     }
 }
 
@@ -119,33 +130,26 @@ function populateForm(data) {
 function loadDefaultSettings() {
     console.log("Loading default settings...");
     const defaults = {
-        website: {
-            name: 'NHAFLOWER',
-            slogan: 'Hoa tươi - Tình yêu thương',
-            description: 'NHAFLOWER - Cửa hàng hoa tươi hàng đầu tại Việt Nam.',
-            email: 'contact@nhaflower.com',
-            phone: '0901234567',
-            address: '123 Đường Nguyễn Huệ, Quận 1, TP. Hồ Chí Minh'
-        },
-        display: {
-            theme: 'pink',
-            products_per_page: 12,
-            show_stock: true,
-            show_reviews: true,
-            show_wishlist: true
-        },
-        seo: {
-            title: 'NHAFLOWER - Hoa tươi đẹp, giao hàng tận nơi',
-            description: 'Cửa hàng hoa tươi NHAFLOWER - Chuyên cung cấp hoa tươi đẹp, chất lượng cao',
-            keywords: 'hoa tươi, cửa hàng hoa, giao hoa tận nơi'
-        },
-        security: {
-            session_timeout: 30,
-            max_login_attempts: 5,
-            two_factor: false,
-            force_https: true,
-            maintenance_mode: false
-        }
+        site_name: 'NHAFLOWER',
+        site_slogan: 'Hoa tươi - Tình yêu thương',
+        site_description: 'NHAFLOWER - Cửa hàng hoa tươi hàng đầu tại Việt Nam.',
+        admin_email: 'contact@nhaflower.com',
+        phone: '0901234567',
+        address: '123 Đường Nguyễn Huệ, Quận 1, TP. Hồ Chí Minh',
+        primary_color: '#e91e63',
+        secondary_color: '#6c757d',
+        products_per_page: '12',
+        show_stock: '1',
+        show_reviews: '1', 
+        show_wishlist: '1',
+        meta_title: 'NHAFLOWER - Hoa tươi đẹp, giao hàng tận nơi',
+        meta_description: 'Cửa hàng hoa tươi NHAFLOWER - Chuyên cung cấp hoa tươi đẹp, chất lượng cao',
+        meta_keywords: 'hoa tươi, cửa hàng hoa, giao hoa tận nơi',
+        session_timeout: '30',
+        max_login_attempts: '5',
+        enable_2fa: '0',
+        force_https: '1',
+        maintenance_mode: '0'
     };
     
     populateForm(defaults);
@@ -178,6 +182,7 @@ function saveAllSettings() {
  */
 function autoSaveSettings() {
     const formData = collectFormData();
+    console.log('Auto-saving settings:', formData);
     
     // Show auto-save indicator
     showAutoSaveIndicator();
@@ -186,17 +191,20 @@ function autoSaveSettings() {
         url: '../api/settings.php',
         method: 'POST',
         data: {
-            action: 'save_general',
-            settings: JSON.stringify(formData)
+            action: 'save',
+            category: 'general',
+            settings: formData
         },
         dataType: 'json',
         success: function(response) {
+            console.log('Auto-save response:', response);
             hideAutoSaveIndicator(true);
             if (!response.success) {
                 console.error('Auto-save failed:', response.message);
             }
         },
         error: function(xhr, status, error) {
+            console.error('Auto-save AJAX error:', xhr.responseText);
             hideAutoSaveIndicator(false);
             console.error('Auto-save error:', error);
         }
@@ -208,33 +216,33 @@ function autoSaveSettings() {
  */
 function collectFormData() {
     return {
-        website: {
-            name: $('#storeName').val(),
-            slogan: $('#storeSlogan').val(),
-            description: $('#storeDescription').val(),
-            email: $('#contactEmail').val(),
-            phone: $('#contactPhone').val(),
-            address: $('#storeAddress').val()
-        },
-        display: {
-            theme: $('#colorTheme').val(),
-            products_per_page: parseInt($('#productsPerPage').val()),
-            show_stock: $('#showStock').is(':checked'),
-            show_reviews: $('#showReviews').is(':checked'),
-            show_wishlist: $('#showWishlist').is(':checked')
-        },
-        seo: {
-            title: $('#metaTitle').val(),
-            description: $('#metaDescription').val(),
-            keywords: $('#metaKeywords').val()
-        },
-        security: {
-            session_timeout: parseInt($('#sessionTimeout').val()),
-            max_login_attempts: parseInt($('#maxLoginAttempts').val()),
-            two_factor: $('#enableTwoFactor').is(':checked'),
-            force_https: $('#forceHttps').is(':checked'),
-            maintenance_mode: $('#enableMaintenanceMode').is(':checked')
-        }
+        // Website settings
+        site_name: $('#storeName').val(),
+        site_slogan: $('#storeSlogan').val(), 
+        site_description: $('#storeDescription').val(),
+        admin_email: $('#contactEmail').val(),
+        phone: $('#contactPhone').val(),
+        address: $('#storeAddress').val(),
+        
+        // Display settings
+        primary_color: $('#colorTheme').val() === 'pink' ? '#e91e63' : '#007bff',
+        secondary_color: '#6c757d',
+        products_per_page: $('#productsPerPage').val(),
+        show_stock: $('#showStock').is(':checked') ? '1' : '0',
+        show_reviews: $('#showReviews').is(':checked') ? '1' : '0',
+        show_wishlist: $('#showWishlist').is(':checked') ? '1' : '0',
+        
+        // SEO settings
+        meta_title: $('#metaTitle').val(),
+        meta_description: $('#metaDescription').val(),
+        meta_keywords: $('#metaKeywords').val(),
+        
+        // Security settings
+        session_timeout: $('#sessionTimeout').val(),
+        max_login_attempts: $('#maxLoginAttempts').val(),
+        enable_2fa: $('#enableTwoFactor').is(':checked') ? '1' : '0',
+        force_https: $('#forceHttps').is(':checked') ? '1' : '0',
+        maintenance_mode: $('#enableMaintenanceMode').is(':checked') ? '1' : '0'
     };
 }
 
@@ -244,15 +252,21 @@ function collectFormData() {
 function performSave(formData, isUpload = false) {
     let url = '../api/settings.php';
     let data = {
-        action: 'save_general',
-        settings: JSON.stringify(formData)
+        action: 'save',
+        category: 'general',
+        settings: formData
     };
     
     // Handle file uploads
     if (isUpload) {
         let uploadData = new FormData();
-        uploadData.append('action', 'save_general');
-        uploadData.append('settings', JSON.stringify(formData));
+        uploadData.append('action', 'save');
+        uploadData.append('category', 'general');
+        
+        // Add each setting individually for FormData
+        for (const key in formData) {
+            uploadData.append('settings[' + key + ']', formData[key]);
+        }
         
         if ($('#logoUpload')[0].files.length > 0) {
             uploadData.append('logo', $('#logoUpload')[0].files[0]);
