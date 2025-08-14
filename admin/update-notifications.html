@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Admin Pages - NHAFLOWER</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #f8f9fc; font-family: 'Nunito', sans-serif; }
+        .page-header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px 0; margin-bottom: 30px; }
+        .update-card { border: none; border-radius: 15px; box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15); }
+        .status { padding: 5px 10px; border-radius: 4px; color: white; font-weight: bold; }
+        .status.success { background: #28a745; }
+        .status.error { background: #dc3545; }
+        .status.processing { background: #ffc107; color: #212529; }
+    </style>
+</head>
+<body>
+    <div class="page-header">
+        <div class="container">
+            <h1 class="display-6 mb-0">
+                <i class="fas fa-tools me-3"></i>
+                Cập nhật Admin Pages
+            </h1>
+            <p class="lead mb-0">Thêm dropdown thông báo cho tất cả trang admin</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <div class="card update-card">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">
+                            <i class="fas fa-list me-2"></i>
+                            Danh sách trang Admin cần cập nhật
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <button class="btn btn-success" onclick="updateAllPages()">
+                                <i class="fas fa-magic me-2"></i>Cập nhật tất cả
+                            </button>
+                            <button class="btn btn-info ms-2" onclick="testNotificationDropdown()">
+                                <i class="fas fa-test-tube me-2"></i>Test Dropdown
+                            </button>
+                        </div>
+                        
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-primary">
+                                    <tr>
+                                        <th>Trang</th>
+                                        <th>Đường dẫn</th>
+                                        <th>Trạng thái</th>
+                                        <th>Thao tác</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="pagesList">
+                                    <!-- Will be populated by JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card update-card">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0">
+                            <i class="fas fa-code me-2"></i>
+                            Template Dropdown Code
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="text-muted">Code sẽ được thêm vào các trang admin:</p>
+                        <pre class="bg-light p-3 rounded"><code id="dropdownCode"><!-- Đang tải template code... --></code></pre>
+                        <button class="btn btn-outline-primary btn-sm" onclick="copyCode()">
+                            <i class="fas fa-copy me-1"></i>Copy Code
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card update-card">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0">
+                            <i class="fas fa-eye me-2"></i>
+                            Preview Dropdown
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="text-muted">Preview của notification dropdown:</p>
+                        <div id="dropdownPreview" class="border p-3 bg-light rounded">
+                            <!-- Dropdown preview sẽ hiển thị ở đây -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Danh sách các trang admin cần cập nhật
+        const adminPages = [
+            { name: 'Dashboard', path: 'index.html', status: 'updated' },
+            { name: 'Orders', path: 'orders.html', status: 'updated' },            { name: 'Products', path: 'products.html', status: 'updated' },
+            { name: 'Categories', path: 'categories.html', status: 'updated' },
+            { name: 'Customers', path: 'customers.html', status: 'updated' },
+            { name: 'Reports', path: 'reports.html', status: 'updated' },
+            { name: 'Settings General', path: 'settings-general.html', status: 'updated' },
+            { name: 'Settings Payment', path: 'settings-payment.html', status: 'updated' },
+            { name: 'Settings Shipping', path: 'settings-shipping.html', status: 'updated' }
+        ];
+
+        // Template dropdown code
+        const dropdownTemplate = `                <!-- Dropdown - Alerts -->
+                <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="alertsDropdown">
+                  <h6 class="dropdown-header">
+                    Trung tâm Thông báo
+                  </h6>
+                  <a class="dropdown-item d-flex align-items-center" href="notifications.html">
+                    <div class="mr-3">
+                      <div class="icon-circle bg-primary">
+                        <i class="fas fa-bell text-white"></i>
+                      </div>
+                    </div>
+                    <div>
+                      <div class="small text-gray-500">Hôm nay</div>
+                      <span class="font-weight-bold">Bạn có thông báo mới!</span>
+                    </div>
+                  </a>
+                  <a class="dropdown-item d-flex align-items-center" href="notifications.html">
+                    <div class="mr-3">
+                      <div class="icon-circle bg-success">
+                        <i class="fas fa-info text-white"></i>
+                      </div>
+                    </div>
+                    <div>
+                      <div class="small text-gray-500">Hôm qua</div>
+                      <span class="font-weight-bold">Hệ thống đã được cập nhật</span>
+                    </div>
+                  </a>
+                  <a class="dropdown-item text-center small text-gray-500" href="notifications.html">
+                    <i class="fas fa-eye"></i> Xem tất cả thông báo
+                  </a>
+                </div>`;
+
+        $(document).ready(function() {
+            renderPagesList();
+            displayDropdownCode();
+            createDropdownPreview();
+        });
+
+        function renderPagesList() {
+            const tbody = $('#pagesList');
+            tbody.empty();
+            
+            adminPages.forEach((page, index) => {
+                const statusClass = page.status === 'updated' ? 'success' : 
+                                   page.status === 'error' ? 'error' : 'processing';
+                const statusText = page.status === 'updated' ? 'Đã cập nhật' : 
+                                  page.status === 'error' ? 'Lỗi' : 'Chưa cập nhật';
+                
+                tbody.append(`
+                    <tr>
+                        <td><strong>${page.name}</strong></td>
+                        <td><code>${page.path}</code></td>
+                        <td><span class="status ${statusClass}">${statusText}</span></td>
+                        <td>
+                            <div class="btn-group" role="group">
+                                <button class="btn btn-sm btn-outline-primary" onclick="updateSinglePage(${index})">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <a href="${page.path}" target="_blank" class="btn btn-sm btn-outline-success">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a href="notifications.html" target="_blank" class="btn btn-sm btn-outline-info">
+                                    <i class="fas fa-bell"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                `);
+            });
+        }
+
+        function displayDropdownCode() {
+            document.getElementById('dropdownCode').textContent = dropdownTemplate;
+        }
+
+        function createDropdownPreview() {
+            const previewHTML = `
+                <div class="dropdown-menu dropdown-menu-right shadow show position-static" style="width: 300px;">
+                    <h6 class="dropdown-header">
+                        Trung tâm Thông báo
+                    </h6>
+                    <a class="dropdown-item d-flex align-items-center" href="notifications.html">
+                        <div class="mr-3">
+                            <div class="icon-circle bg-primary" style="width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-bell text-white"></i>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="small text-muted">Hôm nay</div>
+                            <span class="font-weight-bold">Bạn có thông báo mới!</span>
+                        </div>
+                    </a>
+                    <a class="dropdown-item d-flex align-items-center" href="notifications.html">
+                        <div class="mr-3">
+                            <div class="icon-circle bg-success" style="width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-info text-white"></i>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="small text-muted">Hôm qua</div>
+                            <span class="font-weight-bold">Hệ thống đã được cập nhật</span>
+                        </div>
+                    </a>
+                    <a class="dropdown-item text-center small text-muted" href="notifications.html">
+                        <i class="fas fa-eye"></i> Xem tất cả thông báo
+                    </a>
+                </div>
+            `;
+            
+            document.getElementById('dropdownPreview').innerHTML = previewHTML;
+        }
+
+        function updateAllPages() {
+            alert('Tính năng này sẽ cập nhật tất cả trang admin. Hiện tại cần cập nhật thủ công từng trang.');
+            
+            // Hiển thị hướng dẫn
+            const instructions = `
+Để cập nhật tất cả trang admin:
+
+1. Mở từng file .html trong thư mục admin/
+2. Tìm dòng có class="nav-item dropdown no-arrow mx-1" với icon bell
+3. Thay thế phần </a></li> bằng code template ở trên
+4. Lưu file và test
+
+Hoặc copy code từ index.html và orders.html đã được cập nhật.
+            `;
+            
+            console.log(instructions);
+            
+            // Cập nhật trạng thái visual
+            adminPages.forEach(page => {
+                if (page.status === 'pending') {
+                    page.status = 'processing';
+                }
+            });
+            renderPagesList();
+        }
+
+        function updateSinglePage(index) {
+            const page = adminPages[index];
+            alert(`Đang cập nhật ${page.name}...\n\nVui lòng:\n1. Mở file ${page.path}\n2. Thêm dropdown code\n3. Lưu file`);
+            
+            page.status = 'processing';
+            renderPagesList();
+        }
+
+        function testNotificationDropdown() {
+            window.open('notifications.html', '_blank');
+        }
+
+        function copyCode() {
+            navigator.clipboard.writeText(dropdownTemplate).then(() => {
+                alert('Code đã được copy! Paste vào file HTML cần cập nhật.');
+            }).catch(() => {
+                alert('Không thể copy. Vui lòng copy thủ công từ khung code.');
+            });
+        }
+    </script>
+</body>
+</html>
