@@ -4,9 +4,11 @@
  * API thống kê và báo cáo cho admin dashboard
  */
 
-// Set error reporting for debugging
+// Clean output buffer and disable error display
+ob_start();
 error_reporting(E_ALL);
 ini_set('display_errors', 0);
+ini_set('log_errors', 1);
 
 header('Content-Type: application/json; charset=utf-8');
 header('Access-Control-Allow-Origin: *');
@@ -15,19 +17,25 @@ header('Access-Control-Allow-Headers: Content-Type, Authorization');
 
 // Handle preflight requests
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    ob_end_clean();
     exit(0);
 }
 
-include_once __DIR__ . '/config/connection.php';
-
-$action = $_GET['action'] ?? '';
+// Initialize response
 $response = ['success' => false, 'message' => '', 'data' => null];
 
 try {
-    // Validate database connection
+    // Clear any output that might have been generated
+    ob_clean();
+    
+    // Include database connection
+    include_once __DIR__ . '/config/connection.php';
+    
     if (!$conn) {
         throw new Exception('Database connection failed');
     }
+
+    $action = $_GET['action'] ?? '';
 
     switch ($action) {
         case 'overview':
@@ -57,6 +65,9 @@ try {
             break;
     }
 } catch (Exception $e) {
+    // Clean any previous output
+    ob_clean();
+    
     $response['success'] = false;
     $response['message'] = 'Lỗi server: ' . $e->getMessage();
     $response['error_code'] = $e->getCode();
@@ -64,21 +75,29 @@ try {
     
     // Log error for debugging
     error_log("NHAFLOWER API Error: " . $e->getMessage() . " in " . $e->getFile() . " on line " . $e->getLine());
+} finally {
+    // Ensure clean output
+    ob_end_clean();
+    
+    // Output JSON response
+    echo json_encode($response, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
 }
-
-echo json_encode($response, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
 
 /**
  * Get overview statistics
  */
 function getOverviewStats($conn, &$response) {
     try {
-        $dateFrom = $_GET['date_from'] ?? date('Y-m-01'); // First day of current month
-        $dateTo = $_GET['date_to'] ?? date('Y-m-d'); // Today
+        $dateFrom = !empty($_GET['date_from']) ? $_GET['date_from'] : date('Y-m-01'); // First day of current month
+        $dateTo = !empty($_GET['date_to']) ? $_GET['date_to'] : date('Y-m-d'); // Today
         
-        // Validate dates
-        if (!validateDate($dateFrom) || !validateDate($dateTo)) {
-            throw new Exception('Định dạng ngày không hợp lệ');
+        // Validate dates only if they are not empty
+        if (!empty($_GET['date_from']) && !validateDate($dateFrom)) {
+            throw new Exception('Định dạng ngày bắt đầu không hợp lệ');
+        }
+        
+        if (!empty($_GET['date_to']) && !validateDate($dateTo)) {
+            throw new Exception('Định dạng ngày kết thúc không hợp lệ');
         }
         
         if ($dateFrom > $dateTo) {
@@ -186,12 +205,16 @@ function getOverviewStats($conn, &$response) {
  */
 function getRevenueChartData($conn, &$response) {
     try {
-        $dateFrom = $_GET['date_from'] ?? date('Y-m-01');
-        $dateTo = $_GET['date_to'] ?? date('Y-m-d');
+        $dateFrom = !empty($_GET['date_from']) ? $_GET['date_from'] : date('Y-m-01');
+        $dateTo = !empty($_GET['date_to']) ? $_GET['date_to'] : date('Y-m-d');
         
-        // Validate dates
-        if (!validateDate($dateFrom) || !validateDate($dateTo)) {
-            throw new Exception('Định dạng ngày không hợp lệ');
+        // Validate dates only if they are not empty
+        if (!empty($_GET['date_from']) && !validateDate($dateFrom)) {
+            throw new Exception('Định dạng ngày bắt đầu không hợp lệ');
+        }
+        
+        if (!empty($_GET['date_to']) && !validateDate($dateTo)) {
+            throw new Exception('Định dạng ngày kết thúc không hợp lệ');
         }
         
         $sql = "SELECT 
@@ -272,8 +295,8 @@ function getCategoryStats($conn, &$response) {
  * Get top selling products
  */
 function getTopProducts($conn, &$response) {
-    $dateFrom = $_GET['date_from'] ?? date('Y-m-01');
-    $dateTo = $_GET['date_to'] ?? date('Y-m-d');
+    $dateFrom = !empty($_GET['date_from']) ? $_GET['date_from'] : date('Y-m-01');
+    $dateTo = !empty($_GET['date_to']) ? $_GET['date_to'] : date('Y-m-d');
     $limit = intval($_GET['limit'] ?? 5);
     
     $sql = "SELECT 
@@ -319,8 +342,8 @@ function getTopProducts($conn, &$response) {
  * Get order status statistics
  */
 function getOrderStatusStats($conn, &$response) {
-    $dateFrom = $_GET['date_from'] ?? date('Y-m-01');
-    $dateTo = $_GET['date_to'] ?? date('Y-m-d');
+    $dateFrom = !empty($_GET['date_from']) ? $_GET['date_from'] : date('Y-m-01');
+    $dateTo = !empty($_GET['date_to']) ? $_GET['date_to'] : date('Y-m-d');
     
     $sql = "SELECT 
                 trang_thai,
@@ -374,12 +397,18 @@ function getOrderStatusStats($conn, &$response) {
  * Get revenue report
  */
 function getRevenueReport($conn, &$response) {
-    $dateFrom = $_GET['date_from'] ?? date('Y-m-01');
-    $dateTo = $_GET['date_to'] ?? date('Y-m-d');
-    
-    if (!validateDate($dateFrom) || !validateDate($dateTo)) {
-        throw new Exception('Định dạng ngày không hợp lệ');
-    }
+    try {
+        $dateFrom = !empty($_GET['date_from']) ? $_GET['date_from'] : date('Y-m-01');
+        $dateTo = !empty($_GET['date_to']) ? $_GET['date_to'] : date('Y-m-d');
+        
+        // Validate dates only if they are not empty
+        if (!empty($_GET['date_from']) && !validateDate($dateFrom)) {
+            throw new Exception('Định dạng ngày bắt đầu không hợp lệ');
+        }
+        
+        if (!empty($_GET['date_to']) && !validateDate($dateTo)) {
+            throw new Exception('Định dạng ngày kết thúc không hợp lệ');
+        }
     
     $sql = "SELECT 
                 DATE(dh.ngay_dat) AS date,
@@ -416,10 +445,15 @@ function getRevenueReport($conn, &$response) {
             'conversion_rate' => floatval($row['conversion_rate'])
         ];
     }
-    
-    $response['success'] = true;
+      $response['success'] = true;
     $response['data'] = $data;
     $response['message'] = 'Lấy báo cáo doanh thu thành công';
+    
+    } catch (Exception $e) {
+        $response['success'] = false;
+        $response['message'] = $e->getMessage();
+        $response['data'] = [];
+    }
 }
 
 /**

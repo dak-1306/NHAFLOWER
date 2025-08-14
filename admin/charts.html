@@ -254,7 +254,7 @@
             <li class="nav-item active">
                 <a class="nav-link" href="charts.html">
                     <i class="fas fa-fw fa-chart-area"></i>
-                    <span>Biểu đồ & Báo cáo</span>
+                    <span>Biểu đồ</span>
                 </a>
             </li>
 
@@ -401,6 +401,16 @@
                                 <i class="fas fa-file-pdf mr-1"></i>Xuất PDF
                             </button>
                         </div>
+                    </div>
+
+                    <!-- Demo Data Alert -->
+                    <div id="demoDataAlert" class="alert alert-warning alert-dismissible fade" role="alert" style="display: none;">
+                        <i class="fas fa-info-circle mr-2"></i>
+                        <strong>Chế độ demo:</strong> Hiện đang sử dụng dữ liệu mẫu do API chính gặp sự cố. 
+                        Vui lòng kiểm tra kết nối cơ sở dữ liệu.
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
                     </div>
 
                     <!-- Date Range Filter -->
@@ -556,6 +566,55 @@
                                         <span class="mr-2">
                                             <i class="fas fa-circle" style="color: #ff9800;"></i>
                                             Hoa Tulip
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Second Row - More Charts -->
+                    <div class="row">
+                        <!-- Top Products Chart -->
+                        <div class="col-xl-8 col-lg-7">
+                            <div class="card shadow mb-4">
+                                <div class="card-header py-3">
+                                    <h6 class="m-0 font-weight-bold text-primary">
+                                        <i class="fas fa-chart-bar mr-1"></i>Sản phẩm bán chạy
+                                    </h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="chart-container">
+                                        <canvas id="topProductsChart" class="chart-area"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Order Status Chart -->
+                        <div class="col-xl-4 col-lg-5">
+                            <div class="card shadow mb-4">
+                                <div class="card-header py-3">
+                                    <h6 class="m-0 font-weight-bold text-primary">
+                                        <i class="fas fa-chart-pie mr-1"></i>Trạng thái Đơn hàng
+                                    </h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="chart-container">
+                                        <canvas id="orderStatusChart" class="chart-pie"></canvas>
+                                    </div>
+                                    <div class="mt-4 text-center small">
+                                        <span class="mr-2">
+                                            <i class="fas fa-circle" style="color: #ff9800;"></i>
+                                            Chờ xác nhận
+                                        </span>
+                                        <span class="mr-2">
+                                            <i class="fas fa-circle" style="color: #2196f3;"></i>
+                                            Đang giao
+                                        </span>
+                                        <span class="mr-2">
+                                            <i class="fas fa-circle" style="color: #4caf50;"></i>
+                                            Hoàn thành
                                         </span>
                                     </div>
                                 </div>
