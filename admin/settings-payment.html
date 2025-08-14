@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+
+    <title>NHAFLOWER - Cài đặt Thanh toán</title>
+
+    <!-- Custom fonts for this template -->
+    <link href="../assets/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css" />
+    <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet" />
+
+    <!-- Custom styles for this template -->
+    <link href="../assets/css/admin/sb-admin-2.min.css" rel="stylesheet" />
+    <link href="../assets/css/admin/custom-admin.css" rel="stylesheet" />
+
+    <!-- SweetAlert2 -->
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.32/dist/sweetalert2.min.css" rel="stylesheet">
+
+    <style>
+        .payment-method-card {
+            border: 2px solid #e3e6f0;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .payment-method-card:hover {
+            border-color: #e91e63;
+            transform: translateY(-2px);
+        }
+        
+        .payment-method-card.active {
+            border-color: #e91e63;
+            background: linear-gradient(135deg, rgba(233, 30, 99, 0.1), rgba(244, 143, 177, 0.1));
+        }
+        
+        .payment-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+        
+        .payment-icon.cash { background: linear-gradient(135deg, #28a745, #20c997); color: white; }
+        .payment-icon.bank { background: linear-gradient(135deg, #007bff, #6610f2); color: white; }
+        .payment-icon.momo { background: linear-gradient(135deg, #d63384, #e83e8c); color: white; }
+        .payment-icon.vnpay { background: linear-gradient(135deg, #0d6efd, #6f42c1); color: white; }
+        .payment-icon.paypal { background: linear-gradient(135deg, #0070ba, #003087); color: white; }
+        
+        .config-section {
+            display: none;
+        }
+        
+        .config-section.active {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .status-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .status-active { background: #d4edda; color: #155724; }
+        .status-inactive { background: #f8d7da; color: #721c24; }
+        
+        .test-connection-btn {
+            margin-top: 10px;
+        }
+        
+        .form-control:focus {
+            border-color: #e91e63;
+            box-shadow: 0 0 0 0.2rem rgba(233, 30, 99, 0.25);
+        }
+    </style>
+</head>
+
+<body id="page-top">
+    <!-- Page Wrapper -->
+    <div id="wrapper">
+        <!-- Sidebar (copy from settings-general.html) -->
+        <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
+                <div class="sidebar-brand-icon rotate-n-15">
+                    <i class="fas fa-seedling"></i>
+                </div>
+                <div class="sidebar-brand-text mx-3">NHAFLOWER</div>
+            </a>
+
+            <!-- ...existing sidebar code... -->
+            <hr class="sidebar-divider my-0" />
+            <li class="nav-item">
+                <a class="nav-link" href="index.html">
+                    <i class="fas fa-fw fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <hr class="sidebar-divider" />
+            <div class="sidebar-heading">Quản lý chính</div>
+            <li class="nav-item">
+                <a class="nav-link" href="customers.html">
+                    <i class="fas fa-fw fa-users"></i>
+                    <span>Khách hàng</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="products.html">
+                    <i class="fas fa-fw fa-leaf"></i>
+                    <span>Sản phẩm</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="orders.html">
+                    <i class="fas fa-fw fa-shopping-cart"></i>
+                    <span>Đơn hàng</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="categories.html">
+                    <i class="fas fa-fw fa-tags"></i>
+                    <span>Danh mục</span>
+                </a>
+            </li>
+            <hr class="sidebar-divider" />
+            <div class="sidebar-heading">Báo cáo & Thống kê</div>
+            <li class="nav-item">
+                <a class="nav-link" href="charts.html">
+                    <i class="fas fa-fw fa-chart-area"></i>
+                    <span>Biểu đồ</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="reports.html">
+                    <i class="fas fa-fw fa-file-alt"></i>
+                    <span>Báo cáo</span>
+                </a>
+            </li>
+            <hr class="sidebar-divider" />
+            <div class="sidebar-heading">Hệ thống</div>
+            
+            <li class="nav-item active">
+                <a class="nav-link" href="#" data-toggle="collapse" data-target="#collapseSettings" aria-expanded="true" aria-controls="collapseSettings">
+                    <i class="fas fa-fw fa-cog"></i>
+                    <span>Cài đặt</span>
+                </a>
+                <div id="collapseSettings" class="collapse show" aria-labelledby="headingSettings" data-parent="#accordionSidebar">
+                    <div class="bg-white py-2 collapse-inner rounded">
+                        <h6 class="collapse-header">Cài đặt hệ thống:</h6>
+                        <a class="collapse-item" href="settings-general.html">Chung</a>
+                        <a class="collapse-item active" href="settings-payment.html">Thanh toán</a>
+                        <a class="collapse-item" href="settings-shipping.html">Vận chuyển</a>
+                    </div>
+                </div>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="users.html">
+                    <i class="fas fa-fw fa-user-shield"></i>
+                    <span>Quản lý Admin</span>
+                </a>
+            </li>
+            <hr class="sidebar-divider d-none d-md-block" />
+            <div class="text-center d-none d-md-inline">
+                <button class="rounded-circle border-0" id="sidebarToggle"></button>
+            </div>
+            <div class="sidebar-card d-none d-lg-flex">
+                <img class="sidebar-card-illustration mb-2" src="../assets/img/admin/undraw_rocket.svg" alt="..." />
+                <p class="text-center mb-2">
+                    <strong>NHAFLOWER</strong> Hệ thống quản lý bán hoa chuyên nghiệp!
+                </p>
+                <a class="btn btn-success btn-sm" href="../user/home.html">Xem trang chủ</a>
+            </div>
+        </ul>
+
+        <!-- Content Wrapper -->
+        <div id="content-wrapper" class="d-flex flex-column">
+            <!-- Main Content -->
+            <div id="content">
+                <!-- Topbar (copy from settings-general.html) -->
+                <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+                    <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+                        <i class="fa fa-bars"></i>
+                    </button>
+                    <form class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
+                        <div class="input-group">
+                            <input type="text" class="form-control bg-light border-0 small" placeholder="Tìm kiếm..." />
+                            <div class="input-group-append">
+                                <button class="btn btn-primary" type="button">
+                                    <i class="fas fa-search fa-sm"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                    <ul class="navbar-nav ml-auto">
+                        <li class="nav-item dropdown no-arrow mx-1">
+                            <a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button" data-toggle="dropdown">
+                                <i class="fas fa-bell fa-fw"></i>
+                                <span class="badge badge-danger badge-counter">3+</span>
+                            </a>
+                        </li>
+                        <div class="topbar-divider d-none d-sm-block"></div>
+                        <li class="nav-item dropdown no-arrow">
+                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown">
+                                <span class="mr-2 d-none d-lg-inline text-gray-600 small">Admin NHAFLOWER</span>
+                                <img class="img-profile rounded-circle" src="../assets/img/admin/undraw_profile.svg" />
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in">
+                                <a class="dropdown-item" href="#"><i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>Hồ sơ</a>
+                                <a class="dropdown-item" href="#"><i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>Cài đặt</a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
+                                    <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>Đăng xuất
+                                </a>
+                            </div>
+                        </li>
+                    </ul>
+                </nav>
+
+                <!-- Begin Page Content -->
+                <div class="container-fluid">
+                    <!-- Page Heading -->
+                    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                        <h1 class="h3 mb-0 text-gray-800">
+                            <i class="fas fa-credit-card mr-2 text-primary"></i>Cài đặt Thanh toán
+                        </h1>
+                        <div>
+                            <button class="btn btn-success btn-sm shadow-sm" onclick="savePaymentSettings()">
+                                <i class="fas fa-save fa-sm mr-1"></i>Lưu cài đặt
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Payment Methods Grid -->
+                    <div class="row mb-4">
+                        <div class="col-lg-12">
+                            <h5 class="text-gray-800 mb-3">
+                                <i class="fas fa-list mr-2"></i>Phương thức thanh toán
+                            </h5>
+                        </div>
+                        
+                        <!-- Cash Payment -->
+                        <div class="col-lg-4 col-md-6 mb-4">
+                            <div class="card payment-method-card h-100" data-method="cash">
+                                <div class="card-body text-center position-relative">
+                                    <span class="status-badge status-active">Hoạt động</span>
+                                    <div class="payment-icon cash mx-auto mb-3">
+                                        <i class="fas fa-money-bill"></i>
+                                    </div>
+                                    <h6 class="card-title">Tiền mặt (COD)</h6>
+                                    <p class="card-text text-muted">Thanh toán khi nhận hàng</p>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="enableCash" checked>
+                                        <label class="form-check-label" for="enableCash">Kích hoạt</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Bank Transfer -->
+                        <div class="col-lg-4 col-md-6 mb-4">
+                            <div class="card payment-method-card h-100" data-method="bank">
+                                <div class="card-body text-center position-relative">
+                                    <span class="status-badge status-active">Hoạt động</span>
+                                    <div class="payment-icon bank mx-auto mb-3">
+                                        <i class="fas fa-university"></i>
+                                    </div>
+                                    <h6 class="card-title">Chuyển khoản ngân hàng</h6>
+                                    <p class="card-text text-muted">Chuyển khoản trực tiếp</p>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="enableBank" checked>
+                                        <label class="form-check-label" for="enableBank">Kích hoạt</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- MoMo -->
+                        <div class="col-lg-4 col-md-6 mb-4">
+                            <div class="card payment-method-card h-100" data-method="momo">
+                                <div class="card-body text-center position-relative">
+                                    <span class="status-badge status-inactive">Chưa cấu hình</span>
+                                    <div class="payment-icon momo mx-auto mb-3">
+                                        <i class="fas fa-mobile-alt"></i>
+                                    </div>
+                                    <h6 class="card-title">Ví MoMo</h6>
+                                    <p class="card-text text-muted">Thanh toán qua ví điện tử MoMo</p>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="enableMomo">
+                                        <label class="form-check-label" for="enableMomo">Kích hoạt</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- VNPay -->
+                        <div class="col-lg-4 col-md-6 mb-4">
+                            <div class="card payment-method-card h-100" data-method="vnpay">
+                                <div class="card-body text-center position-relative">
+                                    <span class="status-badge status-inactive">Chưa cấu hình</span>
+                                    <div class="payment-icon vnpay mx-auto mb-3">
+                                        <i class="fas fa-credit-card"></i>
+                                    </div>
+                                    <h6 class="card-title">VNPay</h6>
+                                    <p class="card-text text-muted">Cổng thanh toán VNPay</p>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="enableVNPay">
+                                        <label class="form-check-label" for="enableVNPay">Kích hoạt</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- PayPal -->
+                        <div class="col-lg-4 col-md-6 mb-4">
+                            <div class="card payment-method-card h-100" data-method="paypal">
+                                <div class="card-body text-center position-relative">
+                                    <span class="status-badge status-inactive">Chưa cấu hình</span>
+                                    <div class="payment-icon paypal mx-auto mb-3">
+                                        <i class="fab fa-paypal"></i>
+                                    </div>
+                                    <h6 class="card-title">PayPal</h6>
+                                    <p class="card-text text-muted">Thanh toán quốc tế PayPal</p>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="enablePaypal">
+                                        <label class="form-check-label" for="enablePaypal">Kích hoạt</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Configuration Sections -->
+                    
+                    <!-- Bank Transfer Config -->
+                    <div id="bankConfig" class="config-section active">
+                        <div class="card shadow mb-4">
+                            <div class="card-header">
+                                <h6 class="m-0 font-weight-bold text-primary">
+                                    <i class="fas fa-university mr-2"></i>Cấu hình Chuyển khoản Ngân hàng
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label font-weight-bold">Tên ngân hàng</label>
+                                        <input type="text" class="form-control" id="bankName" value="Techcombank" placeholder="Vietcombank, Techcombank...">
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label font-weight-bold">Số tài khoản</label>
+                                        <input type="text" class="form-control" id="bankAccount" value="19035559988888" placeholder="Nhập số tài khoản">
+                                    </div>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label font-weight-bold">Tên chủ tài khoản</label>
+                                        <input type="text" class="form-control" id="bankOwner" value="NGUYEN VAN A" placeholder="Tên chủ tài khoản">
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label font-weight-bold">Chi nhánh</label>
+                                        <input type="text" class="form-control" id="bankBranch" value="Quận 1, TP.HCM" placeholder="Chi nhánh ngân hàng">
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label font-weight-bold">Nội dung chuyển khoản</label>
+                                    <textarea class="form-control" id="bankNote" rows="2" placeholder="Hướng dẫn nội dung chuyển khoản">Thanh toan don hang [ORDER_ID] tai NHAFLOWER</textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- MoMo Config -->
+                    <div id="momoConfig" class="config-section">
+                        <div class="card shadow mb-4">
+                            <div class="card-header">
+                                <h6 class="m-0 font-weight-bold text-primary">
+                                    <i class="fas fa-mobile-alt mr-2"></i>Cấu hình Ví MoMo
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="alert alert-info">
+                                    <i class="fas fa-info-circle mr-2"></i>
+                                    Để sử dụng MoMo, bạn cần đăng ký tài khoản doanh nghiệp với MoMo và lấy API keys.
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label font-weight-bold">Partner Code</label>
+                                        <input type="text" class="form-control" id="momoPartnerCode" placeholder="Nhập Partner Code từ MoMo">
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label font-weight-bold">Access Key</label>
+                                        <input type="text" class="form-control" id="momoAccessKey" placeholder="Nhập Access Key">
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label font-weight-bold">Secret Key</label>
+                                    <input type="password" class="form-control" id="momoSecretKey" placeholder="Nhập Secret Key">
+                                </div>
+                                
+                                <div class="form-check mb-3">
+                                    <input class="form-check-input" type="checkbox" id="momoSandbox" checked>
+                                    <label class="form-check-label" for="momoSandbox">
+                                        Chế độ thử nghiệm (Sandbox)
+                                    </label>
+                                </div>
+                                
+                                <button class="btn btn-outline-primary test-connection-btn" onclick="testMoMoConnection()">
+                                    <i class="fas fa-plug mr-1"></i>Kiểm tra kết nối
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- VNPay Config -->
+                    <div id="vnpayConfig" class="config-section">
+                        <div class="card shadow mb-4">
+                            <div class="card-header">
+                                <h6 class="m-0 font-weight-bold text-primary">
+                                    <i class="fas fa-credit-card mr-2"></i>Cấu hình VNPay
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="alert alert-info">
+                                    <i class="fas fa-info-circle mr-2"></i>
+                                    VNPay là cổng thanh toán phổ biến tại Việt Nam. Liên hệ VNPay để được hỗ trợ tích hợp.
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label font-weight-bold">TMN Code</label>
+                                        <input type="text" class="form-control" id="vnpayTmnCode" placeholder="Mã website từ VNPay">
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label font-weight-bold">Hash Secret</label>
+                                        <input type="password" class="form-control" id="vnpayHashSecret" placeholder="Hash Secret Key">
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label font-weight-bold">URL thanh toán</label>
+                                    <input type="url" class="form-control" id="vnpayUrl" value="https://sandbox.vnpayment.vn/paymentv2/vpcpay.html" placeholder="URL cổng thanh toán">
+                                </div>
+                                
+                                <div class="form-check mb-3">
+                                    <input class="form-check-input" type="checkbox" id="vnpaySandbox" checked>
+                                    <label class="form-check-label" for="vnpaySandbox">
+                                        Chế độ thử nghiệm (Sandbox)
+                                    </label>
+                                </div>
+                                
+                                <button class="btn btn-outline-primary test-connection-btn" onclick="testVNPayConnection()">
+                                    <i class="fas fa-plug mr-1"></i>Kiểm tra kết nối
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- PayPal Config -->
+                    <div id="paypalConfig" class="config-section">
+                        <div class="card shadow mb-4">
+                            <div class="card-header">
+                                <h6 class="m-0 font-weight-bold text-primary">
+                                    <i class="fab fa-paypal mr-2"></i>Cấu hình PayPal
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="alert alert-info">
+                                    <i class="fas fa-info-circle mr-2"></i>
+                                    PayPal cho phép nhận thanh toán từ khách hàng quốc tế. Cần tài khoản PayPal Business.
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label font-weight-bold">Client ID</label>
+                                        <input type="text" class="form-control" id="paypalClientId" placeholder="PayPal Client ID">
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label font-weight-bold">Client Secret</label>
+                                        <input type="password" class="form-control" id="paypalClientSecret" placeholder="PayPal Client Secret">
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label font-weight-bold">Webhook URL</label>
+                                    <input type="url" class="form-control" id="paypalWebhook" value="https://yourdomain.com/api/paypal-webhook" placeholder="URL webhook">
+                                </div>
+                                
+                                <div class="form-check mb-3">
+                                    <input class="form-check-input" type="checkbox" id="paypalSandbox" checked>
+                                    <label class="form-check-label" for="paypalSandbox">
+                                        Chế độ thử nghiệm (Sandbox)
+                                    </label>
+                                </div>
+                                
+                                <button class="btn btn-outline-primary test-connection-btn" onclick="testPayPalConnection()">
+                                    <i class="fas fa-plug mr-1"></i>Kiểm tra kết nối
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- General Payment Settings -->
+                    <div class="card shadow mb-4">
+                        <div class="card-header">
+                            <h6 class="m-0 font-weight-bold text-primary">
+                                <i class="fas fa-cog mr-2"></i>Cài đặt Chung
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label font-weight-bold">Tiền tệ mặc định</label>
+                                    <select class="form-control" id="defaultCurrency">
+                                        <option value="VND" selected>Việt Nam Đồng (VND)</option>
+                                        <option value="USD">US Dollar (USD)</option>
+                                        <option value="EUR">Euro (EUR)</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label font-weight-bold">Phí giao dịch (%)</label>
+                                    <input type="number" class="form-control" id="transactionFee" value="0" min="0" max="10" step="0.1" placeholder="0">
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label font-weight-bold">Thời gian chờ thanh toán (phút)</label>
+                                <input type="number" class="form-control" id="paymentTimeout" value="15" min="5" max="60" placeholder="15">
+                                <small class="text-muted">Thời gian tối đa khách hàng có thể hoàn tất thanh toán</small>
+                            </div>
+                            
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" id="autoConfirmPayment" checked>
+                                <label class="form-check-label" for="autoConfirmPayment">
+                                    Tự động xác nhận đơn hàng khi thanh toán thành công
+                                </label>
+                            </div>
+                            
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" id="sendPaymentEmail" checked>
+                                <label class="form-check-label" for="sendPaymentEmail">
+                                    Gửi email xác nhận thanh toán
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <!-- /.container-fluid -->
+            </div>
+
+            <!-- Footer -->
+            <footer class="sticky-footer bg-white">
+                <div class="container my-auto">
+                    <div class="copyright text-center my-auto">
+                        <span>Copyright &copy; NHAFLOWER 2025</span>
+                    </div>
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Logout Modal (copy from settings-general.html) -->
+    <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Xác nhận đăng xuất</h5>
+                    <button class="close" type="button" data-dismiss="modal">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">Bạn có chắc chắn muốn đăng xuất khỏi phiên làm việc hiện tại không?</div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Hủy</button>
+                    <a class="btn btn-primary" href="../auth/logout.php">Đăng xuất</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../assets/vendor/jquery/jquery.min.js"></script>
+    <script src="../assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="../assets/vendor/jquery-easing/jquery.easing.min.js"></script>
+    <script src="../assets/js/admin/sb-admin-2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.32/dist/sweetalert2.all.min.js"></script>
+    <script src="../assets/js/admin/settings-payment.js"></script>
+</body>
+</html>

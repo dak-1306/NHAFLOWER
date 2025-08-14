@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+
+    <title>NHAFLOWER - Cài đặt Chung</title>
+
+    <!-- Custom fonts for this template -->
+    <link href="../assets/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css" />
+    <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet" />
+
+    <!-- Custom styles for this template -->
+    <link href="../assets/css/admin/sb-admin-2.min.css" rel="stylesheet" />
+    <link href="../assets/css/admin/custom-admin.css" rel="stylesheet" />
+
+    <!-- SweetAlert2 -->
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.32/dist/sweetalert2.min.css" rel="stylesheet">
+
+    <style>
+        .settings-card {
+            border: none;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+            transition: all 0.3s;
+        }
+        
+        .settings-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0.25rem 2rem 0 rgba(58, 59, 69, 0.2);
+        }
+        
+        .settings-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #e91e63, #f48fb1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+        }
+        
+        .form-control:focus {
+            border-color: #e91e63;
+            box-shadow: 0 0 0 0.2rem rgba(233, 30, 99, 0.25);
+        }
+        
+        .btn-primary {
+            background-color: #e91e63;
+            border-color: #e91e63;
+        }
+        
+        .btn-primary:hover {
+            background-color: #ad1457;
+            border-color: #ad1457;
+        }
+        
+        .preview-image {
+            max-width: 200px;
+            max-height: 200px;
+            object-fit: cover;
+            border: 2px solid #e91e63;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+
+<body id="page-top">
+    <!-- Page Wrapper -->
+    <div id="wrapper">
+        <!-- Sidebar -->
+        <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+            <!-- Sidebar - Brand -->
+            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
+                <div class="sidebar-brand-icon rotate-n-15">
+                    <i class="fas fa-seedling"></i>
+                </div>
+                <div class="sidebar-brand-text mx-3">NHAFLOWER</div>
+            </a>
+
+            <!-- Divider -->
+            <hr class="sidebar-divider my-0" />
+
+            <!-- Nav Item - Dashboard -->
+            <li class="nav-item">
+                <a class="nav-link" href="index.html">
+                    <i class="fas fa-fw fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+
+            <!-- Divider -->
+            <hr class="sidebar-divider" />
+
+            <!-- Heading -->
+            <div class="sidebar-heading">Quản lý chính</div>
+
+            <!-- Nav Item - Khách hàng -->
+            <li class="nav-item">
+                <a class="nav-link" href="customers.html">
+                    <i class="fas fa-fw fa-users"></i>
+                    <span>Khách hàng</span>
+                </a>
+            </li>
+
+            <!-- Nav Item - Sản phẩm -->
+            <li class="nav-item">
+                <a class="nav-link" href="products.html">
+                    <i class="fas fa-fw fa-leaf"></i>
+                    <span>Sản phẩm</span>
+                </a>
+            </li>
+
+            <!-- Nav Item - Đơn hàng -->
+            <li class="nav-item">
+                <a class="nav-link" href="orders.html">
+                    <i class="fas fa-fw fa-shopping-cart"></i>
+                    <span>Đơn hàng</span>
+                </a>
+            </li>
+
+            <!-- Nav Item - Danh mục -->
+            <li class="nav-item">
+                <a class="nav-link" href="categories.html">
+                    <i class="fas fa-fw fa-tags"></i>
+                    <span>Danh mục</span>
+                </a>
+            </li>
+
+            <!-- Divider -->
+            <hr class="sidebar-divider" />
+
+            <!-- Heading -->
+            <div class="sidebar-heading">Báo cáo & Thống kê</div>
+
+            <!-- Nav Item - Charts -->
+            <li class="nav-item">
+                <a class="nav-link" href="charts.html">
+                    <i class="fas fa-fw fa-chart-area"></i>
+                    <span>Biểu đồ</span>
+                </a>
+            </li>
+
+            <!-- Nav Item - Reports -->
+            <li class="nav-item">
+                <a class="nav-link" href="reports.html">
+                    <i class="fas fa-fw fa-file-alt"></i>
+                    <span>Báo cáo</span>
+                </a>
+            </li>
+
+            <!-- Divider -->
+            <hr class="sidebar-divider" />
+
+            <!-- Heading -->
+            <div class="sidebar-heading">Hệ thống</div>
+
+            <!-- Nav Item - Settings Collapse Menu -->
+            <li class="nav-item active">
+                <a class="nav-link" href="#" data-toggle="collapse" data-target="#collapseSettings" aria-expanded="true" aria-controls="collapseSettings">
+                    <i class="fas fa-fw fa-cog"></i>
+                    <span>Cài đặt</span>
+                </a>
+                <div id="collapseSettings" class="collapse show" aria-labelledby="headingSettings" data-parent="#accordionSidebar">
+                    <div class="bg-white py-2 collapse-inner rounded">
+                        <h6 class="collapse-header">Cài đặt hệ thống:</h6>
+                        <a class="collapse-item active" href="settings-general.html">Chung</a>
+                        <a class="collapse-item" href="settings-payment.html">Thanh toán</a>
+                        <a class="collapse-item" href="settings-shipping.html">Vận chuyển</a>
+                    </div>
+                </div>
+            </li>
+
+            <!-- Nav Item - Users -->
+            <li class="nav-item">
+                <a class="nav-link" href="users.html">
+                    <i class="fas fa-fw fa-user-shield"></i>
+                    <span>Quản lý Admin</span>
+                </a>
+            </li>
+
+            <!-- Divider -->
+            <hr class="sidebar-divider d-none d-md-block" />
+
+            <!-- Sidebar Toggler (Sidebar) -->
+            <div class="text-center d-none d-md-inline">
+                <button class="rounded-circle border-0" id="sidebarToggle"></button>
+            </div>
+
+            <!-- Sidebar Message -->
+            <div class="sidebar-card d-none d-lg-flex">
+                <img class="sidebar-card-illustration mb-2" src="../assets/img/admin/undraw_rocket.svg" alt="..." />
+                <p class="text-center mb-2">
+                    <strong>NHAFLOWER</strong> Hệ thống quản lý bán hoa chuyên nghiệp!
+                </p>
+                <a class="btn btn-success btn-sm" href="../user/home.html">Xem trang chủ</a>
+            </div>
+        </ul>
+        <!-- End of Sidebar -->
+
+        <!-- Content Wrapper -->
+        <div id="content-wrapper" class="d-flex flex-column">
+            <!-- Main Content -->
+            <div id="content">
+                <!-- Topbar -->
+                <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+                    <!-- Sidebar Toggle (Topbar) -->
+                    <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+                        <i class="fa fa-bars"></i>
+                    </button>
+
+                    <!-- Topbar Search -->
+                    <form class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
+                        <div class="input-group">
+                            <input type="text" class="form-control bg-light border-0 small" placeholder="Tìm kiếm..." aria-label="Search" aria-describedby="basic-addon2" />
+                            <div class="input-group-append">
+                                <button class="btn btn-primary" type="button">
+                                    <i class="fas fa-search fa-sm"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+
+                    <!-- Topbar Navbar -->
+                    <ul class="navbar-nav ml-auto">
+                        <!-- Nav Item - Alerts -->
+                        <li class="nav-item dropdown no-arrow mx-1">
+                            <a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="fas fa-bell fa-fw"></i>
+                                <!-- Counter - Alerts -->
+                                <span class="badge badge-danger badge-counter">3+</span>
+                            </a>
+                        </li>
+
+                        <div class="topbar-divider d-none d-sm-block"></div>
+
+                        <!-- Nav Item - User Information -->
+                        <li class="nav-item dropdown no-arrow">
+                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <span class="mr-2 d-none d-lg-inline text-gray-600 small">Admin NHAFLOWER</span>
+                                <img class="img-profile rounded-circle" src="../assets/img/admin/undraw_profile.svg" />
+                            </a>
+                            <!-- Dropdown - User Information -->
+                            <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
+                                <a class="dropdown-item" href="#">
+                                    <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    Hồ sơ
+                                </a>
+                                <a class="dropdown-item" href="#">
+                                    <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    Cài đặt
+                                </a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
+                                    <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    Đăng xuất
+                                </a>
+                            </div>
+                        </li>
+                    </ul>
+                </nav>
+                <!-- End of Topbar -->
+
+                <!-- Begin Page Content -->
+                <div class="container-fluid">
+                    <!-- Page Heading -->
+                    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                        <h1 class="h3 mb-0 text-gray-800">
+                            <i class="fas fa-cogs mr-2 text-primary"></i>Cài đặt Chung
+                        </h1>
+                        <div>
+                            <button class="btn btn-success btn-sm shadow-sm" onclick="saveAllSettings()">
+                                <i class="fas fa-save fa-sm mr-1"></i>Lưu tất cả
+                            </button>
+                            <button class="btn btn-secondary btn-sm shadow-sm ml-2" onclick="resetSettings()">
+                                <i class="fas fa-undo fa-sm mr-1"></i>Khôi phục
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <!-- Thông tin website -->
+                        <div class="col-lg-8">
+                            <div class="card settings-card mb-4">
+                                <div class="card-header d-flex align-items-center">
+                                    <div class="settings-icon mr-3">
+                                        <i class="fas fa-globe"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="m-0 font-weight-bold text-primary">Thông tin Website</h6>
+                                        <small class="text-muted">Cấu hình thông tin cơ bản của cửa hàng</small>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <form id="websiteInfoForm">
+                                        <div class="row">
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label font-weight-bold">Tên cửa hàng</label>
+                                                <input type="text" class="form-control" id="storeName" value="NHAFLOWER" placeholder="Nhập tên cửa hàng">
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label font-weight-bold">Slogan</label>
+                                                <input type="text" class="form-control" id="storeSlogan" value="Hoa tươi - Tình yêu thương" placeholder="Nhập slogan">
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label class="form-label font-weight-bold">Mô tả cửa hàng</label>
+                                            <textarea class="form-control" id="storeDescription" rows="3" placeholder="Nhập mô tả về cửa hàng">NHAFLOWER - Cửa hàng hoa tươi hàng đầu tại Việt Nam. Chúng tôi cung cấp những loài hoa tươi đẹp nhất với dịch vụ chăm sóc khách hàng tận tâm.</textarea>
+                                        </div>
+                                        
+                                        <div class="row">
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label font-weight-bold">Email liên hệ</label>
+                                                <input type="email" class="form-control" id="contactEmail" value="contact@nhaflower.com" placeholder="email@example.com">
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label font-weight-bold">Số điện thoại</label>
+                                                <input type="tel" class="form-control" id="contactPhone" value="0901234567" placeholder="0901234567">
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label class="form-label font-weight-bold">Địa chỉ cửa hàng</label>
+                                            <input type="text" class="form-control" id="storeAddress" value="123 Đường Nguyễn Huệ, Quận 1, TP. Hồ Chí Minh" placeholder="Nhập địa chỉ">
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            
+                            <!-- Cấu hình giao diện -->
+                            <div class="card settings-card mb-4">
+                                <div class="card-header d-flex align-items-center">
+                                    <div class="settings-icon mr-3">
+                                        <i class="fas fa-palette"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="m-0 font-weight-bold text-primary">Giao diện & Hiển thị</h6>
+                                        <small class="text-muted">Tùy chỉnh giao diện người dùng</small>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <form id="displayForm">
+                                        <div class="row">
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label font-weight-bold">Chủ đề màu sắc</label>
+                                                <select class="form-control" id="colorTheme">
+                                                    <option value="pink" selected>Hồng NHAFLOWER</option>
+                                                    <option value="green">Xanh lá tự nhiên</option>
+                                                    <option value="blue">Xanh dương</option>
+                                                    <option value="purple">Tím</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label font-weight-bold">Số sản phẩm mỗi trang</label>
+                                                <select class="form-control" id="productsPerPage">
+                                                    <option value="12" selected>12 sản phẩm</option>
+                                                    <option value="16">16 sản phẩm</option>
+                                                    <option value="20">20 sản phẩm</option>
+                                                    <option value="24">24 sản phẩm</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label class="form-label font-weight-bold">Tùy chọn hiển thị</label>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="showStock" checked>
+                                                <label class="form-check-label" for="showStock">
+                                                    Hiển thị số lượng tồn kho
+                                                </label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="showReviews" checked>
+                                                <label class="form-check-label" for="showReviews">
+                                                    Hiển thị đánh giá sản phẩm
+                                                </label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="showWishlist" checked>
+                                                <label class="form-check-label" for="showWishlist">
+                                                    Hiển thị danh sách yêu thích
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Logo và hình ảnh -->
+                        <div class="col-lg-4">
+                            <div class="card settings-card mb-4">
+                                <div class="card-header d-flex align-items-center">
+                                    <div class="settings-icon mr-3">
+                                        <i class="fas fa-image"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="m-0 font-weight-bold text-primary">Logo & Hình ảnh</h6>
+                                        <small class="text-muted">Quản lý hình ảnh thương hiệu</small>
+                                    </div>
+                                </div>
+                                <div class="card-body text-center">
+                                    <div class="mb-4">
+                                        <label class="form-label font-weight-bold">Logo chính</label>
+                                        <div class="mb-2">
+                                            <img id="logoPreview" src="../assets/img/user/logo_NHAFLOWER.png" alt="Logo" class="preview-image">
+                                        </div>
+                                        <input type="file" class="form-control" id="logoUpload" accept="image/*">
+                                        <small class="text-muted">Khuyến nghị: 200x200px, định dạng PNG</small>
+                                    </div>
+                                    
+                                    <div class="mb-4">
+                                        <label class="form-label font-weight-bold">Favicon</label>
+                                        <div class="mb-2">
+                                            <img id="faviconPreview" src="../assets/img/user/logo_NHAFLOWER.png" alt="Favicon" style="max-width: 32px; max-height: 32px;">
+                                        </div>
+                                        <input type="file" class="form-control" id="faviconUpload" accept="image/*">
+                                        <small class="text-muted">Khuyến nghị: 32x32px, định dạng ICO hoặc PNG</small>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Cấu hình SEO -->
+                            <div class="card settings-card mb-4">
+                                <div class="card-header d-flex align-items-center">
+                                    <div class="settings-icon mr-3">
+                                        <i class="fas fa-search"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="m-0 font-weight-bold text-primary">Tối ưu SEO</h6>
+                                        <small class="text-muted">Cải thiện thứ hạng tìm kiếm</small>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <form id="seoForm">
+                                        <div class="mb-3">
+                                            <label class="form-label font-weight-bold">Meta Title</label>
+                                            <input type="text" class="form-control" id="metaTitle" value="NHAFLOWER - Hoa tươi đẹp, giao hàng tận nơi" placeholder="Tiêu đề trang web">
+                                            <small class="text-muted">60-70 ký tự</small>
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label class="form-label font-weight-bold">Meta Description</label>
+                                            <textarea class="form-control" id="metaDescription" rows="3" placeholder="Mô tả trang web">Cửa hàng hoa tươi NHAFLOWER - Chuyên cung cấp hoa tươi đẹp, chất lượng cao với dịch vụ giao hàng nhanh chóng tại TP.HCM</textarea>
+                                            <small class="text-muted">150-160 ký tự</small>
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label class="form-label font-weight-bold">Keywords</label>
+                                            <input type="text" class="form-control" id="metaKeywords" value="hoa tươi, cửa hàng hoa, giao hoa tận nơi" placeholder="từ khóa, cách, nhau, bằng, dấu phẩy">
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Cấu hình bảo mật -->
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="card settings-card mb-4">
+                                <div class="card-header d-flex align-items-center">
+                                    <div class="settings-icon mr-3">
+                                        <i class="fas fa-shield-alt"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="m-0 font-weight-bold text-primary">Cài đặt Bảo mật</h6>
+                                        <small class="text-muted">Cấu hình bảo mật hệ thống</small>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <form id="securityForm">
+                                        <div class="row">
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label font-weight-bold">Thời gian hết phiên (phút)</label>
+                                                <input type="number" class="form-control" id="sessionTimeout" value="30" min="5" max="1440">
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label font-weight-bold">Số lần đăng nhập sai tối đa</label>
+                                                <input type="number" class="form-control" id="maxLoginAttempts" value="5" min="3" max="10">
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label class="form-label font-weight-bold">Tùy chọn bảo mật</label>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="enableTwoFactor">
+                                                <label class="form-check-label" for="enableTwoFactor">
+                                                    Bật xác thực 2 bước
+                                                </label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="forceHttps" checked>
+                                                <label class="form-check-label" for="forceHttps">
+                                                    Bắt buộc sử dụng HTTPS
+                                                </label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="enableMaintenanceMode">
+                                                <label class="form-check-label" for="enableMaintenanceMode">
+                                                    Chế độ bảo trì
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <!-- /.container-fluid -->
+            </div>
+            <!-- End of Main Content -->
+
+            <!-- Footer -->
+            <footer class="sticky-footer bg-white">
+                <div class="container my-auto">
+                    <div class="copyright text-center my-auto">
+                        <span>Copyright &copy; NHAFLOWER 2025</span>
+                    </div>
+                </div>
+            </footer>
+            <!-- End of Footer -->
+        </div>
+        <!-- End of Content Wrapper -->
+    </div>
+    <!-- End of Page Wrapper -->
+
+    <!-- Logout Modal-->
+    <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Xác nhận đăng xuất</h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">Bạn có chắc chắn muốn đăng xuất khỏi phiên làm việc hiện tại không?</div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Hủy</button>
+                    <a class="btn btn-primary" href="../auth/logout.php">Đăng xuất</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap core JavaScript-->
+    <script src="../assets/vendor/jquery/jquery.min.js"></script>
+    <script src="../assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Core plugin JavaScript-->
+    <script src="../assets/vendor/jquery-easing/jquery.easing.min.js"></script>
+
+    <!-- Custom scripts for all pages-->
+    <script src="../assets/js/admin/sb-admin-2.min.js"></script>
+
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.32/dist/sweetalert2.all.min.js"></script>
+
+    <!-- Custom JavaScript for Settings -->
+    <script src="../assets/js/admin/settings-general.js"></script>
+</body>
+</html>
