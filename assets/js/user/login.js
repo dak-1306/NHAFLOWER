@@ -198,25 +198,55 @@ function submitLogin() {
         // Sử dụng AuthManager để đăng nhập
         window.authManager.login(response.data.token, response.data);
 
-        // Lưu thêm nhaflower_user cho các trang profile
-        localStorage.setItem(
-          "nhaflower_user",
-          JSON.stringify({
-            id_taikhoan: response.data.id_taikhoan,
-            email: response.data.email,
-            ten: response.data.ten || response.data.ho_ten || "",
-            sdt: response.data.sdt || "",
-            dia_chi: response.data.dia_chi || "",
-            ngay_sinh: response.data.ngay_sinh || "",
-          })
-        );
-
-        showNotification("Đăng nhập thành công!", "success");
-
-        // Sử dụng AuthManager để xử lý redirect
-        setTimeout(function () {
-          window.authManager.handlePostLoginRedirect();
-        }, 1500);
+        // Gọi API lấy thông tin khách hàng theo id_taikhoan
+        $.ajax({
+          url: "/NHAFLOWER/api/khach_hang.php?action=get",
+          method: "GET",
+          dataType: "json",
+          success: function (res) {
+            let khach = null;
+            if (res.success && Array.isArray(res.data)) {
+              khach = res.data.find(
+                (k) => k.id_taikhoan == response.data.id_taikhoan
+              );
+            }
+            // Lưu nhaflower_user với id_khachhang nếu tìm thấy
+            localStorage.setItem(
+              "nhaflower_user",
+              JSON.stringify({
+                id_taikhoan: response.data.id_taikhoan,
+                id_khachhang: khach ? khach.id_khachhang : null,
+                email: response.data.email,
+                ten: response.data.ten || response.data.ho_ten || "",
+                sdt: response.data.sdt || "",
+                dia_chi: response.data.dia_chi || "",
+                ngay_sinh: response.data.ngay_sinh || "",
+              })
+            );
+            showNotification("Đăng nhập thành công!", "success");
+            setTimeout(function () {
+              window.authManager.handlePostLoginRedirect();
+            }, 1500);
+          },
+          error: function () {
+            // Nếu lỗi vẫn lưu như cũ
+            localStorage.setItem(
+              "nhaflower_user",
+              JSON.stringify({
+                id_taikhoan: response.data.id_taikhoan,
+                email: response.data.email,
+                ten: response.data.ten || response.data.ho_ten || "",
+                sdt: response.data.sdt || "",
+                dia_chi: response.data.dia_chi || "",
+                ngay_sinh: response.data.ngay_sinh || "",
+              })
+            );
+            showNotification("Đăng nhập thành công!", "success");
+            setTimeout(function () {
+              window.authManager.handlePostLoginRedirect();
+            }, 1500);
+          },
+        });
       } else {
         showNotification("Đăng nhập thất bại: " + response.message, "error");
       }

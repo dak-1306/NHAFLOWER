@@ -8,7 +8,7 @@
 class OrdersManager extends BaseProfileManager {
   constructor() {
     super();
-    this.apiBaseUrl = "../../api/don_hang.php";
+    this.apiBaseUrl = "../../api/orders.php";
     this.orders = [];
     this.$ordersContainer = null;
     this.$search = null;
@@ -54,8 +54,23 @@ class OrdersManager extends BaseProfileManager {
 
   async loadOrders() {
     try {
+      // Lấy id_khachhang từ localStorage
+      let userData = JSON.parse(
+        localStorage.getItem("nhaflower_user") || "null"
+      );
+      let id_khachhang =
+        userData && userData.id_khachhang ? userData.id_khachhang : null;
+      if (!id_khachhang) {
+        this.showErrorMessage(
+          "Không tìm thấy thông tin khách hàng. Vui lòng đăng nhập lại!"
+        );
+        this.$ordersContainer.html(
+          `<div class='text-center py-5'><i class='fas fa-exclamation-circle fa-2x text-muted mb-3'></i><h5 class='text-muted'>Không tìm thấy thông tin khách hàng</h5></div>`
+        );
+        return;
+      }
       const res = await fetch(
-        `${this.apiBaseUrl}?action=get_by_customer&id_khachhang=${this.currentUserId}`,
+        `${this.apiBaseUrl}?customer_id=${id_khachhang}`,
         { method: "GET", headers: { "Content-Type": "application/json" } }
       );
       const payload = await res.json();
@@ -79,6 +94,7 @@ class OrdersManager extends BaseProfileManager {
   }
 
   renderOrders(list = this.orders) {
+    console.log("Orders data:", list);
     if (!list.length) {
       this.$ordersContainer.html(`
         <div class="text-center py-5">
@@ -101,7 +117,7 @@ class OrdersManager extends BaseProfileManager {
     const statusBadge = this.getStatusBadge(order.trang_thai);
     const formattedDate = this.formatDate(order.ngay_dat);
     const total =
-      Number(order.total) || this.calculateOrderTotal(order.items || []);
+      Number(order.tong_tien) || this.calculateOrderTotal(order.items || []);
 
     return `
       <div class="card mb-3 order-card" data-order-id="${order.id_donhang}">

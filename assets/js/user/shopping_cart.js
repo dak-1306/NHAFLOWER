@@ -31,42 +31,15 @@ class ShoppingCartManager {
       const currentVersion = "2.0"; // Update when image paths change
 
       if (savedCart && cartVersion === currentVersion) {
-        this.cartItems = JSON.parse(savedCart);
-        // Validate and fix image paths
-        this.cartItems = this.fixImagePaths(this.cartItems);
+        this.cartItems = this.fixImagePaths(JSON.parse(savedCart));
       } else {
-        // Clear old data and use demo data
+        // Clear old data nếu version mismatch
         if (savedCart) {
           console.log("Clearing old cart data due to version mismatch");
           localStorage.removeItem("nhaflower_cart");
         }
         localStorage.setItem("nhaflower_cart_version", currentVersion);
-
-        // Demo data for testing
-        this.cartItems = [
-          {
-            id: 1,
-            name: "Hoa hồng đỏ",
-            price: 250000,
-            originalPrice: 300000,
-            quantity: 2,
-            size: "Vừa",
-            image: "../assets/img/products/hoa_hong_do.jpg",
-            inStock: true,
-            stockQuantity: 10,
-          },
-          {
-            id: 2,
-            name: "Hoa tulip vàng",
-            price: 180000,
-            originalPrice: 200000,
-            quantity: 1,
-            size: "Nhỏ",
-            image: "../assets/img/products/hoa_cuc_trang.jpg",
-            inStock: true,
-            stockQuantity: 5,
-          },
-        ];
+        this.cartItems = [];
       }
     } catch (error) {
       console.error("Error loading cart items:", error);
@@ -502,8 +475,8 @@ class ShoppingCartManager {
 
     console.log("Order Summary:", orderSummary);
 
-    // TODO: Redirect to checkout page
-    // window.location.href = 'checkout.html';
+    // Chuyển đến trang thanh toán nếu hợp lệ
+    window.location.href = "checkout.html";
   }
 }
 
