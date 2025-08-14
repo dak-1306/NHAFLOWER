@@ -1,250 +1,199 @@
 /**
- * NHAFLOWER - Personal Info JavaScript
+ * NHAFLOWER - Personal Info JavaScript (refactor)
  * File: profile-personal-info.js
  * Author: NHAFLOWER Team
- * Created: 2025
+ * Updated: 2025-08
  */
 
 class PersonalInfoManager extends BaseProfileManager {
   constructor() {
     super();
-    this.isEditing = false;
     this.apiBaseUrl = "../../auth/profile.php";
+    this.isEditing = false;
+    this.$form = null;
+    this.$actions = null;
+    this.$btnEdit = null;
     this.init();
   }
 
   init() {
     $(document).ready(() => {
-      console.log("Personal Info Manager initialized");
       this.getCurrentUser();
+      // Cập nhật sidebar từ localStorage (nhanh) — có thể thay bằng call API nếu muốn
+      const userData = JSON.parse(localStorage.getItem("nhaflower_user") || "null");
+      new BaseProfileManager().updateSidebarInfo(userData);
+
+      this.cacheDom();
+      this.bindEvents();
+      this.disableEditing();
       this.loadUserData();
-      this.setupEventListeners();
+    });
+  }
+
+  cacheDom() {
+    this.$form = $("#personalInfoForm");
+    this.$actions = $(".form-actions");
+    this.$btnEdit = $(".card-header .btn-primary");
+  }
+
+  bindEvents() {
+    this.$form.on("submit", (e) => {
+      e.preventDefault();
+      if (!this.isEditing) return;
+      const data = this.getFormData();
+      if (!this.validatePersonalInfo(data)) return;
+      this.savePersonalInfo(data);
     });
   }
 
   async loadUserData() {
     try {
-      console.log("Loading user data for ID:", this.currentUserId);
-
-      const response = await fetch(
-        `${this.apiBaseUrl}?id_taikhoan=${this.currentUserId}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      const result = await response.json();
-
-      if (result.success) {
-        const userData = result.data;
-        this.populateForm(userData);
-        this.updateSidebarInfo(userData);
+      const res = await fetch(`${this.apiBaseUrl}?id_taikhoan=${this.currentUserId}`, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      });
+      const payload = await res.json();
+      if (payload && payload.success && payload.data) {
+        const user = payload.data;
+        this.populateForm(user);
+        this.updateSidebarInfo(user);
       } else {
-        console.error("Error loading user data:", result.message);
-        this.showErrorMessage(
-          "Không thể tải thông tin người dùng: " + result.message
-        );
-        // Fallback to mock data
-        this.loadMockData();
+        this.showErrorMessage("Không thể tải thông tin người dùng.");
       }
-    } catch (error) {
-      console.error("Error:", error);
+    } catch (err) {
+      console.error(err);
       this.showErrorMessage("Lỗi kết nối server");
-      // Fallback to mock data
-      this.loadMockData();
     }
   }
 
-  populateForm(userData) {
-    // Populate form fields
-    $("#fullName").val(userData.ten || "");
-    $("#email").val(userData.email || "");
-    $("#phone").val(userData.sdt || "");
-    $("#birthDate").val(userData.ngay_sinh || "");
-    $("#address").val(userData.dia_chi || "");
+  populateForm(user) {
+    $("#fullName").val(user.ten || "");
+    $("#email").val(user.email || "");
+    $("#phone").val(user.sdt || "");
+    $("#birthDate").val(user.ngay_sinh || "");
+    $("#address").val(user.dia_chi || "");
 
-    // Set default values for fields not in database
-    $("#gender").val("male");
-    $("#occupation").val("Khách hàng");
+    // Nếu có trong DB thì map thêm; nếu không có thì giữ mặc định UI
+    if (user.gioi_tinh) $("#gender").val(user.gioi_tinh);
+    if (user.nghe_nghiep) $("#occupation").val(user.nghe_nghiep);
   }
 
-  // Fallback to mock data if API fails
-  loadMockData() {
-    const mockData = {
-      ten: "Nguyễn Văn An (Demo)",
-      email: "demo@nhaflower.com",
-      sdt: "0123456789",
-      ngay_sinh: "1990-01-01",
-      dia_chi: "123 Đường ABC, Phường XYZ, Quận 1, TP.HCM",
+  getFormData() {
+    return {
+      id_taikhoan: this.currentUserId,
+      ten: ($("#fullName").val() || "").trim(),
+      email: ($("#email").val() || "").trim(),
+      sdt: ($("#phone").val() || "").trim(),
+      ngay_sinh: ($("#birthDate").val() || "").trim(),
+      dia_chi: ($("#address").val() || "").trim(),
+      gioi_tinh: ($("#gender").val() || "").trim(),
+      nghe_nghiep: ($("#occupation").val() || "").trim(),
     };
-
-    this.populateForm(mockData);
-    this.updateSidebarInfo(mockData);
-  }
-
-  setupEventListeners() {
-    // Form submission
-    $("#personalInfoForm").on("submit", (e) => {
-      e.preventDefault();
-      if (this.isEditing) {
-        this.savePersonalInfo();
-      }
-    });
   }
 
   enableEditing() {
     this.isEditing = true;
-
-    // Enable form fields
-    $(
-      "#personalInfoForm input, #personalInfoForm textarea, #personalInfoForm select"
-    )
+    $("#personalInfoForm input, #personalInfoForm textarea, #personalInfoForm select")
       .prop("readonly", false)
       .prop("disabled", false);
-
-    // Show form actions
-    $(".form-actions").show();
-
-    // Update button
-    $(".card-header .btn-primary").html('<i class="fas fa-times"></i> Hủy');
+    this.$actions.show();
+    this.$btnEdit.html('<i class="fas fa-times"></i> Hủy');
   }
 
   disableEditing() {
     this.isEditing = false;
-
-    // Disable form fields
-    $("#personalInfoForm input, #personalInfoForm textarea").prop(
-      "readonly",
-      true
-    );
+    $("#personalInfoForm input, #personalInfoForm textarea").prop("readonly", true);
     $("#personalInfoForm select").prop("disabled", true);
-
-    // Hide form actions
-    $(".form-actions").hide();
-
-    // Update button
-    $(".card-header .btn-primary").html(
-      '<i class="fas fa-edit"></i> Chỉnh sửa'
-    );
+    this.$actions.hide();
+    this.$btnEdit.html('<i class="fas fa-edit"></i> Chỉnh sửa');
   }
 
-  savePersonalInfo() {
-    // Get form data
-    const formData = {
-      id_taikhoan: this.currentUserId,
-      ten: $("#fullName").val(),
-      email: $("#email").val(),
-      sdt: $("#phone").val(),
-      ngay_sinh: $("#birthDate").val(),
-      dia_chi: $("#address").val(),
-    };
-
-    // Validate data
-    if (!this.validatePersonalInfo(formData)) {
-      return;
-    }
-
-    // Show loading
-    $(".form-actions .btn-success")
-      .prop("disabled", true)
-      .html('<i class="fas fa-spinner fa-spin"></i> Đang lưu...');
-
-    // Call API
-    this.callSaveAPI(formData);
+  toggleEditing() {
+    this.isEditing ? this.disableEditing() : this.enableEditing();
   }
 
-  async callSaveAPI(formData) {
+  async savePersonalInfo(formData) {
+    const $btnSave = this.$actions.find(".btn-success");
+    $btnSave.prop("disabled", true).html('<i class="fas fa-spinner fa-spin"></i> Đang lưu...');
+
     try {
-      console.log("Saving user data:", formData);
-
-      const response = await fetch(this.apiBaseUrl, {
+      const res = await fetch(this.apiBaseUrl, {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
+      const result = await res.json();
 
-      const result = await response.json();
-
-      if (result.success) {
-        this.showSuccessMessage(
-          "Thông tin cá nhân đã được cập nhật thành công!"
-        );
+      if (result && result.success) {
+        this.showSuccessMessage("Cập nhật thông tin cá nhân thành công!");
         this.disableEditing();
 
-        // Update sidebar
-        $("#profileName").text(formData.ten);
-        $("#profileEmail").text(formData.email);
+        // Cập nhật sidebar nhanh
+        $("#profileName").text(formData.ten || "");
+        $("#profileEmail").text(formData.email || "");
       } else {
-        this.showErrorMessage("Lỗi cập nhật: " + result.message);
+        this.showErrorMessage("Lỗi cập nhật: " + (result?.message || "Không xác định"));
       }
-    } catch (error) {
-      console.error("Error:", error);
+    } catch (err) {
+      console.error(err);
       this.showErrorMessage("Lỗi kết nối server");
+    } finally {
+      $btnSave.prop("disabled", false).html('<i class="fas fa-save"></i> Lưu thay đổi');
     }
-
-    // Reset button
-    $(".form-actions .btn-success")
-      .prop("disabled", false)
-      .html('<i class="fas fa-save"></i> Lưu thay đổi');
   }
 
   validatePersonalInfo(data) {
-    // Basic validation
-    if (!data.ten || !data.ten.trim()) {
+    if (!data.ten) {
       this.showErrorMessage("Vui lòng nhập họ và tên");
       return false;
     }
-
-    if (!data.email || !data.email.trim()) {
+    if (!data.email) {
       this.showErrorMessage("Vui lòng nhập email");
       return false;
     }
-
     if (!this.isValidEmail(data.email)) {
       this.showErrorMessage("Email không hợp lệ");
       return false;
     }
-
-    if (!data.sdt || !data.sdt.trim()) {
+    if (!data.sdt) {
       this.showErrorMessage("Vui lòng nhập số điện thoại");
       return false;
     }
-
     if (!this.isValidPhone(data.sdt)) {
       this.showErrorMessage("Số điện thoại không đúng định dạng");
       return false;
     }
-
     return true;
   }
-}
 
-// Global functions
-function editPersonalInfo() {
-  if (personalInfoManager.isEditing) {
-    personalInfoManager.disableEditing();
-  } else {
-    personalInfoManager.enableEditing();
+  isValidEmail(email) {
+    // Regex email nhẹ nhàng, đủ dùng
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  }
+
+  isValidPhone(phone) {
+    // VN (10–11 số), chấp nhận 0, +84
+    return /^(?:\+?84|0)(?:\d){9,10}$/.test(phone.replace(/\s+/g, ""));
+  }
+
+  cancelEdit() {
+    this.disableEditing();
+    this.loadUserData(); // reload dữ liệu thật
   }
 }
 
+/* ===== Global bindings để tương thích HTML sẵn có ===== */
+const personalInfoManager = new PersonalInfoManager();
+
+function editPersonalInfo() {
+  personalInfoManager.toggleEditing();
+}
 function cancelEdit() {
-  personalInfoManager.disableEditing();
-  personalInfoManager.loadUserData(); // Reset form data
+  personalInfoManager.cancelEdit();
 }
-
 function changeAvatar() {
-  personalInfoManager.changeAvatar();
+  // tuỳ dự án, hiện không làm gì
 }
-
 function logout() {
   personalInfoManager.logout();
 }
-
-// Initialize manager
-const personalInfoManager = new PersonalInfoManager();

@@ -36,7 +36,7 @@
     <link rel="stylesheet" href="../../assets/css/user/common.css" />
   </head>
   <body>
-    <!-- THANH NAVIGATION -->
+    <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-custom fixed-top">
       <div class="container">
         <div class="navbar-nav mr-auto">
@@ -57,7 +57,7 @@
             <div
               class="user-avatar"
               title="Trang cá nhân"
-              onclick="window.location.href='personal-info.html'"
+              onclick="window.location.href='dashboard.html'"
             >
               <i class="fas fa-user"></i>
             </div>
@@ -72,137 +72,44 @@
         </div>
       </div>
     </nav>
+
     <!-- Main Content -->
     <div class="main-content">
       <div class="row profile-container">
         <!-- Sidebar -->
         <div class="col-lg-4">
-          <div class="profile-sidebar">
-            <div class="profile-avatar-section">
-              <div class="profile-avatar">
-                <img
-                  id="profileAvatar"
-                  src="../../assets/img/user/default-avatar.png"
-                  alt="Avatar"
-                />
-              </div>
-              <h4 id="profileName">Người dùng NHAFLOWER</h4>
-              <p id="profileEmail">user@nhaflower.com</p>
-            </div>
-
-            <nav class="profile-nav">
-              <ul>
-                <li>
-                  <a href="personal-info.html" class="nav-item">
-                    <i class="fas fa-user"></i>
-                    Thông tin cá nhân
-                  </a>
-                </li>
-                <li>
-                  <a href="orders.html" class="nav-item">
-                    <i class="fas fa-shopping-bag"></i>
-                    Đơn hàng của tôi
-                  </a>
-                </li>
-                <li>
-                  <a href="addresses.html" class="nav-item">
-                    <i class="fas fa-map-marker-alt"></i>
-                    Địa chỉ giao hàng
-                  </a>
-                </li>
-                <li>
-                  <a href="notifications.html" class="nav-item active">
-                    <i class="fas fa-bell"></i>
-                    Thông báo
-                  </a>
-                </li>
-                <li>
-                  <a href="security.html" class="nav-item">
-                    <i class="fas fa-lock"></i>
-                    Bảo mật
-                  </a>
-                </li>
-                <li>
-                  <a href="#" class="nav-item logout-btn" onclick="logout()">
-                    <i class="fas fa-sign-out-alt"></i>
-                    Đăng xuất
-                  </a>
-                </li>
-              </ul>
-            </nav>
-          </div>
+          <div id="sidebar-container"></div>
         </div>
-        <!-- Notification Settings -->
-        <div class="col-lg-8 content-card">
-          <div class="card-header">
-            <h5>Cài đặt thông báo</h5>
-          </div>
-          <div class="card-body">
-            <div class="form-check">
-              <input
-                type="checkbox"
-                id="emailNotifications"
-                class="form-check-input"
-                checked
-              />
-              <label class="form-check-label" for="emailNotifications">
-                <i class="fas fa-envelope"></i>
-                Nhận thông báo qua email
-              </label>
-            </div>
-            <div class="form-check">
-              <input
-                type="checkbox"
-                id="orderUpdates"
-                class="form-check-input"
-                checked
-              />
-              <label class="form-check-label" for="orderUpdates">
-                <i class="fas fa-shopping-bag"></i>
-                Thông báo cập nhật đơn hàng
-              </label>
-            </div>
-            <div class="form-check">
-              <input
-                type="checkbox"
-                id="promotionNotifications"
-                class="form-check-input"
-                checked
-              />
-              <label class="form-check-label" for="promotionNotifications">
-                <i class="fas fa-gift"></i>
-                Thông báo khuyến mãi và ưu đãi
-              </label>
-            </div>
-            <div class="form-check">
-              <input
-                type="checkbox"
-                id="systemNotifications"
-                class="form-check-input"
-                checked
-              />
-              <label class="form-check-label" for="systemNotifications">
-                <i class="fas fa-cog"></i>
-                Thông báo hệ thống
-              </label>
-            </div>
-            <button
-              class="btn btn-primary mt-3"
-              onclick="saveNotificationSettings()"
+
+        <!-- Notifications Content -->
+        <div class="col-lg-8">
+          <div class="content-card">
+            <div
+              class="card-header d-flex justify-content-between align-items-center"
             >
-              <i class="fas fa-save"></i>
-              Lưu cài đặt
-            </button>
+              <h3>
+                <i class="fas fa-bell text-warning"></i> Thông báo của tôi
+              </h3>
+              <button class="btn btn-danger btn-clear-notifications">
+                <i class="fas fa-trash"></i> Xóa tất cả
+              </button>
+            </div>
+            <div class="card-body" id="notificationsContainer">
+              <div class="text-center py-5">
+                <i class="fas fa-spinner fa-spin fa-2x text-muted mb-3"></i>
+                <h5 class="text-muted">Đang tải thông báo...</h5>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Bootstrap JS -->
+    <!-- Scripts -->
     <script src="../../assets/vendor/jquery/jquery.min.js"></script>
     <script src="../../assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-
-    <!-- Custom JavaScript -->
+    <script src="../../assets/js/user/profile/profile-base.js"></script>
     <script src="../../assets/js/user/profile/profile-notifications.js"></script>
+    <script src="../../assets/js/user/profile/sidebar-loader.js"></script>
   </body>
 </html>

@@ -3,21 +3,167 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>NHAFLOWER - Trang cá nhân</title>
+    <title>NHAFLOWER - Bảng điều khiển</title>
 
-    <script>
-      // Redirect to personal info page as default
-      window.location.href = "./personal-info.html";
-    </script>
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N"
+      crossorigin="anonymous"
+    />
+    <link
+      href="../../assets/vendor/bootstrap/css/bootstrap.min.css"
+      rel="stylesheet"
+      onerror="console.warn('Local Bootstrap CSS not available, using CDN')"
+    />
+
+    <!-- Font Awesome -->
+    <link
+      href="../../assets/vendor/fontawesome-free/css/all.min.css"
+      rel="stylesheet"
+    />
+
+    <!-- Custom CSS -->
+    <link
+      rel="stylesheet"
+      href="../../assets/css/user/profile/profile-base.css"
+    />
+    <link rel="stylesheet" href="../../assets/css/user/common.css" />
   </head>
   <body>
-    <div style="text-align: center; padding: 50px">
-      <p>Đang chuyển hướng đến thông tin cá nhân...</p>
-      <p>
-        <a href="./personal-info.html"
-          >Nhấn vào đây nếu không được chuyển hướng tự động</a
-        >
-      </p>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-custom fixed-top">
+      <div class="container">
+        <div class="navbar-nav mr-auto">
+          <a class="nav-link-custom" href="../home.html">Home</a>
+          <a class="nav-link-custom" href="../list_product.html">Danh sách</a>
+        </div>
+
+        <div class="navbar-brand-logo">
+          <img
+            src="../../assets/img/user/logo_NHAFLOWER.png"
+            alt="NHAFLOWER"
+            class="brand-circle-logo"
+          />
+        </div>
+
+        <div class="navbar-nav ml-auto">
+          <div class="nav-icon-wrapper">
+            <div
+              class="user-avatar"
+              title="Trang cá nhân"
+              onclick="window.location.href='dashboard.html'"
+            >
+              <i class="fas fa-user"></i>
+            </div>
+          </div>
+          <div class="nav-icon-wrapper">
+            <i
+              class="fas fa-shopping-bag nav-icon"
+              title="Giỏ hàng"
+              onclick="window.location.href='../shopping_cart.html'"
+            ></i>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <div class="row profile-container">
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+          <div id="sidebar-container"></div>
+        </div>
+
+        <!-- Dashboard Content -->
+        <div class="col-lg-8">
+          <div class="content-card">
+            <div class="card-header">
+              <h3>
+                <i class="fas fa-tachometer-alt text-primary"></i> Bảng điều
+                khiển
+              </h3>
+            </div>
+            <div class="card-body">
+              <div class="row">
+                <!-- Total Orders -->
+                <div class="col-md-6 mb-4">
+                  <div
+                    class="dashboard-card bg-primary text-white p-3 rounded shadow-sm"
+                  >
+                    <div class="d-flex align-items-center">
+                      <i class="fas fa-shopping-bag fa-2x mr-3"></i>
+                      <div>
+                        <h5 class="mb-0" id="totalOrders">0</h5>
+                        <small>Đơn hàng</small>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- Notifications -->
+                <div class="col-md-6 mb-4">
+                  <div
+                    class="dashboard-card bg-warning text-white p-3 rounded shadow-sm"
+                  >
+                    <div class="d-flex align-items-center">
+                      <i class="fas fa-bell fa-2x mr-3"></i>
+                      <div>
+                        <h5 class="mb-0" id="totalNotifications">0</h5>
+                        <small>Thông báo</small>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- Addresses -->
+                <div class="col-md-6 mb-4">
+                  <div
+                    class="dashboard-card bg-success text-white p-3 rounded shadow-sm"
+                  >
+                    <div class="d-flex align-items-center">
+                      <i class="fas fa-map-marker-alt fa-2x mr-3"></i>
+                      <div>
+                        <h5 class="mb-0" id="totalAddresses">0</h5>
+                        <small>Địa chỉ</small>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- Security -->
+                <div class="col-md-6 mb-4">
+                  <div
+                    class="dashboard-card bg-info text-white p-3 rounded shadow-sm"
+                  >
+                    <div class="d-flex align-items-center">
+                      <i class="fas fa-lock fa-2x mr-3"></i>
+                      <div>
+                        <h5 class="mb-0" id="securityStatus">An toàn</h5>
+                        <small>Bảo mật tài khoản</small>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Recent Orders -->
+              <div class="mt-4">
+                <h5>Đơn hàng gần đây</h5>
+                <div id="recentOrders">
+                  <p class="text-muted">Chưa có đơn hàng nào gần đây.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
+
+    <!-- Scripts -->
+    <script src="../../assets/vendor/jquery/jquery.min.js"></script>
+    <script src="../../assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="../../assets/js/user/profile/profile-base.js"></script>
+    <script src="../../assets/js/user/profile/profile-dashboard.js"></script>
+    <script src="../../assets/js/user/profile/sidebar-loader.js"></script>
   </body>
 </html>

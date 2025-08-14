@@ -1,0 +1,68 @@
+<!-- Sidebar Profile - Dùng chung cho tất cả các trang profile -->
+<div class="profile-sidebar">
+  <div class="profile-avatar-section">
+    <div class="profile-avatar">
+      <img
+        id="profileAvatar"
+        src="../../assets/img/user/default-avatar.png"
+        alt="Avatar"
+      />
+    </div>
+    <h4 id="profileName">Tên người dùng</h4>
+    <p id="profileEmail">Email</p>
+  </div>
+  <nav class="profile-nav">
+    <ul>
+      <li>
+        <a href="dashboard.html" class="nav-item" id="sidebar-dashboard">
+          <i class="fas fa-tachometer-alt"></i>
+          Bảng điều khiển
+        </a>
+      </li>
+      <li>
+        <a
+          href="personal-info.html"
+          class="nav-item"
+          id="sidebar-personal-info"
+        >
+          <i class="fas fa-user"></i>
+          Thông tin cá nhân
+        </a>
+      </li>
+      <li>
+        <a href="orders.html" class="nav-item" id="sidebar-orders">
+          <i class="fas fa-shopping-bag"></i>
+          Đơn hàng của tôi
+        </a>
+      </li>
+      <li>
+        <a href="addresses.html" class="nav-item" id="sidebar-addresses">
+          <i class="fas fa-map-marker-alt"></i>
+          Địa chỉ giao hàng
+        </a>
+      </li>
+      <li>
+        <a
+          href="notifications.html"
+          class="nav-item"
+          id="sidebar-notifications"
+        >
+          <i class="fas fa-bell"></i>
+          Thông báo
+        </a>
+      </li>
+      <li>
+        <a href="security.html" class="nav-item" id="sidebar-security">
+          <i class="fas fa-lock"></i>
+          Bảo mật
+        </a>
+      </li>
+      <li>
+        <a href="#" class="nav-item logout-btn" onclick="logout()">
+          <i class="fas fa-sign-out-alt"></i>
+          Đăng xuất
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>

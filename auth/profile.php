@@ -18,26 +18,33 @@ $method = $_SERVER['REQUEST_METHOD'];
 
 if ($method === 'GET') {
     // Get profile info
-    if (!isset($_GET['id_taikhoan'])) {
+    $id_taikhoan = isset($_GET['id_taikhoan']) ? intval($_GET['id_taikhoan']) : null;
+    $id_khachhang = isset($_GET['id_khachhang']) ? intval($_GET['id_khachhang']) : null;
+    if (!$id_taikhoan && !$id_khachhang) {
         echo json_encode([
             "success" => false,
-            "message" => "ID tài khoản là bắt buộc"
+            "message" => "Thiếu id_taikhoan hoặc id_khachhang"
         ], JSON_UNESCAPED_UNICODE);
         exit;
     }
-    
-    $id_taikhoan = intval($_GET['id_taikhoan']);
-    
     try {
-        // Query to get user profile
-        $sql = "SELECT t.id_taikhoan, t.email, t.vai_tro,
-                       k.ten, k.sdt, k.dia_chi, k.ngay_sinh
-                FROM taikhoan t 
-                LEFT JOIN khachhang k ON t.id_taikhoan = k.id_taikhoan 
-                WHERE t.id_taikhoan = ? AND t.trang_thai = 1";
-        
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("i", $id_taikhoan);
+        if ($id_taikhoan) {
+            $sql = "SELECT t.id_taikhoan, t.email, t.vai_tro, t.trang_thai,
+                           k.ten, k.sdt, k.dia_chi, k.ngay_sinh
+                    FROM taikhoan t 
+                    LEFT JOIN khachhang k ON t.id_taikhoan = k.id_taikhoan 
+                    WHERE t.id_taikhoan = ?";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("i", $id_taikhoan);
+        } else {
+            $sql = "SELECT t.id_taikhoan, t.email, t.vai_tro, t.trang_thai,
+                           k.ten, k.sdt, k.dia_chi, k.ngay_sinh
+                    FROM khachhang k 
+                    LEFT JOIN taikhoan t ON t.id_taikhoan = k.id_taikhoan 
+                    WHERE k.id_khachhang = ?";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("i", $id_khachhang);
+        }
         $stmt->execute();
         $result = $stmt->get_result();
         
