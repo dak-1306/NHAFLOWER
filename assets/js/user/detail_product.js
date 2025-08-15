@@ -16,177 +16,45 @@ class ProductDetailManager {
 
   init() {
     $(document).ready(() => {
-      console.log("Product Detail Manager initialized");
       this.loadProductDetail();
       this.setupEventListeners();
-      this.loadRelatedProducts();
     });
   }
 
   setupEventListeners() {
-    // No additional event listeners needed for simplified version
+    // Nút tăng/giảm số lượng (nếu có trong DOM)
+    $(document).on("click", ".qty-plus", () => {
+      this.setQuantity(this.quantity + 1);
+    });
+
+    $(document).on("click", ".qty-minus", () => {
+      this.setQuantity(Math.max(1, this.quantity - 1));
+    });
+
+    $(document).on("input", "#quantityInput", (e) => {
+      const n = parseInt(e.target.value || "1", 10);
+      if (!isNaN(n) && n > 0) {
+        this.setQuantity(n);
+      }
+    });
+
+    // Thêm vào giỏ (nếu có id hoặc class)
+    $(document).on("click", "#addToCart, .add-to-cart", () => this.addToCart());
+
+    // Mua ngay
+    $(document).on("click", "#buyNow, .buy-now", () => this.buyNow());
+
+    // Yêu thích
+    $(document).on("click", ".favorite-btn", () => this.toggleFavorite());
   }
 
-  // Lấy product ID từ URL parameters
+  // --- Helpers ---
+
   getProductIdFromUrl() {
     const urlParams = new URLSearchParams(window.location.search);
-    return urlParams.get("id") || 1; // Default to product ID 1 for demo
+    return urlParams.get("id") || 1; // fallback demo
   }
 
-  // Load thông tin chi tiết sản phẩm
-  async loadProductDetail() {
-    try {
-      const productId = this.getProductIdFromUrl();
-      console.log("Loading product detail for ID:", productId);
-
-      // Show loading state
-      this.showLoadingSkeleton();
-
-      // Simulate API call - thay thế bằng API thật sau
-      const mockProduct = this.getMockProductData(productId);
-
-      // Uncomment dòng dưới khi có API thật
-      // const response = await fetch(`${this.API_BASE_URL}?action=get_sanpham&id=${productId}`);
-      // const product = await response.json();
-
-      this.currentProduct = mockProduct;
-      this.renderProductDetail(mockProduct);
-
-      // Update page title
-      document.title = `${mockProduct.name} - NHAFLOWER`;
-    } catch (error) {
-      console.error("Error loading product detail:", error);
-      this.showErrorMessage("Không thể tải thông tin sản phẩm");
-    }
-  }
-
-  // Mock data cho demo - sẽ thay thế bằng API call thật
-  getMockProductData(productId) {
-    const mockProducts = {
-      1: {
-        id: 1,
-        name: "Hoa hồng đỏ tươi",
-        price: 250000,
-        originalPrice: 300000,
-        description:
-          "Hoa hồng đỏ tươi được chọn lọc kỹ càng, thể hiện tình yêu chân thành và sâu sắc. Với màu đỏ rực rỡ và hương thom quyến rũ, đây là lựa chọn hoàn hảo cho những dịp đặc biệt.",
-        detailedDescription: `
-          <h4>Đặc điểm nổi bật:</h4>
-          <ul>
-            <li>Hoa tươi, được cắt trong ngày</li>
-            <li>Màu sắc rực rỡ, không phai màu</li>
-            <li>Hương thơm tự nhiên, dịu nhẹ</li>
-            <li>Thời gian tươi: 7-10 ngày với cách chăm sóc đúng</li>
-          </ul>
-          <h4>Ý nghĩa:</h4>
-          <p>Hoa hồng đỏ là biểu tượng của tình yêu nồng nàn, sự đam mê và lòng trung thành. Thích hợp tặng người yêu, vợ/chồng trong các dịp Valentine, sinh nhật, kỷ niệm.</p>
-        `,
-        rating: 4.9,
-        reviewCount: 156,
-        category: "hoa-hong",
-        images: ["../assets/img/products/hoa_hong_do.jpg"],
-        inStock: true,
-        stockQuantity: 50,
-      },
-      2: {
-        id: 2,
-        name: "Hoa tulip vàng",
-        price: 320000,
-        originalPrice: 380000,
-        description:
-          "Hoa tulip vàng tươi sáng, mang đến niềm vui và hy vọng. Thích hợp trang trí nhà cửa hoặc làm quà tặng ý nghĩa.",
-        rating: 4.8,
-        reviewCount: 89,
-        category: "hoa-tulip",
-        images: ["../assets/img/products/hoa_cuc_trang.jpg"],
-      },
-      // Thêm các sản phẩm khác...
-    };
-
-    return mockProducts[productId] || mockProducts[1];
-  }
-
-  // Hiển thị thông tin sản phẩm
-  renderProductDetail(product) {
-    // Update product name
-    $("#productName").text(product.name);
-
-    // Update price
-    $("#productPrice").text(this.formatPrice(product.price));
-    if (product.originalPrice && product.originalPrice > product.price) {
-      $("#originalPrice").text(this.formatPrice(product.originalPrice)).show();
-      const discount = Math.round(
-        ((product.originalPrice - product.price) / product.originalPrice) * 100
-      );
-      $(".discount-badge").text(`-${discount}%`).show();
-    } else {
-      $("#originalPrice").hide();
-      $(".discount-badge").hide();
-    }
-
-    // Update rating
-    $("#ratingNumber").text(product.rating);
-    $("#reviewCount").text(product.reviewCount);
-    this.renderStars(product.rating, "#productRating");
-
-    // Update description
-    $("#productDescription").text(product.description);
-    $("#detailedDescription").html(
-      product.detailedDescription || product.description
-    );
-
-    // Update images
-    if (product.images && product.images.length > 0) {
-      this.renderProductImages(product.images);
-    }
-
-    // Hide loading skeleton
-    this.hideLoadingSkeleton();
-  }
-
-  // Render product images
-  renderProductImages(images) {
-    // Update main image only with error handling
-    const $mainImage = $("#mainProductImage");
-
-    // Add error handler before setting src
-    $mainImage.off("error").on("error", function () {
-      console.log("Image failed to load:", this.src);
-      // Fallback to default SVG placeholder
-      this.src = "../assets/img/products/default-flower.svg";
-    });
-
-    // Add load handler for successful loading
-    $mainImage.off("load").on("load", function () {
-      console.log("Image loaded successfully:", this.src);
-    });
-
-    $mainImage
-      .attr("src", images[0])
-      .attr("alt", this.currentProduct.name)
-      .show();
-  }
-
-  // Render rating stars
-  renderStars(rating, container) {
-    const fullStars = Math.floor(rating);
-    const hasHalfStar = rating % 1 !== 0;
-    let starsHtml = "";
-
-    for (let i = 0; i < 5; i++) {
-      if (i < fullStars) {
-        starsHtml += '<i class="fas fa-star"></i>';
-      } else if (i === fullStars && hasHalfStar) {
-        starsHtml += '<i class="fas fa-star-half-alt"></i>';
-      } else {
-        starsHtml += '<i class="far fa-star"></i>';
-      }
-    }
-
-    $(container).html(starsHtml);
-  }
-
-  // Format price
   formatPrice(price) {
     return new Intl.NumberFormat("vi-VN", {
       style: "currency",
@@ -196,19 +64,30 @@ class ProductDetailManager {
       .replace("₫", "VNĐ");
   }
 
-  // Show loading skeleton
+  getStarsHtml(rating = 4.8) {
+    const full = Math.floor(rating);
+    const half = rating - full >= 0.5 ? 1 : 0;
+    const empty = 5 - full - half;
+    return (
+      "<span class='rating-stars'>" +
+      "★".repeat(full) +
+      (half ? "☆" : "") +
+      "☆".repeat(empty) +
+      "</span>"
+    );
+  }
+
   showLoadingSkeleton() {
     $("#productName").addClass("loading-skeleton").text("");
     $("#productPrice").addClass("loading-skeleton").text("");
     $("#productDescription").addClass("loading-skeleton").text("");
+    $("#productGallery").addClass("loading-skeleton").empty();
   }
 
-  // Hide loading skeleton
   hideLoadingSkeleton() {
     $(".loading-skeleton").removeClass("loading-skeleton");
   }
 
-  // Show error message
   showErrorMessage(message) {
     const alertHtml = `
       <div class="alert alert-danger alert-dismissible fade show" role="alert">
@@ -221,211 +100,380 @@ class ProductDetailManager {
     $(".product-detail-container").prepend(alertHtml);
   }
 
-  // Load related products
+  // --- Data ---
+
+  async loadProductDetail() {
+    try {
+      const productId = this.getProductIdFromUrl();
+      this.showLoadingSkeleton();
+
+      const response = await fetch(
+        `${this.API_BASE_URL}?action=get_sanpham&id=${productId}`
+      );
+      const result = await response.json();
+
+      let productRaw = null;
+      if (result && result.success && result.data) {
+        productRaw = result.data;
+      } else {
+        // fallback mock nếu API lỗi
+        productRaw = this.getMockProductData(productId);
+        if (!productRaw) throw new Error("Không tìm thấy sản phẩm");
+      }
+
+      this.currentProduct = {
+        id: productRaw.id_sanpham ?? productRaw.id,
+        name: productRaw.ten_hoa ?? productRaw.name,
+        price: Number(productRaw.gia ?? productRaw.price ?? 0),
+        originalPrice: Number(
+          productRaw.gia_goc ?? productRaw.originalPrice ?? productRaw.gia ?? 0
+        ),
+        description: productRaw.mo_ta ?? productRaw.description ?? "",
+        detailedDescription:
+          productRaw.mo_ta_chi_tiet ??
+          productRaw.detailedDescription ??
+          productRaw.mo_ta ??
+          "",
+        rating: Number(productRaw.danh_gia ?? productRaw.rating ?? 4.8),
+        reviewCount: Number(
+          productRaw.so_danh_gia ?? productRaw.reviewCount ?? 0
+        ),
+        category: productRaw.id_loaihoa ?? productRaw.category ?? "",
+        images: productRaw.hinh_anh
+          ? [`../assets/img/products/${productRaw.hinh_anh}`]
+          : productRaw.images ?? ["../assets/img/products/default-flower.svg"],
+        inStock: (productRaw.so_luong ?? productRaw.stockQuantity ?? 0) > 0,
+        stockQuantity: Number(
+          productRaw.so_luong ?? productRaw.stockQuantity ?? 0
+        ),
+      };
+
+      this.renderProductDetail(this.currentProduct);
+      document.title = `${this.currentProduct.name} - NHAFLOWER`;
+
+      // Tải sản phẩm liên quan
+      this.loadRelatedProducts();
+    } catch (error) {
+      console.error("Error loading product detail:", error);
+      this.showErrorMessage("Không thể tải thông tin sản phẩm");
+    } finally {
+      this.hideLoadingSkeleton();
+    }
+  }
+
+  getMockProductData(productId) {
+    const mockProducts = {
+      1: {
+        id: 1,
+        name: "Hoa hồng đỏ tươi",
+        price: 250000,
+        originalPrice: 300000,
+        description:
+          "Hoa hồng đỏ tươi được chọn lọc kỹ càng, thể hiện tình yêu chân thành và sâu sắc.",
+        detailedDescription:
+          "<h4>Đặc điểm nổi bật:</h4><ul><li>Đỏ rực rỡ</li><li>Hương thơm dịu</li></ul>",
+        rating: 4.8,
+        reviewCount: 21,
+        category: 10,
+        images: ["../assets/img/products/hoa_hong_do.jpg"],
+        stockQuantity: 12,
+      },
+    };
+    return mockProducts[productId] || null;
+  }
+
   async loadRelatedProducts() {
     try {
-      // Mock related products data
-      const relatedProducts = [
-        {
-          id: 2,
-          name: "Hoa tulip vàng",
-          price: 320000,
-          image: "../assets/img/products/hoa_cuc_trang.jpg",
-          rating: 4.8,
-        },
-        {
-          id: 3,
-          name: "Hoa lan tím",
-          price: 450000,
-          image: "../assets/img/products/hoa_hong_do.jpg",
-          rating: 4.9,
-        },
-        {
-          id: 4,
-          name: "Hoa cúc họa mi",
-          price: 180000,
-          image: "../assets/img/products/default-flower.svg",
-          rating: 4.7,
-        },
-      ];
+      // Ưu tiên API thật nếu có category
+      if (this.currentProduct && this.currentProduct.category) {
+        const res = await fetch(
+          `${this.API_BASE_URL}?action=get_all&category=${this.currentProduct.category}`
+        );
+        const result = await res.json();
+        if (result && result.success && Array.isArray(result.data)) {
+          const relatedProducts = result.data
+            .filter((p) => (p.id_sanpham ?? p.id) != this.currentProduct.id)
+            .slice(0, 3);
 
-      const relatedHtml = relatedProducts
-        .map(
-          (product) => `
+          if (relatedProducts.length) {
+            this.renderRelatedProductsFromApi(relatedProducts);
+            return;
+          }
+        }
+      }
+      // Fallback mock nếu API không trả được
+      this.renderRelatedProductsMock();
+    } catch (err) {
+      console.warn("loadRelatedProducts fallback to mock:", err);
+      this.renderRelatedProductsMock();
+    }
+  }
+
+  renderRelatedProductsFromApi(list) {
+    const relatedHtml = list
+      .map(
+        (product) => `
         <div class="col-lg-4 col-md-6 mb-4">
           <div class="product-card" onclick="productDetailManager.goToProduct(${
-            product.id
-          })">
+            product.id_sanpham ?? product.id
+          })" style="cursor:pointer;">
             <div class="product-image">
-              <img src="${product.image}" alt="${product.name}" 
-               style="width: 100%; height: 200px; object-fit: cover; border-radius: 10px;"
-               onerror="this.src='../assets/img/products/default-flower.svg'; console.warn('Failed to load related product image:', this.src);">
+              <img src="../assets/img/products/${
+                product.hinh_anh || "default-flower.svg"
+              }" alt="${product.ten_hoa ?? product.name}"
+               style="width:100%;height:200px;object-fit:cover;border-radius:10px;"
+               onerror="this.src='../assets/img/products/default-flower.svg';">
             </div>
-            <div class="product-info" style="padding: 15px; text-align: center;">
-              <div class="product-name" style="font-weight: 600; margin-bottom: 10px;">${
-                product.name
-              }</div>
-              <div class="product-price" style="color: #e74c3c; font-weight: 700;">${this.formatPrice(
-                product.price
-              )}</div>
-              <div class="product-rating" style="margin-top: 8px;">
-                ${this.getStarsHtml(product.rating)}
-                <span style="margin-left: 5px; color: #6c757d;">${
-                  product.rating
-                }</span>
+            <div class="product-info" style="padding:15px;text-align:center;">
+              <div class="product-name" style="font-weight:600;margin-bottom:10px;">
+                ${product.ten_hoa ?? product.name}
+              </div>
+              <div class="product-price" style="color:#e74c3c;font-weight:700;">
+                ${this.formatPrice(product.gia ?? product.price ?? 0)}
+              </div>
+              <div class="product-rating" style="margin-top:8px;">
+                ${this.getStarsHtml(product.danh_gia ?? product.rating ?? 4.8)}
+                <span style="margin-left:5px;color:#6c757d;">
+                  ${(product.danh_gia ?? product.rating ?? 4.8).toFixed(1)}
+                </span>
               </div>
             </div>
           </div>
-        </div>
-      `
-        )
-        .join("");
+        </div>`
+      )
+      .join("");
+    $("#relatedProducts").html(relatedHtml);
+  }
 
-      $("#relatedProducts").html(relatedHtml);
-    } catch (error) {
-      console.error("Error loading related products:", error);
+  renderRelatedProductsMock() {
+    const relatedProducts = [
+      {
+        id: 2,
+        name: "Hoa tulip vàng",
+        price: 320000,
+        image: "../assets/img/products/hoa_cuc_trang.jpg",
+        rating: 4.8,
+      },
+      {
+        id: 3,
+        name: "Hoa lan tím",
+        price: 450000,
+        image: "../assets/img/products/hoa_hong_do.jpg",
+        rating: 4.9,
+      },
+      {
+        id: 4,
+        name: "Hoa cúc họa mi",
+        price: 180000,
+        image: "../assets/img/products/default-flower.svg",
+        rating: 4.7,
+      },
+    ];
+
+    const relatedHtml = relatedProducts
+      .map(
+        (p) => `
+        <div class="col-lg-4 col-md-6 mb-4">
+          <div class="product-card" onclick="productDetailManager.goToProduct(${
+            p.id
+          })" style="cursor:pointer;">
+            <div class="product-image">
+              <img src="${p.image}" alt="${p.name}"
+               style="width:100%;height:200px;object-fit:cover;border-radius:10px;"
+               onerror="this.src='../assets/img/products/default-flower.svg';">
+            </div>
+            <div class="product-info" style="padding:15px;text-align:center;">
+              <div class="product-name" style="font-weight:600;margin-bottom:10px;">${
+                p.name
+              }</div>
+              <div class="product-price" style="color:#e74c3c;font-weight:700;">${this.formatPrice(
+                p.price
+              )}</div>
+              <div class="product-rating" style="margin-top:8px;">
+                ${this.getStarsHtml(p.rating)}
+                <span style="margin-left:5px;color:#6c757d;">${p.rating.toFixed(
+                  1
+                )}</span>
+              </div>
+            </div>
+          </div>
+        </div>`
+      )
+      .join("");
+    $("#relatedProducts").html(relatedHtml);
+  }
+
+  // --- Render UI ---
+
+  renderProductDetail(product) {
+    // Tên
+    $("#productName").text(product.name);
+
+    // Giá
+    const priceHtml = `
+      <span class="current-price">${this.formatPrice(product.price)}</span>
+      ${
+        product.originalPrice && product.originalPrice > product.price
+          ? `<span class="original-price" style="text-decoration:line-through;margin-left:8px;color:#888;">
+               ${this.formatPrice(product.originalPrice)}
+             </span>`
+          : ""
+      }`;
+    $("#productPrice").html(priceHtml);
+
+    // Mô tả
+    $("#productDescription").html(product.description || "");
+
+    // Mô tả chi tiết (nếu có khung)
+    if ($("#productDetailedDescription").length) {
+      $("#productDetailedDescription").html(product.detailedDescription || "");
+    }
+
+    // Rating
+    if ($("#productRating").length) {
+      $("#productRating").html(
+        `${this.getStarsHtml(
+          product.rating
+        )} <span style="margin-left:6px;color:#6c757d;">${product.rating.toFixed(
+          1
+        )} (${product.reviewCount} đánh giá)</span>`
+      );
+    }
+
+    // Tồn kho
+    if ($("#stockStatus").length) {
+      $("#stockStatus")
+        .text(product.inStock ? "Còn hàng" : "Hết hàng")
+        .toggleClass("text-success", product.inStock)
+        .toggleClass("text-danger", !product.inStock);
+    }
+
+    // Ảnh (gallery)
+    const imgs =
+      product.images && product.images.length
+        ? product.images
+        : ["../assets/img/products/default-flower.svg"];
+    const galleryHtml = imgs
+      .map(
+        (src, idx) => `
+        <img src="${src}" alt="product-image-${idx}"
+             style="width:100%;max-height:420px;object-fit:cover;border-radius:12px;"
+             onerror="this.src='../assets/img/products/default-flower.svg';">`
+      )
+      .join("");
+    if ($("#productGallery").length) {
+      $("#productGallery").html(galleryHtml);
+    }
+
+    // Số lượng
+    this.setQuantity(1);
+    if ($("#quantityInput").length) $("#quantityInput").val(this.quantity);
+
+    // Nút
+    $("#addToCart, .add-to-cart").prop("disabled", !product.inStock);
+    $("#buyNow, .buy-now").prop("disabled", !product.inStock);
+  }
+
+  // --- Actions ---
+
+  setQuantity(n) {
+    this.quantity = Math.max(1, Math.min(999, n));
+    if ($("#quantityInput").length) {
+      $("#quantityInput").val(this.quantity);
     }
   }
 
-  // Get stars HTML for related products
-  getStarsHtml(rating) {
-    const fullStars = Math.floor(rating);
-    let starsHtml = "";
-
-    for (let i = 0; i < 5; i++) {
-      if (i < fullStars) {
-        starsHtml += '<i class="fas fa-star" style="color: #ffd700;"></i>';
-      } else {
-        starsHtml += '<i class="far fa-star" style="color: #ddd;"></i>';
+  addToCart() {
+    if (!this.currentProduct) return;
+    if (!this.currentProduct.inStock) {
+      this.showToast("Sản phẩm tạm hết hàng", "danger");
+      return;
+    }
+    // Kiểm tra đăng nhập
+    if (!localStorage.getItem("nhaflower_user")) {
+      if (confirm("Bạn cần đăng nhập để mua hàng. Đăng nhập ngay?")) {
+        window.location.href = "login.html";
       }
+      return;
     }
-
-    return starsHtml;
-  }
-
-  // Navigate to product
-  goToProduct(productId) {
-    window.location.href = `detail_product.html?id=${productId}`;
-  }
-}
-// Global functions for onclick events
-function openImageModal() {
-  const mainImageSrc = $("#mainProductImage").attr("src");
-  $("#modalImage").attr("src", mainImageSrc);
-  $("#imageModal").modal("show");
-}
-
-function decreaseQuantity() {
-  const currentQty = parseInt($("#quantity").val());
-  if (currentQty > 1) {
-    $("#quantity").val(currentQty - 1);
-    productDetailManager.quantity = currentQty - 1;
-  }
-}
-
-function increaseQuantity() {
-  const currentQty = parseInt($("#quantity").val());
-  const maxQty = 99; // Hoặc lấy từ stock quantity
-  if (currentQty < maxQty) {
-    $("#quantity").val(currentQty + 1);
-    productDetailManager.quantity = currentQty + 1;
-  }
-}
-
-function addToCart() {
-  // Kiểm tra đăng nhập (dựa vào user_token và user_data)
-  if (
-    !localStorage.getItem("user_token") ||
-    !localStorage.getItem("user_data")
-  ) {
-    if (confirm("Bạn cần đăng nhập để mua hàng. Đăng nhập ngay?")) {
-      window.location.href = "login.html";
+    const cart = JSON.parse(localStorage.getItem("nhaflower_cart") || "[]");
+    const idx = cart.findIndex((i) => i.id === this.currentProduct.id);
+    if (idx >= 0) {
+      cart[idx].quantity += this.quantity;
+    } else {
+      cart.push({
+        id: this.currentProduct.id,
+        name: this.currentProduct.name,
+        price: this.currentProduct.price,
+        image:
+          (this.currentProduct.images || [])[0] ||
+          "../assets/img/products/default-flower.svg",
+        quantity: this.quantity,
+      });
     }
-    return;
+    localStorage.setItem("nhaflower_cart", JSON.stringify(cart));
+    this.showToast("Đã thêm vào giỏ hàng!", "success");
   }
 
-  if (!productDetailManager.currentProduct) {
-    alert("Đang tải thông tin sản phẩm...");
-    return;
+  buyNow() {
+    this.addToCart();
+    setTimeout(() => {
+      window.location.href = "checkout.html";
+    }, 400);
   }
 
-  const cartItem = {
-    productId: productDetailManager.currentProduct.id,
-    name: productDetailManager.currentProduct.name,
-    price: productDetailManager.currentProduct.price,
-    quantity: productDetailManager.quantity,
-    image: productDetailManager.currentProduct.images
-      ? productDetailManager.currentProduct.images[0]
-      : "",
-  };
+  toggleFavorite() {
+    this.isFavorite = !this.isFavorite;
+    const btn = $(".favorite-btn");
+    if (this.isFavorite) {
+      btn.addClass("active");
+      btn.find("i").removeClass("far").addClass("fas");
+      this.showToast("Đã thêm vào yêu thích!", "success");
+    } else {
+      btn.removeClass("active");
+      btn.find("i").removeClass("fas").addClass("far");
+      this.showToast("Đã xóa khỏi yêu thích!", "success");
+    }
+  }
 
-  // Thêm vào localStorage hoặc gửi API
-  console.log("Adding to cart:", cartItem);
+  goToProduct(id) {
+    window.location.href = `detail_product.html?id=${id}`;
+  }
 
-  // Show success message
-  showSuccessMessage("Đã thêm sản phẩm vào giỏ hàng!");
+  showToast(message, type = "success") {
+    const id = `toast-${Date.now()}`;
+    const html = `
+      <div id="${id}" class="alert alert-${type} alert-dismissible fade show position-fixed"
+           style="top:100px;right:20px;z-index:9999;min-width:300px;" role="alert">
+        <i class="fas ${
+          type === "success" ? "fa-check-circle" : "fa-exclamation-triangle"
+        }"></i> ${message}
+        <button type="button" class="close" data-dismiss="alert"><span>&times;</span></button>
+      </div>`;
+    $("body").append(html);
+    setTimeout(() => $(`#${id}`).alert("close"), 3000);
+  }
 }
 
+// Khởi tạo
+const productDetailManager = new ProductDetailManager();
+
+// (Tuỳ chọn) Expose global wrappers nếu HTML đang gọi các hàm này
 function buyNow() {
-  addToCart();
-  // Redirect to checkout
-  setTimeout(() => {
-    window.location.href = "checkout.html";
-  }, 1000);
+  productDetailManager.buyNow();
 }
-
 function toggleFavorite() {
-  productDetailManager.isFavorite = !productDetailManager.isFavorite;
-  const favoriteBtn = $(".favorite-btn");
-
-  if (productDetailManager.isFavorite) {
-    favoriteBtn.addClass("active");
-    favoriteBtn.find("i").removeClass("far").addClass("fas");
-    showSuccessMessage("Đã thêm vào danh sách yêu thích!");
-  } else {
-    favoriteBtn.removeClass("active");
-    favoriteBtn.find("i").removeClass("fas").addClass("far");
-    showSuccessMessage("Đã xóa khỏi danh sách yêu thích!");
-  }
+  productDetailManager.toggleFavorite();
 }
-
-function showSuccessMessage(message) {
-  const alertHtml = `
-    <div class="alert alert-success alert-dismissible fade show position-fixed" 
-         style="top: 100px; right: 20px; z-index: 9999; min-width: 300px;" role="alert">
-      <i class="fas fa-check-circle"></i> ${message}
-      <button type="button" class="close" data-dismiss="alert">
-        <span>&times;</span>
-      </button>
-    </div>
-  `;
-  $("body").append(alertHtml);
-
-  // Auto hide after 3 seconds
-  setTimeout(() => {
-    $(".alert-success").alert("close");
-  }, 3000);
+function showCart() {
+  window.location.href = "cart.html";
 }
-
-// Navigation functions (placeholder)
 function showCategories() {
   window.location.href = "list_product.html";
 }
-
 function showSearchModal() {
-  // Implement search modal
   console.log("Show search modal");
 }
-
 function showUserProfile() {
-  // Implement user profile
   console.log("Show user profile");
 }
-
-function showCart() {
-  // Implement cart
-  console.log("Show cart");
-}
-
-// Initialize the product detail manager
-const productDetailManager = new ProductDetailManager();

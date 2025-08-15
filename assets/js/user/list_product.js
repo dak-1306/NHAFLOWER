@@ -34,7 +34,7 @@ class ProductList {
     $("#userDropdown").show();
 
     try {
-      const userData = JSON.parse(localStorage.getItem("userData"));
+      const userData = JSON.parse(localStorage.getItem("nhaflower_user"));
       if (userData.ho_ten) {
         $("#userName").text(userData.ho_ten);
       }
@@ -392,11 +392,50 @@ class ProductList {
 
       // Auto-complete suggestion (placeholder)
       $searchInput.on("input", (e) => {
-        const term = $(e.target).val();
+        const term = $(e.target).val().toLowerCase().trim();
         if (term.length > 2) {
-          // TODO: Implement auto-complete
-          console.log("Auto-complete for:", term);
+          // Auto-complete: tìm sản phẩm có tên chứa term
+          const suggestions = this.allProducts
+            .filter((p) => p.ten_hoa && p.ten_hoa.toLowerCase().includes(term))
+            .slice(0, 5)
+            .map(
+              (p) =>
+                `<div class='autocomplete-suggestion' data-id='${p.id_sanpham}'>${p.ten_hoa}</div>`
+            )
+            .join("");
+          let $ac = $("#autocomplete-box");
+          if ($ac.length === 0) {
+            $ac = $("<div id='autocomplete-box'></div>").css({
+              position: "absolute",
+              top: $searchInput.offset().top + $searchInput.outerHeight(),
+              left: $searchInput.offset().left,
+              width: $searchInput.outerWidth(),
+              background: "#fff",
+              border: "1px solid #ddd",
+              "z-index": 9999,
+              "box-shadow": "0 2px 8px rgba(0,0,0,0.08)",
+              "max-height": "200px",
+              "overflow-y": "auto",
+            });
+            $("body").append($ac);
+          }
+          $ac.html(suggestions).show();
+          // Click suggestion
+          $ac.off("click").on("click", ".autocomplete-suggestion", function () {
+            const id = $(this).data("id");
+            $searchInput.val($(this).text());
+            $ac.hide();
+            goToProductDetail(id);
+          });
+        } else {
+          $("#autocomplete-box").hide();
         }
+      });
+      // Ẩn autocomplete khi blur
+      $searchInput.on("blur", function () {
+        setTimeout(() => {
+          $("#autocomplete-box").hide();
+        }, 200);
       });
     }
   }
@@ -433,10 +472,7 @@ function addToCartFromList(productId) {
   event.stopPropagation();
 
   // Kiểm tra đăng nhập (dựa vào user_token và user_data)
-  if (
-    !localStorage.getItem("user_token") ||
-    !localStorage.getItem("user_data")
-  ) {
+  if (!localStorage.getItem("nhaflower_user")) {
     if (confirm("Bạn cần đăng nhập để mua hàng. Đăng nhập ngay?")) {
       window.location.href = "login.html";
     }
