@@ -6,6 +6,26 @@
  */
 
 class ProfileDashboard extends BaseProfileManager {
+  /**
+   * Lấy số lượng thông báo và cập nhật dashboard
+   */
+  async loadDashboardNotifications() {
+    try {
+      const res = await fetch(
+        "../../api/thong_bao.php?action=get_notifications",
+        {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+      const data = await res.json();
+      const count =
+        data && data.success && Array.isArray(data.data) ? data.data.length : 0;
+      $("#totalNotifications").text(count);
+    } catch (err) {
+      $("#totalNotifications").text(0);
+    }
+  }
   constructor() {
     super();
     this.apiProfile = "../../api/khach_hang.php?action=get_by_taikhoan";
@@ -58,6 +78,7 @@ class ProfileDashboard extends BaseProfileManager {
 
       this.loadUserData();
       this.loadRecentOrders();
+      this.loadDashboardNotifications();
     });
   }
 
@@ -66,22 +87,21 @@ class ProfileDashboard extends BaseProfileManager {
    */
   async loadUserData() {
     try {
-      // Lấy id_taikhoan từ localStorage
+      // Lấy id_khachhang từ localStorage
       const user = JSON.parse(localStorage.getItem("nhaflower_user"));
-      if (!user || !user.id_taikhoan) {
-        this.showErrorMessage("Không tìm thấy thông tin đăng nhập.");
+      if (!user || !user.id_khachhang) {
+        this.showErrorMessage("Không tìm thấy thông tin khách hàng.");
         return;
       }
       const res = await fetch(
-        `${this.apiProfile}&id_taikhoan=${user.id_taikhoan}`
+        `../../api/khach_hang.php?action=get_by_id&id=${user.id_khachhang}`
       );
       const data = await res.json();
-
       if (data.success && data.data) {
         this.updateSidebarInfo(data.data);
       } else {
         this.showErrorMessage(
-          data.message || "Không thể tải thông tin người dùng."
+          data.message || "Không thể tải thông tin khách hàng."
         );
       }
     } catch (error) {
@@ -102,29 +122,15 @@ class ProfileDashboard extends BaseProfileManager {
    */
   async loadRecentOrders() {
     try {
-      // Lấy id_taikhoan từ localStorage
+      // Lấy id_khachhang từ localStorage
       const user = JSON.parse(localStorage.getItem("nhaflower_user"));
-      if (!user || !user.id_taikhoan) {
-        this.showErrorMessage("Không tìm thấy thông tin đăng nhập.");
-        return;
-      }
-      // Gọi API profile để lấy id_khachhang
-      const resProfile = await fetch(
-        `${this.apiProfile}&id_taikhoan=${user.id_taikhoan}`
-      );
-      const dataProfile = await resProfile.json();
-      if (
-        !dataProfile.success ||
-        !dataProfile.data ||
-        !dataProfile.data.id_khachhang
-      ) {
+      if (!user || !user.id_khachhang) {
         this.showErrorMessage("Không tìm thấy thông tin khách hàng.");
         return;
       }
-      const id_khachhang = dataProfile.data.id_khachhang;
-      // Gọi API lấy đơn hàng theo id_khachhang
+      // Gọi API lấy đơn hàng đúng chuẩn mới
       const resOrders = await fetch(
-        `${this.apiOrders}&id_khachhang=${id_khachhang}`
+        `../../api/orders.php?customer_id=${user.id_khachhang}`
       );
       const dataOrders = await resOrders.json();
       if (dataOrders.success && Array.isArray(dataOrders.data)) {
@@ -189,7 +195,7 @@ class ProfileDashboard extends BaseProfileManager {
    * Render danh sách đơn hàng gần đây
    */
   renderOrders(orders) {
-    const list = $("#recentOrdersList");
+    const list = $("#recentOrders");
     list.empty();
 
     if (!orders.length) {
@@ -200,11 +206,9 @@ class ProfileDashboard extends BaseProfileManager {
     orders.forEach((order) => {
       list.append(`
         <div class="order-item">
-          <div><strong>Mã đơn:</strong> ${order.ma_don}</div>
-          <div><strong>Ngày:</strong> ${this.formatDate(order.ngay_tao)}</div>
-          <div><strong>Trạng thái:</strong> ${this.getStatusText(
-            order.trang_thai
-          )}</div>
+          <div><strong>Mã đơn:</strong> ${order.id_donhang}</div>
+          <div><strong>Ngày:</strong> ${this.formatDate(order.ngay_dat)}</div>
+          <div><strong>Trạng thái:</strong> ${order.trang_thai}</div>
           <div><strong>Tổng tiền:</strong> ${this.formatPrice(
             order.tong_tien
           )}</div>

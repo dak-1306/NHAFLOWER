@@ -1,52 +1,105 @@
 // profile-addresses.js
 // Quản lý danh sách địa chỉ người dùng
+async function loadAddress(id_khachhang) {
+  const $container = $("#addressesContainer");
+  $container.html('<div class="loading-state">Đang tải địa chỉ...');
+  try {
+    const res = await fetch(
+      `../../api/khach_hang.php?action=get_by_id&id=${id_khachhang}`,
+      {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      }
+    );
+    const data = await res.json();
+    if (data && data.data && data.data.dia_chi) {
+      $container.html(`
+        <div class="address-view">
+          <label>Địa chỉ giao hàng hiện tại:</label>
+          <div class="address-value">${escapeHTML(data.data.dia_chi)}</div>
+          <input type="text" id="addressInput" class="form-control mt-2" value="${escapeHTML(
+            data.data.dia_chi
+          )}" placeholder="Nhập địa chỉ mới...">
+          <button id="btnUpdateAddress" class="btn btn-primary mt-2">Cập nhật địa chỉ</button>
+        </div>
+      `);
+    } else {
+      $container.html(`
+        <div class="address-view">
+          <label>Chưa có địa chỉ giao hàng.</label>
+          <input type="text" id="addressInput" class="form-control mt-2" placeholder="Nhập địa chỉ mới...">
+          <button id="btnUpdateAddress" class="btn btn-primary mt-2">Lưu địa chỉ</button>
+        </div>
+      `);
+    }
+  } catch (err) {
+    $container.html('<div class="empty-state">Không thể tải địa chỉ.</div>');
+  }
+}
+async function updateAddress(id_khachhang, dia_chi) {
+  const $btn = $("#btnUpdateAddress");
+  $btn
+    .prop("disabled", true)
+    .html('<i class="fas fa-spinner fa-spin"></i> Đang lưu...');
+  try {
+    const res = await fetch(
+      `../../api/khach_hang.php?action=update&id=${id_khachhang}`,
+      {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ dia_chi }),
+      }
+    );
+    const result = await res.json();
+    if (result && result.success) {
+      showSuccessMessage("Cập nhật địa chỉ thành công!");
+      await loadAddress(id_khachhang);
+    } else {
+      showErrorMessage(result.message || "Cập nhật thất bại!");
+    }
+  } catch (err) {
+    showErrorMessage("Lỗi kết nối máy chủ!");
+  } finally {
+    $btn.prop("disabled", false).html("Cập nhật địa chỉ");
+  }
+}
+function showSuccessMessage(msg) {
+  alert(msg); // Có thể thay bằng toast hoặc UI đẹp hơn
+}
+function showErrorMessage(msg) {
+  alert(msg); // Có thể thay bằng toast hoặc UI đẹp hơn
+}
 
+function escapeHTML(str) {
+  return String(str).replace(/[&<>'"]/g, function (c) {
+    return {
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      "'": "&#39;",
+      '"': "&quot;",
+    }[c];
+  });
+}
 $(document).ready(function () {
   const userData = JSON.parse(localStorage.getItem("nhaflower_user") || "null");
   const baseManager = new BaseProfileManager();
-
   baseManager.updateSidebarInfo(userData);
-
-  if (!userData || !userData.id_taikhoan) {
-    baseManager.showErrorMessage("Bạn cần đăng nhập để xem địa chỉ.");
+  if (!userData || !userData.id_khachhang) {
+    showErrorMessage("Bạn cần đăng nhập để xem địa chỉ.");
     return;
   }
-
-  loadAddresses(userData.id_taikhoan);
+  loadAddress(userData.id_khachhang);
+  $(document).on("click", "#btnUpdateAddress", function () {
+    const newAddress = $("#addressInput").val().trim();
+    if (!newAddress) {
+      showErrorMessage("Vui lòng nhập địa chỉ giao hàng.");
+      return;
+    }
+    updateAddress(userData.id_khachhang, newAddress);
+  });
 });
 
-/**
- * Gọi API lấy danh sách địa chỉ
- * @param {number} userId
- */
-function loadAddresses(userId) {
-  const $list = $("#address-list");
-  $list.html('<div class="loading-state">Đang tải địa chỉ...</div>');
-
-  $.ajax({
-    url: `/api/dia_chi.php?action=get_by_user&id_taikhoan=${userId}`,
-    method: "GET",
-    dataType: "json",
-    timeout: 8000,
-    success: function (res) {
-      if (res && (res.data || res).length) {
-        renderAddresses(res.data || res);
-      } else {
-        $list.html('<div class="empty-state">Bạn chưa có địa chỉ nào.</div>');
-      }
-    },
-    error: function () {
-      $list.html(
-        '<div class="empty-state">Không thể tải danh sách địa chỉ.</div>'
-      );
-    },
-  });
-}
-
-/**
- * Render danh sách địa chỉ
- * @param {Array} list
- */
 function renderAddresses(list) {
   const $list = $("#address-list");
 
@@ -55,88 +108,27 @@ function renderAddresses(list) {
     return;
   }
 
-  const html = list
-    .map((item) => {
-      const fullAddress = `${escapeHTML(item.dia_chi || "")}, ${escapeHTML(
-        item.phuong_xa || ""
-      )}, ${escapeHTML(item.quan_huyen || "")}, ${escapeHTML(
-        item.tinh_thanh || ""
-      )}`;
-      return `
-        <div class="address-item ${item.mac_dinh ? "default" : ""}">
-          <div class="address-info">
-            <div class="address-name">${escapeHTML(item.ho_ten || "")}</div>
-            <div class="address-phone">${escapeHTML(
-              item.so_dien_thoai || ""
-            )}</div>
-            <div class="address-full">${fullAddress}</div>
-          </div>
-          <div class="address-actions">
-            ${
-              item.mac_dinh
-                ? '<span class="badge badge-success">Mặc định</span>'
-                : ""
-            }
-            <button class="btn btn-sm btn-outline-primary" onclick="editAddress(${
-              item.id
-            })">Sửa</button>
-            <button class="btn btn-sm btn-outline-danger" onclick="deleteAddress(${
-              item.id
-            })">Xóa</button>
-          </div>
-        </div>
-      `;
-    })
-    .join("");
+  $(document).ready(function () {
+    const userData = JSON.parse(
+      localStorage.getItem("nhaflower_user") || "null"
+    );
+    const baseManager = new BaseProfileManager();
+    baseManager.updateSidebarInfo(userData);
 
-  $list.html(html);
-}
+    if (!userData || !userData.id_khachhang) {
+      baseManager.showErrorMessage("Bạn cần đăng nhập để xem địa chỉ.");
+      return;
+    }
 
-/**
- * Escape HTML để tránh XSS
- */
-function escapeHTML(str) {
-  return str.replace(/[&<>"']/g, (match) => {
-    const escapes = {
-      "&": "&amp;",
-      "<": "&lt;",
-      ">": "&gt;",
-      '"': "&quot;",
-      "'": "&#039;",
-    };
-    return escapes[match];
-  });
-}
+    loadAddress(userData.id_khachhang);
 
-/**
- * Xử lý sửa địa chỉ
- */
-function editAddress(id) {
-  // Điều hướng sang trang chỉnh sửa
-  window.location.href = `edit-address.html?id=${id}`;
-}
-
-/**
- * Xử lý xóa địa chỉ
- */
-function deleteAddress(id) {
-  if (!confirm("Bạn có chắc muốn xóa địa chỉ này?")) return;
-
-  $.ajax({
-    url: `/api/dia_chi.php?action=delete&id=${id}`,
-    method: "POST",
-    dataType: "json",
-    success: function (res) {
-      if (res.success) {
-        loadAddresses(
-          JSON.parse(localStorage.getItem("nhaflower_user")).id_taikhoan
-        );
-      } else {
-        alert("Không thể xóa địa chỉ. Vui lòng thử lại.");
+    $(document).on("click", "#btnUpdateAddress", function () {
+      const newAddress = $("#addressInput").val().trim();
+      if (!newAddress) {
+        baseManager.showErrorMessage("Vui lòng nhập địa chỉ giao hàng.");
+        return;
       }
-    },
-    error: function () {
-      alert("Có lỗi khi xóa địa chỉ.");
-    },
+      updateAddress(userData.id_khachhang, newAddress);
+    });
   });
 }

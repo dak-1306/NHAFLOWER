@@ -2,26 +2,25 @@
 // Hiển thị thông báo từ bảng thongbao (dữ liệu thật)
 
 $(document).ready(function () {
-  console.log('NHAFLOWER User Notifications initializing...');
-  
+  console.log("NHAFLOWER User Notifications initializing...");
+
   const userData = JSON.parse(localStorage.getItem("nhaflower_user") || "null");
   const baseManager = new BaseProfileManager();
 
   baseManager.updateSidebarInfo(userData);
   loadNotifications();
-  
+
   // Auto-refresh notifications every 60 seconds
   setInterval(loadNotifications, 60000);
-  
-  console.log('User notifications loaded successfully!');
+
+  console.log("User notifications loaded successfully!");
 });
 
 /**
  * Gọi API lấy danh sách thông báo
  */
-function loadNotifications() {
+async function loadNotifications() {
   const $container = $("#notificationsContainer");
-  
   // Hiển thị trạng thái loading
   $container.html(`
     <div class="text-center py-5">
@@ -31,25 +30,25 @@ function loadNotifications() {
       <h5 class="text-muted mt-3">Đang tải thông báo...</h5>
     </div>
   `);
-
-  $.ajax({
-    url: "../../api/thong_bao.php?action=get_notifications",
-    method: "GET",
-    dataType: "json",
-    timeout: 8000,
-    success: function (res) {
-      if (res && res.success && res.data && res.data.length > 0) {
-        renderNotifications(res.data);
-        updateNotificationCount(res.data.length);
-      } else {
-        showEmptyState();
+  try {
+    const res = await fetch(
+      "../../api/thong_bao.php?action=get_notifications",
+      {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
       }
-    },
-    error: function (xhr, status, error) {
-      console.error('Notification load error:', error);
-      showErrorState();
-    },
-  });
+    );
+    const data = await res.json();
+    if (data && data.success && data.data && data.data.length > 0) {
+      renderNotifications(data.data);
+      updateNotificationCount(data.data.length);
+    } else {
+      showEmptyState();
+    }
+  } catch (err) {
+    console.error("Notification load error:", err);
+    showErrorState();
+  }
 }
 
 /**
@@ -88,12 +87,13 @@ function showErrorState() {
  */
 function updateNotificationCount(count) {
   // Cập nhật counter trong dashboard nếu có
-  if (typeof window.updateNotificationCounter === 'function') {
+  if (typeof window.updateNotificationCounter === "function") {
     window.updateNotificationCounter(count);
   }
-  
+
   // Cập nhật title
-  document.title = count > 0 ? `NHAFLOWER - Thông báo (${count})` : 'NHAFLOWER - Thông báo';
+  document.title =
+    count > 0 ? `NHAFLOWER - Thông báo (${count})` : "NHAFLOWER - Thông báo";
 }
 
 /**
@@ -108,33 +108,43 @@ function renderNotifications(list) {
     return;
   }
 
-  let html = '';
-  
+  let html = "";
+
   list.forEach((item, index) => {
-    const notificationIcon = getNotificationIcon(item.type || 'system');
+    const notificationIcon = getNotificationIcon(item.type || "system");
     const timeAgo = getTimeAgo(item.ngay_gui);
-    
+
     html += `
-      <div class="notification-item" data-id="${item.id_thongbao}" data-index="${index}">
+      <div class="notification-item" data-id="${
+        item.id_thongbao
+      }" data-index="${index}">
         <div class="d-flex">
           <div class="notification-icon-wrapper mr-3">
-            <div class="notification-icon ${getNotificationIconClass(item.type || 'system')}">
+            <div class="notification-icon ${getNotificationIconClass(
+              item.type || "system"
+            )}">
               <i class="fas ${notificationIcon}"></i>
             </div>
           </div>
           <div class="flex-grow-1">
             <div class="d-flex justify-content-between align-items-start">
-              <h6 class="notification-title mb-1">${escapeHTML(item.tieu_de || "")}</h6>
+              <h6 class="notification-title mb-1">${escapeHTML(
+                item.tieu_de || ""
+              )}</h6>
               <div class="notification-actions">
                 <button class="btn btn-sm btn-outline-primary" onclick="toggleNotificationDetail(${index})">
                   <i class="fas fa-eye"></i>
                 </button>
-                <button class="btn btn-sm btn-outline-danger ml-1" onclick="markAsRead(${item.id_thongbao})">
+                <button class="btn btn-sm btn-outline-danger ml-1" onclick="markAsRead(${
+                  item.id_thongbao
+                })">
                   <i class="fas fa-check"></i>
                 </button>
               </div>
             </div>
-            <p class="notification-preview text-muted mb-2">${escapeHTML(truncateText(item.noi_dung || "", 100))}</p>
+            <p class="notification-preview text-muted mb-2">${escapeHTML(
+              truncateText(item.noi_dung || "", 100)
+            )}</p>
             <small class="text-muted">
               <i class="fas fa-clock mr-1"></i>${timeAgo}
             </small>
@@ -143,7 +153,9 @@ function renderNotifications(list) {
                 <strong>Nội dung đầy đủ:</strong>
                 <div class="mt-2">${escapeHTML(item.noi_dung || "")}</div>
                 <hr class="my-2">
-                <small class="text-muted">Ngày gửi: ${formatDate(item.ngay_gui)}</small>
+                <small class="text-muted">Ngày gửi: ${formatDate(
+                  item.ngay_gui
+                )}</small>
               </div>
             </div>
           </div>
@@ -153,7 +165,7 @@ function renderNotifications(list) {
   });
 
   $container.html(html);
-  
+
   // Setup clear all notifications button
   setupClearAllButton(list.length);
 }
@@ -162,24 +174,26 @@ function renderNotifications(list) {
  * Thiết lập nút xóa tất cả thông báo
  */
 function setupClearAllButton(count) {
-  $('.btn-clear-notifications').off('click').on('click', function() {
-    if (count === 0) return;
-    
-    Swal.fire({
-      title: 'Xác nhận xóa tất cả?',
-      text: `Bạn có chắc chắn muốn xóa tất cả ${count} thông báo không?`,
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#dc3545',
-      cancelButtonColor: '#6c757d',
-      confirmButtonText: 'Xóa tất cả',
-      cancelButtonText: 'Hủy'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        clearAllNotifications();
-      }
+  $(".btn-clear-notifications")
+    .off("click")
+    .on("click", function () {
+      if (count === 0) return;
+
+      Swal.fire({
+        title: "Xác nhận xóa tất cả?",
+        text: `Bạn có chắc chắn muốn xóa tất cả ${count} thông báo không?`,
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#dc3545",
+        cancelButtonColor: "#6c757d",
+        confirmButtonText: "Xóa tất cả",
+        cancelButtonText: "Hủy",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          clearAllNotifications();
+        }
+      });
     });
-  });
 }
 
 /**
@@ -188,14 +202,14 @@ function setupClearAllButton(count) {
 function clearAllNotifications() {
   // Since we don't have user-specific notifications, we'll just hide them
   showEmptyState();
-  
+
   Swal.fire({
-    icon: 'success',
-    title: 'Đã xóa!',
-    text: 'Tất cả thông báo đã được xóa.',
+    icon: "success",
+    title: "Đã xóa!",
+    text: "Tất cả thông báo đã được xóa.",
     timer: 2000,
     timerProgressBar: true,
-    showConfirmButton: false
+    showConfirmButton: false,
   });
 }
 
@@ -204,19 +218,19 @@ function clearAllNotifications() {
  */
 function markAsRead(notificationId) {
   const $notification = $(`.notification-item[data-id="${notificationId}"]`);
-  
+
   // Visual feedback
-  $notification.fadeOut(300, function() {
+  $notification.fadeOut(300, function () {
     $(this).remove();
-    
+
     // Check if any notifications left
-    if ($('.notification-item').length === 0) {
+    if ($(".notification-item").length === 0) {
       showEmptyState();
     }
   });
-  
+
   // Show success message
-  showSuccessToast('Đã đánh dấu thông báo là đã đọc');
+  showSuccessToast("Đã đánh dấu thông báo là đã đọc");
 }
 
 /**
@@ -224,9 +238,11 @@ function markAsRead(notificationId) {
  */
 function toggleNotificationDetail(index) {
   const $detail = $(`#detail-${index}`);
-  const $button = $(`.notification-item[data-index="${index}"] .notification-actions button:first`);
-  
-  if ($detail.is(':visible')) {
+  const $button = $(
+    `.notification-item[data-index="${index}"] .notification-actions button:first`
+  );
+
+  if ($detail.is(":visible")) {
     $detail.slideUp();
     $button.html('<i class="fas fa-eye"></i>');
   } else {
@@ -240,13 +256,13 @@ function toggleNotificationDetail(index) {
  */
 function getNotificationIcon(type) {
   const icons = {
-    'system': 'fa-info-circle',
-    'order': 'fa-shopping-cart',
-    'promotion': 'fa-gift',
-    'product': 'fa-leaf',
-    'delivery': 'fa-truck'
+    system: "fa-info-circle",
+    order: "fa-shopping-cart",
+    promotion: "fa-gift",
+    product: "fa-leaf",
+    delivery: "fa-truck",
   };
-  return icons[type] || 'fa-bell';
+  return icons[type] || "fa-bell";
 }
 
 /**
@@ -254,31 +270,34 @@ function getNotificationIcon(type) {
  */
 function getNotificationIconClass(type) {
   const classes = {
-    'system': 'bg-info',
-    'order': 'bg-primary', 
-    'promotion': 'bg-success',
-    'product': 'bg-warning',
-    'delivery': 'bg-secondary'
+    system: "bg-info",
+    order: "bg-primary",
+    promotion: "bg-success",
+    product: "bg-warning",
+    delivery: "bg-secondary",
   };
-  return classes[type] || 'bg-info';
+  return classes[type] || "bg-info";
 }
 
 /**
  * Tính thời gian trước
  */
 function getTimeAgo(dateString) {
-  if (!dateString) return '';
-  
+  if (!dateString) return "";
+
   const now = new Date();
   const date = new Date(dateString);
   const diffInSeconds = Math.floor((now - date) / 1000);
-  
-  if (diffInSeconds < 60) return 'Vài giây trước';
-  if (diffInSeconds < 3600) return Math.floor(diffInSeconds / 60) + ' phút trước';
-  if (diffInSeconds < 86400) return Math.floor(diffInSeconds / 3600) + ' giờ trước';
-  if (diffInSeconds < 604800) return Math.floor(diffInSeconds / 86400) + ' ngày trước';
-  
-  return date.toLocaleDateString('vi-VN');
+
+  if (diffInSeconds < 60) return "Vài giây trước";
+  if (diffInSeconds < 3600)
+    return Math.floor(diffInSeconds / 60) + " phút trước";
+  if (diffInSeconds < 86400)
+    return Math.floor(diffInSeconds / 3600) + " giờ trước";
+  if (diffInSeconds < 604800)
+    return Math.floor(diffInSeconds / 86400) + " ngày trước";
+
+  return date.toLocaleDateString("vi-VN");
 }
 
 /**
@@ -286,7 +305,7 @@ function getTimeAgo(dateString) {
  */
 function truncateText(text, maxLength) {
   if (!text || text.length <= maxLength) return text;
-  return text.substring(0, maxLength) + '...';
+  return text.substring(0, maxLength) + "...";
 }
 
 /**
@@ -303,9 +322,9 @@ function showSuccessToast(message) {
       </button>
     </div>
   `);
-  
-  $('body').append(toast);
-  
+
+  $("body").append(toast);
+
   setTimeout(() => {
     toast.fadeOut(() => toast.remove());
   }, 3000);
