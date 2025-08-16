@@ -302,6 +302,7 @@
 .product-rating-section {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 10px;
   margin-bottom: 20px;
 }
@@ -327,6 +328,7 @@
   margin-bottom: 25px;
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 15px;
   flex-wrap: wrap;
 }
@@ -400,6 +402,7 @@
   border: none;
   border-radius: 25px;
   overflow: hidden;
+  margin-left: 20px;
 }
 
 .qty-btn {

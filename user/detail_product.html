@@ -112,7 +112,10 @@
                 alt="Sản phẩm"
                 class="main-product-image"
               />
-              <button class="image-zoom-btn" onclick="openImageModal(document.getElementById('mainProductImage').src)">
+              <button
+                class="image-zoom-btn"
+                onclick="openImageModal(document.getElementById('mainProductImage').src)"
+              >
                 <i class="fas fa-search-plus"></i>
               </button>
             </div>
@@ -126,21 +129,16 @@
         <div class="col-12">
           <div class="product-info-section">
             <!-- Product Title -->
-            <h1 class="product-title" id="productName"></h1>
 
-            <!-- Product Rating -->
+            <h1 class="product-title" id="productName"></h1>
             <div class="product-rating-section">
               <div class="rating-stars" id="productRating"></div>
-              <span class="rating-number" id="ratingNumber"></span>
-              <span class="review-count">(<span id="reviewCount"></span> đánh giá)</span>
             </div>
             <div class="stock-quantity mb-2" id="stockQuantityInfo"></div>
-            </div>
 
             <!-- Product Price -->
             <div class="price-section">
               <span class="current-price" id="productPrice"></span>
-              <span class="original-price" id="originalPrice"></span>
               <span class="discount-badge" id="discountBadge"></span>
             </div>
 
@@ -153,13 +151,15 @@
             <!-- Product Options -->
             <div class="product-options">
               <!-- Quantity Selector -->
-              <div class="quantity-section">
+              <div
+                class="quantity-section d-flex align-items-center justify-content-center"
+              >
                 <label>Số lượng:</label>
                 <div class="quantity-controls">
                   <button class="qty-btn qty-minus" type="button">-</button>
                   <input
                     type="number"
-                    id="quantityInput"
+                    id="quantity"
                     value="1"
                     min="1"
                     max="99"
@@ -173,7 +173,10 @@
 
             <!-- Action Buttons -->
             <div class="action-buttons">
-              <button id="addToCart" class="btn btn-primary add-to-cart">
+              <button
+                id="addToCart"
+                class="btn btn-primary add-to-cart add-to-cart-btn"
+              >
                 <i class="fas fa-shopping-cart"></i>
                 Thêm vào giỏ hàng
               </button>
@@ -208,12 +211,43 @@
         </div>
       </div>
 
+      <!-- Product Comments -->
+      <div class="product-comments-section mt-5">
+        <h3>Bình luận & Đánh giá</h3>
+        <div id="productComments"></div>
+        <div class="comment-form mt-4 p-3 border rounded bg-light">
+          <h5>Gửi bình luận của bạn</h5>
+          <form id="addCommentForm" onsubmit="return false;">
+            <div class="form-group">
+              <label for="commentContent">Nội dung</label>
+              <textarea
+                id="commentContent"
+                class="form-control"
+                rows="3"
+                required
+              ></textarea>
+            </div>
+            <div class="form-group">
+              <label for="commentRating">Số sao</label>
+              <select id="commentRating" class="form-control" required>
+                <option value="">Chọn số sao</option>
+                <option value="5">5 - Tuyệt vời</option>
+                <option value="4">4 - Tốt</option>
+                <option value="3">3 - Bình thường</option>
+                <option value="2">2 - Tạm được</option>
+                <option value="1">1 - Không hài lòng</option>
+              </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Gửi bình luận</button>
+            <div id="commentMsg" class="mt-2"></div>
+          </form>
+        </div>
+      </div>
+
       <!-- Related Products -->
       <div class="related-products-section">
         <h3>Sản phẩm liên quan</h3>
-        <div class="row" id="relatedProducts">
-          <!-- Related products sẽ được load bằng JavaScript -->
-        </div>
+        <div class="row" id="relatedProducts"></div>
       </div>
     </div>
 

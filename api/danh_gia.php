@@ -18,11 +18,14 @@ function sendResponse($success, $message, $data = null) {
 
 if ($action === 'get' || $action === 'get_all') {
     // Lấy tất cả đánh giá
-    $sql = "SELECT dg.*, kh.ten_khachhang, sp.ten_hoa 
+    $sql = "SELECT dg.*, kh.ten AS ten_khachhang, sp.ten_hoa 
             FROM danhgia dg 
             JOIN khachhang kh ON dg.id_khachhang = kh.id_khachhang
             JOIN sanpham sp ON dg.id_sanpham = sp.id_sanpham";
     $result = $conn->query($sql);
+    if (!$result) {
+        sendResponse(false, 'Lỗi truy vấn: ' . $conn->error);
+    }
     $data = [];
     while ($row = $result->fetch_assoc()) {
         $data[] = $row;

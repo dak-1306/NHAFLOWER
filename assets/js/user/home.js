@@ -230,16 +230,24 @@ function nextSlide() {
 
 // updateSlideContent(): Cập nhật nội dung slide
 function updateSlideContent() {
-  const slides = [
-    {
-      title: "Ưu đãi tháng 7...",
-      subtitle: "Giảm đến 50%...",
-      description: "Đến hẹn lại lên, chương trình khuyến mãi lớn nhất năm...",
-    },
-    // TODO: Thêm nhiều slide khác
-  ];
-
-  if (slides[currentSlide]) {
+  // Lấy dữ liệu thật từ API khuyến mãi
+  if (!window.promotionSlides) {
+    fetch("../api/khuyen_mai.php?action=get_all")
+      .then((res) => res.json())
+      .then((result) => {
+        if (result.success && Array.isArray(result.data)) {
+          window.promotionSlides = result.data.map((km) => ({
+            title: km.ten_km || "Khuyến mãi",
+            subtitle: km.phan_tram ? `Giảm ${km.phan_tram}%` : "",
+            description: km.mo_ta || "",
+          }));
+          updateSlideContent();
+        }
+      });
+    return;
+  }
+  const slides = window.promotionSlides;
+  if (slides && slides.length && slides[currentSlide]) {
     $(".promo-title").fadeOut(200, function () {
       $(this).text(slides[currentSlide].title).fadeIn(200);
     });

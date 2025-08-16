@@ -6,6 +6,62 @@
  */
 
 class ProductDetailManager {
+  async loadProductComments(productId) {
+    console.log("[DEBUG] productId:", productId);
+    try {
+      const response = await fetch(`../api/danh_gia.php?action=get_all`);
+      const result = await response.json();
+      console.log("[DEBUG] API result:", result);
+      if (result && result.data) {
+        console.dir(result.data);
+      }
+      if (result.success && Array.isArray(result.data)) {
+        // Lọc bình luận theo sản phẩm
+        const comments = result.data.filter(
+          (c) => String(c.id_sanpham) == String(productId)
+        );
+        this.renderProductComments(comments);
+      } else {
+        $("#productComments").html(
+          '<div class="text-muted">Chưa có bình luận nào.</div>'
+        );
+      }
+    } catch (err) {
+      $("#productComments").html(
+        '<div class="text-danger">Lỗi tải bình luận.</div>'
+      );
+    }
+  }
+
+  renderProductComments(comments) {
+    if (!comments.length) {
+      $("#productComments").html(
+        '<div class="text-muted">Chưa có bình luận nào.</div>'
+      );
+      return;
+    }
+    const html = comments
+      .map(
+        (c) => `
+      <div class="comment-item mb-3 p-3 border rounded">
+        <div class="d-flex align-items-center mb-1">
+          <span class="font-weight-bold mr-2">${
+            c.ten_khachhang || "Ẩn danh"
+          }</span>
+          <span class="text-warning">${"★".repeat(c.sao || 0)}${"☆".repeat(
+          5 - (c.sao || 0)
+        )}</span>
+          <span class="ml-2 text-muted" style="font-size:13px;">${
+            c.ngay_danhgia ? c.ngay_danhgia.split(" ")[0] : ""
+          }</span>
+        </div>
+        <div class="comment-content">${c.noi_dung || ""}</div>
+      </div>
+    `
+      )
+      .join("");
+    $("#productComments").html(html);
+  }
   constructor() {
     this.API_BASE_URL = "../api/products.php";
     this.currentProduct = null;
@@ -18,6 +74,58 @@ class ProductDetailManager {
     $(document).ready(() => {
       this.loadProductDetail();
       this.setupEventListeners();
+      this.setupCommentForm();
+    });
+  }
+
+  setupCommentForm() {
+    $(document).on("submit", "#addCommentForm", async (e) => {
+      e.preventDefault();
+      const content = $("#commentContent").val().trim();
+      const rating = parseInt($("#commentRating").val(), 10);
+      if (!content || !rating) {
+        $("#commentMsg")
+          .text("Vui lòng nhập nội dung và chọn số sao.")
+          .addClass("text-danger");
+        return;
+      }
+      // Lấy thông tin user từ localStorage
+      const user = JSON.parse(localStorage.getItem("nhaflower_user") || "{}");
+      if (!user.id_khachhang) {
+        $("#commentMsg")
+          .text("Bạn cần đăng nhập để bình luận.")
+          .addClass("text-danger");
+        return;
+      }
+      // Gửi bình luận lên API
+      const payload = {
+        id_khachhang: user.id_khachhang,
+        id_sanpham: this.currentProduct.id,
+        sao: rating,
+        noi_dung: content,
+      };
+      try {
+        const res = await fetch("../api/danh_gia.php?action=add", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+        const result = await res.json();
+        if (result.success) {
+          $("#commentMsg")
+            .text("Gửi bình luận thành công!")
+            .removeClass("text-danger")
+            .addClass("text-success");
+          $("#addCommentForm")[0].reset();
+          this.loadProductComments(this.currentProduct.id);
+        } else {
+          $("#commentMsg")
+            .text(result.message || "Gửi bình luận thất bại.")
+            .addClass("text-danger");
+        }
+      } catch (err) {
+        $("#commentMsg").text("Lỗi gửi bình luận.").addClass("text-danger");
+      }
     });
   }
 
@@ -31,7 +139,7 @@ class ProductDetailManager {
       this.setQuantity(Math.max(1, this.quantity - 1));
     });
 
-    $(document).on("input", "#quantityInput", (e) => {
+    $(document).on("input", "#quantity", (e) => {
       const n = parseInt(e.target.value || "1", 10);
       if (!isNaN(n) && n > 0) {
         this.setQuantity(n);
@@ -154,6 +262,9 @@ class ProductDetailManager {
 
       // Tải sản phẩm liên quan
       this.loadRelatedProducts();
+
+      // Tải bình luận sản phẩm
+      this.loadProductComments(this.currentProduct.id);
     } catch (error) {
       console.error("Error loading product detail:", error);
       this.showErrorMessage("Không thể tải thông tin sản phẩm");
@@ -324,9 +435,9 @@ class ProductDetailManager {
 
     // Hiển thị badge khuyến mãi nếu có id_khuyenmai
     if (
-      productRaw.id_khuyenmai &&
-      productRaw.id_khuyenmai !== "0" &&
-      productRaw.id_khuyenmai !== 0
+      product.id_khuyenmai &&
+      product.id_khuyenmai !== "0" &&
+      product.id_khuyenmai !== 0
     ) {
       $("#discountBadge").show().text("Khuyến mãi");
     } else {
@@ -395,7 +506,7 @@ class ProductDetailManager {
 
     // Số lượng
     this.setQuantity(1);
-    if ($("#quantityInput").length) $("#quantityInput").val(this.quantity);
+    if ($("#quantity").length) $("#quantity").val(this.quantity);
 
     // Nút
     $("#addToCart, .add-to-cart").prop("disabled", !product.inStock);
@@ -406,8 +517,8 @@ class ProductDetailManager {
 
   setQuantity(n) {
     this.quantity = Math.max(1, Math.min(999, n));
-    if ($("#quantityInput").length) {
-      $("#quantityInput").val(this.quantity);
+    if ($("#quantity").length) {
+      $("#quantity").val(this.quantity);
     }
   }
 
@@ -492,12 +603,16 @@ function buyNow() {
 }
 function toggleFavorite() {
   productDetailManager.toggleFavorite();
-}
-function showCart() {
-  window.location.href = "cart.html";
-}
-function showCategories() {
-  window.location.href = "list_product.html";
+  // Hiển thị badge khuyến mãi nếu có id_khuyenmai
+  if (
+    product.id_khuyenmai &&
+    product.id_khuyenmai !== "0" &&
+    product.id_khuyenmai !== 0
+  ) {
+    $("#discountBadge").show().text("Khuyến mãi");
+  } else {
+    $("#discountBadge").hide();
+  }
 }
 function showSearchModal() {
   console.log("Show search modal");
