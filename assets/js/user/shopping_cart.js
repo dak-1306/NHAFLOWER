@@ -126,14 +126,14 @@ class ShoppingCartManager {
     const cartHtml = this.cartItems
       .map(
         (item) => `
-      <div class="cart-item" data-id="${item.id}">
+    <div class="cart-item" data-id="${item.id}">
+      <div class="cart-item-main" onclick="goToProductDetail(${item.id})">
         <div class="cart-item-image">
           <img src="${item.image}" alt="${item.name}" 
                onerror="this.src='../assets/img/products/default-flower.svg'; console.warn('Failed to load cart item image:', this.src);" />
         </div>
-        
         <div class="cart-item-details">
-          <div class="cart-item-name" onclick="goToProductDetail(${item.id})">
+          <div class="cart-item-name">
             ${item.name}
           </div>
           <div class="cart-item-price">
@@ -159,39 +159,38 @@ class ShoppingCartManager {
             }
           </div>
         </div>
-        
-        <div class="cart-item-quantity">
-          <span class="quantity-label">Số lượng:</span>
-          <div class="quantity-controls">
-            <button class="qty-btn" onclick="cartManager.decreaseQuantity(${
-              item.id
-            })">-</button>
-            <input 
-              type="number" 
-              class="quantity-input" 
-              value="${item.quantity}" 
-              min="1" 
-              max="${item.stockQuantity}"
-              onchange="cartManager.updateQuantity(${item.id}, this.value)"
-            />
-            <button class="qty-btn" onclick="cartManager.increaseQuantity(${
-              item.id
-            })">+</button>
-          </div>
-        </div>
-        
-        <div class="cart-item-actions">
-          <button class="remove-item-btn" onclick="cartManager.removeItem(${
+      </div>
+      <div class="cart-item-quantity">
+        <span class="quantity-label">Số lượng:</span>
+        <div class="quantity-controls">
+          <button class="qty-btn" onclick="cartManager.decreaseQuantity(${
             item.id
-          })" title="Xóa sản phẩm">
-            <i class="fas fa-trash"></i>
-          </button>
-          <div class="cart-item-total">
-            ${this.formatPrice(item.price * item.quantity)}
-          </div>
+          })">-</button>
+          <input 
+            type="number" 
+            class="quantity-input" 
+            value="${item.quantity}" 
+            min="1" 
+            max="${item.stockQuantity}"
+            onchange="cartManager.updateQuantity(${item.id}, this.value)"
+          />
+          <button class="qty-btn" onclick="cartManager.increaseQuantity(${
+            item.id
+          })">+</button>
         </div>
       </div>
-    `
+      <div class="cart-item-actions">
+        <button class="remove-item-btn" onclick="cartManager.removeItem(${
+          item.id
+        })" title="Xóa sản phẩm">
+          <i class="fas fa-trash"></i>
+        </button>
+        <div class="cart-item-total">
+          ${this.formatPrice(item.price * item.quantity)}
+        </div>
+      </div>
+    </div>
+  `
       )
       .join("");
 
@@ -326,7 +325,76 @@ class ShoppingCartManager {
 
   // Load sản phẩm liên quan
   loadRelatedProducts() {
-    // Mock related products
+    // Lấy sản phẩm liên quan từ API thật
+    fetch("../api/products.php?action=get_all")
+      .then((res) => res.json())
+      .then((result) => {
+        if (result && result.success && Array.isArray(result.data)) {
+          // Lọc sản phẩm liên quan: loại trừ sản phẩm đã có trong giỏ
+          const cartIds = this.cartItems.map((item) => item.id);
+          let related = result.data.filter(
+            (p) => !cartIds.includes(p.id_sanpham)
+          );
+          // Nếu có loại hoa, ưu tiên cùng loại với sản phẩm đầu tiên trong giỏ
+          if (this.cartItems.length && this.cartItems[0].category) {
+            related = related.filter(
+              (p) => p.id_loaihoa == this.cartItems[0].category
+            );
+          }
+          related = related.slice(0, 3);
+          const productsHtml = related
+            .map(
+              (product) => `
+            <div class="col-md-4 mb-4">
+              <div class="card product-card">
+                <img src="../assets/img/products/${
+                  product.hinh_anh || "default-flower.svg"
+                }" class="card-img-top" alt="${
+                product.ten_hoa || product.name
+              }" onerror="this.src='../assets/img/products/default-flower.svg';">
+                <div class="card-body">
+                  <h6 class="card-title">${product.ten_hoa || product.name}</h6>
+                  <div class="product-price">
+                    <span class="current-price">${this.formatPrice(
+                      product.gia || product.price
+                    )}</span>
+                    ${
+                      product.gia_goc
+                        ? `<del class="original-price">${this.formatPrice(
+                            product.gia_goc
+                          )}</del>`
+                        : ""
+                    }
+                  </div>
+                  <div class="product-rating">
+                    ${this.generateStars(
+                      product.danh_gia || product.rating || 4.8
+                    )} ${(product.danh_gia || product.rating || 4.8).toFixed(1)}
+                  </div>
+                  <button class="btn btn-sm btn-outline-primary" onclick="addToCartFromRelated(${
+                    product.id_sanpham || product.id
+                  })">
+                    Thêm vào giỏ
+                  </button>
+                </div>
+              </div>
+            </div>
+          `
+            )
+            .join("");
+          $("#relatedProducts").html(productsHtml);
+        } else {
+          this.renderRelatedProductsMock();
+        }
+      })
+      .catch((err) => {
+        console.warn("Lỗi lấy sản phẩm liên quan, dùng mock:", err);
+        this.renderRelatedProductsMock();
+      });
+  }
+
+  // Mock related products
+  renderRelatedProductsMock() {
     const relatedProducts = [
       {
         id: 3,
@@ -351,7 +419,6 @@ class ShoppingCartManager {
         rating: 4.9,
       },
     ];
-
     const productsHtml = relatedProducts
       .map(
         (product) => `
@@ -359,7 +426,7 @@ class ShoppingCartManager {
         <div class="card product-card">
           <img src="${product.image}" class="card-img-top" alt="${
           product.name
-        }" onerror="this.src='../assets/img/products/default-flower.svg'; console.warn('Failed to load shopping cart related product image:', this.src);">
+        }" onerror="this.src='../assets/img/products/default-flower.svg';">
           <div class="card-body">
             <h6 class="card-title">${product.name}</h6>
             <div class="product-price">
@@ -388,7 +455,6 @@ class ShoppingCartManager {
     `
       )
       .join("");
-
     $("#relatedProducts").html(productsHtml);
   }
 
@@ -452,17 +518,21 @@ class ShoppingCartManager {
       this.showNotification("Giỏ hàng của bạn đang trống!", "warning");
       return;
     }
-
+    // Kiểm tra đăng nhập
+    if (!localStorage.getItem("nhaflower_user")) {
+      if (confirm("Bạn cần đăng nhập để thanh toán. Đăng nhập ngay?")) {
+        window.location.href = "login.html";
+      }
+      return;
+    }
     // Check stock availability
     const outOfStockItems = this.cartItems.filter((item) => !item.inStock);
     if (outOfStockItems.length > 0) {
       this.showNotification("Có sản phẩm hết hàng trong giỏ hàng!", "error");
       return;
     }
-
     // Redirect to checkout page (to be implemented)
     this.showNotification("Chuyển đến trang thanh toán...", "info");
-
     // For now, just show order summary
     const orderSummary = {
       items: this.cartItems,
@@ -472,9 +542,7 @@ class ShoppingCartManager {
       total: this.getTotal(),
       coupon: this.appliedCoupon,
     };
-
     console.log("Order Summary:", orderSummary);
-
     // Chuyển đến trang thanh toán nếu hợp lệ
     window.location.href = "checkout.html";
   }
