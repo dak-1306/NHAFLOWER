@@ -237,8 +237,7 @@ function getRevenueChartData($conn, &$response) {
         if (!$stmt->execute()) {
             throw new Exception('Lỗi thực hiện truy vấn: ' . $stmt->error);
         }
-        
-        $result = $stmt->get_result();
+          $result = $stmt->get_result();
         $data = [];
         
         while ($row = $result->fetch_assoc()) {
@@ -252,8 +251,19 @@ function getRevenueChartData($conn, &$response) {
         // Fill missing dates with zero values
         $data = fillMissingDates($data, $dateFrom, $dateTo);
         
+        // Format for chart
+        $labels = [];
+        $values = [];
+        foreach ($data as $item) {
+            $labels[] = $item['date'];
+            $values[] = $item['revenue'];
+        }
+        
         $response['success'] = true;
-        $response['data'] = $data;
+        $response['data'] = [
+            'labels' => $labels,
+            'values' => $values
+        ];
         $response['message'] = 'Lấy dữ liệu biểu đồ doanh thu thành công';
         $response['total_records'] = count($data);
         
@@ -267,8 +277,7 @@ function getRevenueChartData($conn, &$response) {
 /**
  * Get category statistics
  */
-function getCategoryStats($conn, &$response) {
-    $sql = "SELECT 
+function getCategoryStats($conn, &$response) {    $sql = "SELECT 
                 lh.ten_loai AS category_name,
                 COUNT(sp.id_sanpham) AS product_count
             FROM loaihoa lh
@@ -281,13 +290,18 @@ function getCategoryStats($conn, &$response) {
         throw new Exception('Lỗi truy vấn thống kê danh mục: ' . $conn->error);
     }
     
-    $data = [];
+    $labels = [];
+    $values = [];
     while ($row = $result->fetch_assoc()) {
-        $data[] = $row;
+        $labels[] = $row['category_name'];
+        $values[] = intval($row['product_count']);
     }
     
     $response['success'] = true;
-    $response['data'] = $data;
+    $response['data'] = [
+        'labels' => $labels,
+        'values' => $values
+    ];
     $response['message'] = 'Lấy thống kê danh mục thành công';
 }
 
@@ -321,20 +335,21 @@ function getTopProducts($conn, &$response) {
     if (!$stmt->execute()) {
         throw new Exception('Lỗi thực hiện truy vấn: ' . $stmt->error);
     }
+      $result = $stmt->get_result();
     
-    $result = $stmt->get_result();
-    
-    $data = [];
+    $labels = [];
+    $values = [];
     while ($row = $result->fetch_assoc()) {
-        $data[] = [
-            'product_name' => $row['product_name'],
-            'quantity_sold' => intval($row['quantity_sold']),
-            'total_revenue' => floatval($row['total_revenue'])
-        ];
+        $labels[] = $row['product_name'];
+        $values[] = intval($row['quantity_sold']);
     }
     
     $response['success'] = true;
-    $response['data'] = $data;
+    $response['data'] = [
+        'labels' => $labels,
+        'values' => $values
+    ];
+    $response['message'] = 'Lấy thống kê sản phẩm bán chạy thành công';
     $response['message'] = 'Lấy top sản phẩm bán chạy thành công';
 }
 
@@ -363,8 +378,7 @@ function getOrderStatusStats($conn, &$response) {
     }
     
     $result = $stmt->get_result();
-    
-    $data = [
+      $data = [
         'pending' => 0,
         'shipping' => 0,
         'completed' => 0
@@ -388,8 +402,15 @@ function getOrderStatusStats($conn, &$response) {
         }
     }
     
+    // Format data for charts
+    $labels = ['Chờ xác nhận', 'Đang giao', 'Hoàn thành'];
+    $values = [$data['pending'], $data['shipping'], $data['completed']];
+    
     $response['success'] = true;
-    $response['data'] = $data;
+    $response['data'] = [
+        'labels' => $labels,
+        'values' => $values
+    ];
     $response['message'] = 'Lấy thống kê trạng thái đơn hàng thành công';
 }
 
