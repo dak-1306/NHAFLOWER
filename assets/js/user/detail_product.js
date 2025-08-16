@@ -139,9 +139,10 @@ class ProductDetailManager {
           productRaw.so_danh_gia ?? productRaw.reviewCount ?? 0
         ),
         category: productRaw.id_loaihoa ?? productRaw.category ?? "",
-        images: productRaw.hinh_anh
-          ? [`../assets/img/products/${productRaw.hinh_anh}`]
-          : productRaw.images ?? ["../assets/img/products/default-flower.svg"],
+        images:
+          productRaw.hinh_anh && productRaw.hinh_anh.trim()
+            ? [`../assets/img/products/${productRaw.hinh_anh}`]
+            : ["../assets/img/products/default-flower.svg"],
         inStock: (productRaw.so_luong ?? productRaw.stockQuantity ?? 0) > 0,
         stockQuantity: Number(
           productRaw.so_luong ?? productRaw.stockQuantity ?? 0
@@ -311,15 +312,26 @@ class ProductDetailManager {
 
     // Giá
     const priceHtml = `
-      <span class="current-price">${this.formatPrice(product.price)}</span>
-      ${
-        product.originalPrice && product.originalPrice > product.price
-          ? `<span class="original-price" style="text-decoration:line-through;margin-left:8px;color:#888;">
-               ${this.formatPrice(product.originalPrice)}
-             </span>`
-          : ""
-      }`;
+        <span class="current-price">${this.formatPrice(product.price)}</span>
+        ${
+          product.originalPrice && product.originalPrice > product.price
+            ? `<span class="original-price" style="text-decoration:line-through;margin-left:8px;color:#888;">
+                 ${this.formatPrice(product.originalPrice)}
+               </span>`
+            : ""
+        }`;
     $("#productPrice").html(priceHtml);
+
+    // Hiển thị badge khuyến mãi nếu có id_khuyenmai
+    if (
+      productRaw.id_khuyenmai &&
+      productRaw.id_khuyenmai !== "0" &&
+      productRaw.id_khuyenmai !== 0
+    ) {
+      $("#discountBadge").show().text("Khuyến mãi");
+    } else {
+      $("#discountBadge").hide();
+    }
 
     // Mô tả
     $("#productDescription").html(product.description || "");
@@ -347,22 +359,38 @@ class ProductDetailManager {
         .toggleClass("text-success", product.inStock)
         .toggleClass("text-danger", !product.inStock);
     }
+    // Hiển thị số lượng tồn kho
+    if ($("#stockQuantityInfo").length) {
+      if (product.inStock) {
+        $("#stockQuantityInfo").html(
+          `<span class='text-info'>Còn lại: <b>${product.stockQuantity}</b> sản phẩm</span>`
+        );
+      } else {
+        $("#stockQuantityInfo").html(
+          `<span class='text-danger'>Hết hàng</span>`
+        );
+      }
+    }
 
-    // Ảnh (gallery)
-    const imgs =
+    // DEBUG: Log đường dẫn ảnh và dữ liệu images
+    console.log("[DEBUG] product.images:", product.images);
+    if (product.images && product.images.length) {
+      product.images.forEach((img, idx) => {
+        console.log(`[DEBUG] Gallery img[${idx}]:`, img);
+      });
+    }
+
+    // Hiển thị ảnh sản phẩm chính
+    const mainImg =
       product.images && product.images.length
-        ? product.images
-        : ["../assets/img/products/default-flower.svg"];
-    const galleryHtml = imgs
-      .map(
-        (src, idx) => `
-        <img src="${src}" alt="product-image-${idx}"
-             style="width:100%;max-height:420px;object-fit:cover;border-radius:12px;"
-             onerror="this.src='../assets/img/products/default-flower.svg';">`
-      )
-      .join("");
-    if ($("#productGallery").length) {
-      $("#productGallery").html(galleryHtml);
+        ? product.images[0]
+        : "../assets/img/products/default-flower.svg";
+    if ($("#mainProductImage").length) {
+      $("#mainProductImage").attr("src", mainImg);
+      $("#mainProductImage").attr(
+        "onerror",
+        "this.src='../assets/img/products/default-flower.svg';"
+      );
     }
 
     // Số lượng
@@ -476,4 +504,17 @@ function showSearchModal() {
 }
 function showUserProfile() {
   console.log("Show user profile");
+}
+// Xử lý mở modal xem ảnh sản phẩm
+function openImageModal(imageUrl) {
+  const modal = document.getElementById("imageModal");
+  const modalImg = document.getElementById("modalImage");
+  if (modal && modalImg) {
+    modalImg.src = imageUrl;
+    if (typeof $ !== "undefined" && $(modal).modal) {
+      $(modal).modal("show");
+    } else {
+      modal.style.display = "block";
+    }
+  }
 }

@@ -112,7 +112,7 @@
                 alt="Sản phẩm"
                 class="main-product-image"
               />
-              <button class="image-zoom-btn" onclick="openImageModal()">
+              <button class="image-zoom-btn" onclick="openImageModal(document.getElementById('mainProductImage').src)">
                 <i class="fas fa-search-plus"></i>
               </button>
             </div>
@@ -126,36 +126,28 @@
         <div class="col-12">
           <div class="product-info-section">
             <!-- Product Title -->
-            <h1 class="product-title" id="productName">Tên sản phẩm</h1>
+            <h1 class="product-title" id="productName"></h1>
 
             <!-- Product Rating -->
             <div class="product-rating-section">
-              <div class="rating-stars" id="productRating">
-                <i class="fas fa-star"></i>
-                <i class="fas fa-star"></i>
-                <i class="fas fa-star"></i>
-                <i class="fas fa-star"></i>
-                <i class="fas fa-star"></i>
-              </div>
-              <span class="rating-number" id="ratingNumber">4.9</span>
-              <span class="review-count"
-                >(<span id="reviewCount">156</span> đánh giá)</span
-              >
+              <div class="rating-stars" id="productRating"></div>
+              <span class="rating-number" id="ratingNumber"></span>
+              <span class="review-count">(<span id="reviewCount"></span> đánh giá)</span>
+            </div>
+            <div class="stock-quantity mb-2" id="stockQuantityInfo"></div>
             </div>
 
             <!-- Product Price -->
             <div class="price-section">
-              <span class="current-price" id="productPrice">250,000 VNĐ</span>
-              <span class="original-price" id="originalPrice">300,000 VNĐ</span>
-              <span class="discount-badge">-17%</span>
+              <span class="current-price" id="productPrice"></span>
+              <span class="original-price" id="originalPrice"></span>
+              <span class="discount-badge" id="discountBadge"></span>
             </div>
 
             <!-- Product Description -->
             <div class="description-section">
               <h3>Mô tả sản phẩm</h3>
-              <p id="productDescription">
-                Thông tin của sản phẩm sẽ được hiển thị ở đây...
-              </p>
+              <p id="productDescription"></p>
             </div>
 
             <!-- Product Options -->
@@ -164,29 +156,24 @@
               <div class="quantity-section">
                 <label>Số lượng:</label>
                 <div class="quantity-controls">
-                  <button class="qty-btn" onclick="decreaseQuantity()">
-                    -
-                  </button>
+                  <button class="qty-btn qty-minus" type="button">-</button>
                   <input
                     type="number"
-                    id="quantity"
+                    id="quantityInput"
                     value="1"
                     min="1"
                     max="99"
+                    class="form-control text-center"
+                    style="width: 60px"
                   />
-                  <button class="qty-btn" onclick="increaseQuantity()">
-                    +
-                  </button>
+                  <button class="qty-btn qty-plus" type="button">+</button>
                 </div>
               </div>
             </div>
 
             <!-- Action Buttons -->
             <div class="action-buttons">
-              <button
-                class="btn btn-primary add-to-cart-btn"
-                onclick="addToCart()"
-              >
+              <button id="addToCart" class="btn btn-primary add-to-cart">
                 <i class="fas fa-shopping-cart"></i>
                 Thêm vào giỏ hàng
               </button>
