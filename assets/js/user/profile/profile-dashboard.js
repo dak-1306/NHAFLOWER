@@ -87,7 +87,7 @@ class ProfileDashboard extends BaseProfileManager {
    */
   async loadUserData() {
     try {
-      // Lấy id_khachhang từ localStorage
+      // Lấy id_khachhang và email từ localStorage
       const user = JSON.parse(localStorage.getItem("nhaflower_user"));
       if (!user || !user.id_khachhang) {
         this.showErrorMessage("Không tìm thấy thông tin khách hàng.");
@@ -98,7 +98,7 @@ class ProfileDashboard extends BaseProfileManager {
       );
       const data = await res.json();
       if (data.success && data.data) {
-        // Ghép email từ localStorage vào object trả về từ API
+        // Luôn ưu tiên email từ localStorage
         const userData = { ...data.data, email: user.email };
         this.updateSidebarInfo(userData);
       } else {
@@ -228,4 +228,8 @@ const profileDashboard = new ProfileDashboard();
  */
 function changeAvatar() {
   alert("Tính năng thay đổi avatar đang được phát triển");
+}
+// Đảm bảo hàm logout() luôn gọi đúng hàm logout của BaseProfileManager
+function logout() {
+  new BaseProfileManager().logout();
 }

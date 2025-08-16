@@ -8,7 +8,7 @@
 class ProfileSecurity extends BaseProfileManager {
   constructor() {
     super();
-    this.apiUrl = "../../api/user/security.php"; // đường dẫn API đổi mật khẩu
+    this.apiUrl = "../../api/tai_khoan.php?action=change_password"; // đường dẫn API đổi mật khẩu
     this.bindEvents();
   }
 
@@ -17,7 +17,12 @@ class ProfileSecurity extends BaseProfileManager {
    */
   bindEvents() {
     $(document).ready(() => {
-      $("#changePasswordForm").on("submit", (e) => {
+      // TEST: Hiển thị alert mẫu khi trang vừa load
+      this.showAlert(
+        "Test alert: Nếu bạn thấy thông báo này, JS và DOM hoạt động đúng.",
+        "success"
+      );
+      $("#securityForm").on("submit", (e) => {
         e.preventDefault();
         this.handleChangePassword();
       });
@@ -25,48 +30,67 @@ class ProfileSecurity extends BaseProfileManager {
   }
 
   /**
+   * Hiển thị thông báo thành công/thất bại
+   */
+  showAlert(message, type = "success") {
+    const $alert = $("#securityAlert");
+    $alert.removeClass("d-none");
+    $alert.removeClass("alert-success alert-danger");
+    $alert.addClass(type === "success" ? "alert-success" : "alert-danger");
+    $alert.text(message);
+    console.log("ALERT DEBUG:", $alert[0], $alert.attr("class"), $alert.text());
+    setTimeout(() => {
+      $alert.addClass("d-none");
+    }, 4000);
+  }
+
+  /**
    * Xử lý đổi mật khẩu
    */
   async handleChangePassword() {
-    const oldPassword = $("#oldPassword").val()?.trim();
+    const oldPassword = $("#currentPassword").val()?.trim();
     const newPassword = $("#newPassword").val()?.trim();
     const confirmPassword = $("#confirmPassword").val()?.trim();
 
     // Validate đầu vào
     if (!oldPassword || !newPassword || !confirmPassword) {
-      return this.showErrorMessage("Vui lòng nhập đầy đủ thông tin.");
+      return this.showAlert("Vui lòng nhập đầy đủ thông tin.", "danger");
     }
     if (newPassword.length < 6) {
-      return this.showErrorMessage("Mật khẩu mới phải từ 6 ký tự trở lên.");
+      return this.showAlert("Mật khẩu mới phải từ 6 ký tự trở lên.", "danger");
     }
     if (newPassword !== confirmPassword) {
-      return this.showErrorMessage("Mật khẩu xác nhận không khớp.");
+      return this.showAlert("Mật khẩu xác nhận không khớp.", "danger");
+    }
+
+    // Lấy id_taikhoan từ localStorage
+    const user = JSON.parse(localStorage.getItem("nhaflower_user") || "null");
+    const id_taikhoan = user && user.id_taikhoan ? user.id_taikhoan : null;
+    if (!id_taikhoan) {
+      return this.showAlert("Không tìm thấy thông tin tài khoản.", "danger");
     }
 
     try {
       this.setLoading(true);
-
       const response = await fetch(this.apiUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          user_id: this.getCurrentUser(),
+          id_taikhoan: id_taikhoan,
           old_password: oldPassword,
           new_password: newPassword,
         }),
       });
-
       const result = await response.json();
-
       if (result.success) {
-        this.showSuccessMessage("Đổi mật khẩu thành công.");
-        $("#changePasswordForm")[0].reset();
+        this.showAlert("Đổi mật khẩu thành công!", "success");
+        $("#securityForm")[0].reset();
       } else {
-        this.showErrorMessage(result.message || "Đổi mật khẩu thất bại.");
+        this.showAlert(result.message || "Đổi mật khẩu thất bại.", "danger");
       }
     } catch (error) {
       console.error("Lỗi đổi mật khẩu:", error);
-      this.showErrorMessage("Không thể kết nối tới máy chủ.");
+      this.showAlert("Không thể kết nối tới máy chủ.", "danger");
     } finally {
       this.setLoading(false);
     }
@@ -85,6 +109,11 @@ class ProfileSecurity extends BaseProfileManager {
       btn.prop("disabled", false).text("Đổi mật khẩu");
     }
   }
+}
+
+// Đảm bảo hàm logout() luôn gọi đúng hàm logout của BaseProfileManager
+function logout() {
+  new BaseProfileManager().logout();
 }
 
 // Khởi tạo

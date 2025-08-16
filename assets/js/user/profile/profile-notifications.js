@@ -355,3 +355,8 @@ function escapeHTML(str) {
     return escapes[match];
   });
 }
+
+// Đảm bảo hàm logout() luôn gọi đúng hàm logout của BaseProfileManager
+function logout() {
+  new BaseProfileManager().logout();
+}

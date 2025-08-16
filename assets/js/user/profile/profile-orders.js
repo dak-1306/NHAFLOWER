@@ -367,3 +367,8 @@ class OrdersManager extends BaseProfileManager {
 
 // Global instance cho các onclick trong HTML
 window.ordersManager = new OrdersManager();
+
+// Đảm bảo hàm logout() luôn gọi đúng hàm logout của BaseProfileManager
+function logout() {
+  new BaseProfileManager().logout();
+}

@@ -132,3 +132,8 @@ function renderAddresses(list) {
     });
   });
 }
+
+// Đảm bảo hàm logout() luôn gọi đúng hàm logout của BaseProfileManager
+function logout() {
+  new BaseProfileManager().logout();
+}

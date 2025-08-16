@@ -89,5 +89,41 @@ if ($action === 'delete') {
     }
 }
 
+if ($action === 'change_password') {
+    $input = file_get_contents("php://input");
+    $data = json_decode($input, true);
+    if (json_last_error() !== JSON_ERROR_NONE) {
+        sendResponse(false, 'Invalid JSON data: ' . json_last_error_msg());
+    }
+    $id = $data['id_taikhoan'] ?? 0;
+    $old_password = $data['old_password'] ?? '';
+    $new_password = $data['new_password'] ?? '';
+    if (!$id || !$old_password || !$new_password) {
+        sendResponse(false, 'Thiếu thông tin bắt buộc');
+    }
+    // Lấy mật khẩu hiện tại
+    $sql = "SELECT mat_khau FROM taikhoan WHERE id_taikhoan=?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    if ($result->num_rows === 0) {
+        sendResponse(false, 'Không tìm thấy tài khoản');
+    }
+    $row = $result->fetch_assoc();
+    if (!password_verify($old_password, $row['mat_khau'])) {
+        sendResponse(false, 'Mật khẩu cũ không đúng');
+    }
+    $new_hash = password_hash($new_password, PASSWORD_DEFAULT);
+    $update_sql = "UPDATE taikhoan SET mat_khau=? WHERE id_taikhoan=?";
+    $update_stmt = $conn->prepare($update_sql);
+    $update_stmt->bind_param("si", $new_hash, $id);
+    if ($update_stmt->execute()) {
+        sendResponse(true, 'Đổi mật khẩu thành công');
+    } else {
+        sendResponse(false, $update_stmt->error);
+    }
+}
+
 sendResponse(false, 'Hành động không hợp lệ');
 ?>
