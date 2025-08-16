@@ -6,6 +6,7 @@ class AuthManager {
   constructor() {
     this.userToken = localStorage.getItem("user_token");
     this.userData = localStorage.getItem("user_data");
+    this.nhaflowerUser = localStorage.getItem("nhaflower_user");
   }
 
   // Kiểm tra xem user đã đăng nhập chưa
@@ -16,8 +17,11 @@ class AuthManager {
   // Lấy thông tin user hiện tại
   getCurrentUser() {
     if (!this.isAuthenticated()) return null;
-
     try {
+      // Ưu tiên trả về nhaflower_user nếu có
+      if (this.nhaflowerUser) {
+        return JSON.parse(this.nhaflowerUser);
+      }
       return JSON.parse(this.userData);
     } catch (error) {
       console.error("Error parsing user data:", error);
@@ -30,6 +34,19 @@ class AuthManager {
   login(token, userData) {
     localStorage.setItem("user_token", token);
     localStorage.setItem("user_data", JSON.stringify(userData));
+    // Đồng bộ lưu nhaflower_user
+    localStorage.setItem(
+      "nhaflower_user",
+      JSON.stringify({
+        id_taikhoan: userData.id_taikhoan,
+        id_khachhang: userData.id_khachhang || null,
+        email: userData.email,
+        ten: userData.ten || userData.ho_ten || "",
+        sdt: userData.sdt || "",
+        dia_chi: userData.dia_chi || "",
+        ngay_sinh: userData.ngay_sinh || "",
+      })
+    );
     this.userToken = token;
     this.userData = JSON.stringify(userData);
   }

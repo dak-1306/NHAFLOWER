@@ -210,37 +210,25 @@ function submitLogin() {
                 (k) => k.id_taikhoan == response.data.id_taikhoan
               );
             }
-            // Lưu nhaflower_user với id_khachhang nếu tìm thấy
-            localStorage.setItem(
-              "nhaflower_user",
-              JSON.stringify({
-                id_taikhoan: response.data.id_taikhoan,
-                id_khachhang: khach ? khach.id_khachhang : null,
-                email: response.data.email,
-                ten: response.data.ten || response.data.ho_ten || "",
-                sdt: response.data.sdt || "",
-                dia_chi: response.data.dia_chi || "",
-                ngay_sinh: response.data.ngay_sinh || "",
-              })
+            // Lấy object nhaflower_user đã chuẩn hóa từ localStorage
+            let nhaflowerUser = JSON.parse(
+              localStorage.getItem("nhaflower_user") || "null"
             );
+            // Nếu tìm thấy id_khachhang thì cập nhật vào object
+            if (khach && khach.id_khachhang) {
+              nhaflowerUser.id_khachhang = khach.id_khachhang;
+              localStorage.setItem(
+                "nhaflower_user",
+                JSON.stringify(nhaflowerUser)
+              );
+            }
             showNotification("Đăng nhập thành công!", "success");
             setTimeout(function () {
               window.authManager.handlePostLoginRedirect();
             }, 1500);
           },
           error: function () {
-            // Nếu lỗi vẫn lưu như cũ
-            localStorage.setItem(
-              "nhaflower_user",
-              JSON.stringify({
-                id_taikhoan: response.data.id_taikhoan,
-                email: response.data.email,
-                ten: response.data.ten || response.data.ho_ten || "",
-                sdt: response.data.sdt || "",
-                dia_chi: response.data.dia_chi || "",
-                ngay_sinh: response.data.ngay_sinh || "",
-              })
-            );
+            // Nếu lỗi vẫn giữ object nhaflower_user đã chuẩn hóa
             showNotification("Đăng nhập thành công!", "success");
             setTimeout(function () {
               window.authManager.handlePostLoginRedirect();

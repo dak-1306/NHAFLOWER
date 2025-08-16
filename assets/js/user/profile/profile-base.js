@@ -45,6 +45,7 @@ class BaseProfileManager {
       "src",
       userData?.avatar || "../../assets/img/user/default-avatar.png"
     );
+    console.log("User sidebar:", userData);
   }
 
   /**

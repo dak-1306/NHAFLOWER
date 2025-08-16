@@ -73,10 +73,17 @@ class OrdersManager extends BaseProfileManager {
         `${this.apiBaseUrl}?customer_id=${id_khachhang}`,
         { method: "GET", headers: { "Content-Type": "application/json" } }
       );
-      const payload = await res.json();
+      let result;
+      try {
+        result = await res.json();
+      } catch (e) {
+        const text = await res.text();
+        this.showErrorMessage("Lỗi server: " + text);
+        return;
+      }
 
       // Hỗ trợ 2 kiểu payload: Array hoặc {success, data}
-      const data = Array.isArray(payload) ? payload : payload?.data || [];
+      const data = Array.isArray(result) ? result : result?.data || [];
       if (!Array.isArray(data)) throw new Error("Invalid data format");
 
       this.orders = data;
@@ -304,16 +311,33 @@ class OrdersManager extends BaseProfileManager {
 
   async cancelOrder(orderId) {
     if (!confirm("Bạn có chắc chắn muốn hủy đơn hàng này?")) return;
-
     try {
-      // Khuyến nghị: chuyển về 1 endpoint duy nhất: this.apiBaseUrl?action=cancel (POST)
-      const res = await fetch(`${this.apiBaseUrl}/delete_donhang.php`, {
+      const res = await fetch(this.apiBaseUrl, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id_donhang: orderId }),
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({
+          action: "update_status",
+          id_donhang: orderId,
+          trang_thai: "huy",
+        }),
       });
-      const result = await res.json();
-
+      let result;
+      try {
+        result = await res.json();
+      } catch (e) {
+        // Nếu không phải JSON, lấy text để hiển thị lỗi
+        const text = await fetch(this.apiBaseUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: new URLSearchParams({
+            action: "update_status",
+            id_donhang: orderId,
+            trang_thai: "huy",
+          }),
+        }).then((r) => r.text());
+        this.showErrorMessage("Lỗi server: " + text);
+        return;
+      }
       if (result && result.success) {
         this.showSuccessMessage("Đơn hàng đã được hủy thành công");
         this.loadOrders();

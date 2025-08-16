@@ -20,7 +20,9 @@ class PersonalInfoManager extends BaseProfileManager {
     $(document).ready(() => {
       this.getCurrentUser();
       // Cập nhật sidebar từ localStorage (nhanh) — có thể thay bằng call API nếu muốn
-      const userData = JSON.parse(localStorage.getItem("nhaflower_user") || "null");
+      const userData = JSON.parse(
+        localStorage.getItem("nhaflower_user") || "null"
+      );
       new BaseProfileManager().updateSidebarInfo(userData);
 
       this.cacheDom();
@@ -44,14 +46,24 @@ class PersonalInfoManager extends BaseProfileManager {
       if (!this.validatePersonalInfo(data)) return;
       this.savePersonalInfo(data);
     });
+    // Sử dụng event delegation cho các nút chỉnh sửa/hủy
+    $(document).on("click", ".btn-edit-info", () => {
+      this.enableEditing();
+    });
+    $(document).on("click", ".btn-cancel-edit", () => {
+      this.cancelEdit();
+    });
   }
 
   async loadUserData() {
     try {
-      const res = await fetch(`${this.apiBaseUrl}?id_taikhoan=${this.currentUserId}`, {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-      });
+      const res = await fetch(
+        `${this.apiBaseUrl}?id_taikhoan=${this.currentUserId}`,
+        {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+        }
+      );
       const payload = await res.json();
       if (payload && payload.success && payload.data) {
         const user = payload.data;
@@ -93,18 +105,23 @@ class PersonalInfoManager extends BaseProfileManager {
 
   enableEditing() {
     this.isEditing = true;
-    $("#personalInfoForm input, #personalInfoForm textarea, #personalInfoForm select")
+    $(
+      "#personalInfoForm input, #personalInfoForm textarea, #personalInfoForm select"
+    )
       .prop("readonly", false)
       .prop("disabled", false);
-    this.$actions.show();
+    this.$actions.removeClass("hidden").show();
     this.$btnEdit.html('<i class="fas fa-times"></i> Hủy');
   }
 
   disableEditing() {
     this.isEditing = false;
-    $("#personalInfoForm input, #personalInfoForm textarea").prop("readonly", true);
+    $("#personalInfoForm input, #personalInfoForm textarea").prop(
+      "readonly",
+      true
+    );
     $("#personalInfoForm select").prop("disabled", true);
-    this.$actions.hide();
+    this.$actions.addClass("hidden").hide();
     this.$btnEdit.html('<i class="fas fa-edit"></i> Chỉnh sửa');
   }
 
@@ -113,9 +130,17 @@ class PersonalInfoManager extends BaseProfileManager {
   }
 
   async savePersonalInfo(formData) {
+    // Đảm bảo có id_taikhoan từ localStorage nếu chưa có
+    if (!formData.id_taikhoan) {
+      const user = JSON.parse(localStorage.getItem("nhaflower_user") || "null");
+      if (user && user.id_taikhoan) {
+        formData.id_taikhoan = user.id_taikhoan;
+      }
+    }
     const $btnSave = this.$actions.find(".btn-success");
-    $btnSave.prop("disabled", true).html('<i class="fas fa-spinner fa-spin"></i> Đang lưu...');
-
+    $btnSave
+      .prop("disabled", true)
+      .html('<i class="fas fa-spinner fa-spin"></i> Đang lưu...');
     try {
       const res = await fetch(this.apiBaseUrl, {
         method: "PUT",
@@ -123,22 +148,24 @@ class PersonalInfoManager extends BaseProfileManager {
         body: JSON.stringify(formData),
       });
       const result = await res.json();
-
       if (result && result.success) {
         this.showSuccessMessage("Cập nhật thông tin cá nhân thành công!");
         this.disableEditing();
-
         // Cập nhật sidebar nhanh
         $("#profileName").text(formData.ten || "");
         $("#profileEmail").text(formData.email || "");
       } else {
-        this.showErrorMessage("Lỗi cập nhật: " + (result?.message || "Không xác định"));
+        this.showErrorMessage(
+          "Lỗi cập nhật: " + (result?.message || "Không xác định")
+        );
       }
     } catch (err) {
       console.error(err);
       this.showErrorMessage("Lỗi kết nối server");
     } finally {
-      $btnSave.prop("disabled", false).html('<i class="fas fa-save"></i> Lưu thay đổi');
+      $btnSave
+        .prop("disabled", false)
+        .html('<i class="fas fa-save"></i> Lưu thay đổi');
     }
   }
 

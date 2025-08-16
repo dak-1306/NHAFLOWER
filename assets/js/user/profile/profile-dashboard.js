@@ -98,7 +98,9 @@ class ProfileDashboard extends BaseProfileManager {
       );
       const data = await res.json();
       if (data.success && data.data) {
-        this.updateSidebarInfo(data.data);
+        // Ghép email từ localStorage vào object trả về từ API
+        const userData = { ...data.data, email: user.email };
+        this.updateSidebarInfo(userData);
       } else {
         this.showErrorMessage(
           data.message || "Không thể tải thông tin khách hàng."

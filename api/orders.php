@@ -195,61 +195,47 @@ function handleDeleteRequest($conn, &$response) {
  * Update order status
  */
 function updateOrderStatus($conn, &$response) {
-    $ma_don_hang = $_POST['ma_don_hang'] ?? '';
-    $trang_thai = $_POST['trang_thai_don_hang'] ?? '';
+    $id_donhang = $_POST['id_donhang'] ?? '';
+    $trang_thai = $_POST['trang_thai'] ?? '';
     $ghi_chu = $_POST['ghi_chu'] ?? '';
-    
-    if (empty($ma_don_hang) || empty($trang_thai)) {
+
+    if (empty($id_donhang) || empty($trang_thai)) {
         $response['message'] = 'Thiếu thông tin cần thiết';
         http_response_code(400);
         return;
     }
-    
     // Validate status
-    $valid_statuses = ['pending', 'confirmed', 'shipping', 'completed', 'cancelled'];
+    $valid_statuses = ['cho', 'dang_giao', 'hoan_tat', 'huy'];
     if (!in_array($trang_thai, $valid_statuses)) {
         $response['message'] = 'Trạng thái không hợp lệ';
         http_response_code(400);
         return;
     }
-    
     $conn->begin_transaction();
-    
     try {
         // Update order status
-        $sql = "UPDATE don_hang SET 
-                    trang_thai_don_hang = ?, 
-                    ngay_cap_nhat = CURRENT_TIMESTAMP
-                WHERE ma_don_hang = ?";
-        
+        $sql = "UPDATE donhang SET trang_thai = ? WHERE id_donhang = ?";
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param('si', $trang_thai, $ma_don_hang);
+        $stmt->bind_param('si', $trang_thai, $id_donhang);
         $stmt->execute();
-        
         if ($stmt->affected_rows === 0) {
             throw new Exception('Không tìm thấy đơn hàng hoặc không có thay đổi');
         }
-        
         // Add status change log if note provided
         if (!empty($ghi_chu)) {
-            $log_sql = "INSERT INTO don_hang_log (ma_don_hang, trang_thai_cu, trang_thai_moi, ghi_chu, ngay_thay_doi) 
-                       SELECT ?, (SELECT trang_thai_don_hang FROM don_hang WHERE ma_don_hang = ? LIMIT 1), ?, ?, CURRENT_TIMESTAMP";
-            
-            // Note: This assumes a log table exists, if not, we'll skip logging
+            // Nếu có bảng log, sửa lại cho đúng tên cột/bảng
+            $log_sql = "INSERT INTO donhang_log (id_donhang, trang_thai_cu, trang_thai_moi, ghi_chu, ngay_thay_doi) \n                       SELECT ?, (SELECT trang_thai FROM donhang WHERE id_donhang = ? LIMIT 1), ?, ?, CURRENT_TIMESTAMP";
             try {
                 $log_stmt = $conn->prepare($log_sql);
-                $log_stmt->bind_param('iiss', $ma_don_hang, $ma_don_hang, $trang_thai, $ghi_chu);
+                $log_stmt->bind_param('iiss', $id_donhang, $id_donhang, $trang_thai, $ghi_chu);
                 $log_stmt->execute();
             } catch (Exception $e) {
-                // Log table doesn't exist, continue without logging
+                // Log table doesn't tồn tại, bỏ qua
             }
         }
-        
         $conn->commit();
-        
         $response['success'] = true;
         $response['message'] = 'Cập nhật trạng thái đơn hàng thành công';
-        
     } catch (Exception $e) {
         $conn->rollback();
         $response['message'] = 'Lỗi cập nhật trạng thái: ' . $e->getMessage();
