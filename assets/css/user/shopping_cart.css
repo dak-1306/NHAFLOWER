@@ -116,11 +116,14 @@
 .cart-item {
   display: flex;
   align-items: center;
+  justify-content: center;
   padding: 20px 0;
   border-bottom: 1px solid #f1f1f1;
   transition: all 0.3s ease;
 }
-
+.cart-item-main {
+  margin-right: 20px;
+}
 .cart-item:last-child {
   border-bottom: none;
 }

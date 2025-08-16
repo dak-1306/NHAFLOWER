@@ -480,28 +480,6 @@
   box-shadow: 0 8px 25px rgba(46, 204, 113, 0.3);
 }
 
-.favorite-btn {
-  border: 2px solid #e74c3c;
-  color: #e74c3c;
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s ease;
-}
-
-.favorite-btn:hover,
-.favorite-btn.active {
-  background: #e74c3c;
-  color: white;
-}
-
-.favorite-btn.active i {
-  content: "\f004"; /* fas fa-heart */
-}
-
 /* ====================================
    PRODUCT FEATURES
    ==================================== */
@@ -608,11 +586,6 @@
   .action-buttons .btn {
     width: 100%;
     min-width: auto;
-  }
-
-  .favorite-btn {
-    width: 100%;
-    border-radius: 25px;
   }
 
   .quantity-controls {

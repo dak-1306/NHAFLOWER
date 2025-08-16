@@ -20,6 +20,22 @@ class ProductDetailManager {
         const comments = result.data.filter(
           (c) => String(c.id_sanpham) == String(productId)
         );
+        // Tính số lượng và trung bình số sao
+        const reviewCount = comments.length;
+        const avgRating = reviewCount
+          ? comments.reduce((sum, c) => sum + Number(c.sao || 0), 0) /
+            reviewCount
+          : 0;
+        // Hiển thị số sao và số lượng đánh giá thật
+        if (document.getElementById("productRating")) {
+          document.getElementById(
+            "productRating"
+          ).innerHTML = `${this.getStarsHtml(
+            avgRating
+          )} <span style="margin-left:6px;color:#6c757d;">${avgRating.toFixed(
+            1
+          )} (${reviewCount} đánh giá)</span>`;
+        }
         this.renderProductComments(comments);
       } else {
         $("#productComments").html(
