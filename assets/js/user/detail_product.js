@@ -59,7 +59,7 @@ class ProductDetailManager {
     const html = comments
       .map(
         (c) => `
-      <div class="comment-item mb-3 p-3 border rounded">
+      <div class="comment-item mb-3 p-3 border rounded bg-white">
         <div class="d-flex align-items-center mb-1">
           <span class="font-weight-bold mr-2">${
             c.ten_khachhang || "Ẩn danh"

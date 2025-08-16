@@ -126,24 +126,48 @@ class ProductList {
     try {
       $("#loading").show();
 
+      // Lấy sản phẩm
       const response = await $.ajax({
         url: "/NHAFLOWER/api/products.php?action=get_all",
         method: "GET",
         dataType: "json",
       });
 
-      // Check if data is array (direct format) or has success property
+      // Lấy toàn bộ đánh giá
+      const reviewsRes = await $.ajax({
+        url: "/NHAFLOWER/api/danh_gia.php?action=get_all",
+        method: "GET",
+        dataType: "json",
+      });
+      let reviews = [];
+      if (reviewsRes.success && Array.isArray(reviewsRes.data)) {
+        reviews = reviewsRes.data;
+      }
+
+      // Gắn số sao trung bình và số lượng đánh giá cho từng sản phẩm
+      let productsArr = [];
       if (response.success && Array.isArray(response.data)) {
-        this.allProducts = response.data;
-        this.products = [...this.allProducts];
-        this.renderProducts();
+        productsArr = response.data;
       } else if (Array.isArray(response)) {
-        this.allProducts = response;
-        this.products = [...this.allProducts];
-        this.renderProducts();
+        productsArr = response;
       } else {
         throw new Error("Không thể tải sản phẩm");
       }
+
+      productsArr.forEach((product) => {
+        const productReviews = reviews.filter(
+          (r) => String(r.id_sanpham) === String(product.id_sanpham)
+        );
+        product.reviewCount = productReviews.length;
+        product.avgRating = product.reviewCount
+          ? productReviews.reduce((sum, r) => sum + Number(r.sao || 0), 0) /
+            product.reviewCount
+          : 0;
+      });
+
+      this.allProducts = productsArr;
+      this.products = [...this.allProducts];
+      this.renderProducts();
     } catch (error) {
       console.error("Error loading products:", error);
       this.showError("Không thể tải danh sách sản phẩm. Vui lòng thử lại sau.");
@@ -182,38 +206,45 @@ class ProductList {
     const categorySlug = this.getCategorySlug(product.id_loaihoa);
     const formattedPrice = this.formatPrice(product.gia);
 
+    // Tạo HTML cho số sao thật
+    const fullStars = Math.floor(product.avgRating || 0);
+    const halfStar = (product.avgRating || 0) - fullStars >= 0.5 ? 1 : 0;
+    const emptyStars = 5 - fullStars - halfStar;
+    let starsHtml = "";
+    for (let i = 0; i < fullStars; i++)
+      starsHtml += '<i class="fas fa-star"></i>';
+    if (halfStar) starsHtml += '<i class="fas fa-star-half-alt"></i>';
+    for (let i = 0; i < emptyStars; i++)
+      starsHtml += '<i class="far fa-star"></i>';
+
     return `
-      <div class="product-card" data-category="${categorySlug}" onclick="goToProductDetail(${
+           <div class="product-card" data-category="${categorySlug}" onclick="goToProductDetail(${
       product.id_sanpham
     })">
-        <div class="product-image">
-          ${
-            product.hinh_anh
-              ? `<img src="/NHAFLOWER/assets/img/products/${product.hinh_anh}" alt="${product.ten_hoa}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.parentElement.innerHTML='<div class=\\'placeholder-image\\'><i class=\\'fas fa-image\\' style=\\'font-size: 48px; color: #ddd;\\'></i><p style=\\'margin: 10px 0 0 0; color: #999; font-size: 14px;\\'>Hình ảnh sản phẩm</p></div>'">`
-              : `<div class="placeholder-image"><i class="fas fa-image" style="font-size: 48px; color: #ddd;"></i><p style="margin: 10px 0 0 0; color: #999; font-size: 14px;">Hình ảnh sản phẩm</p></div>`
-          }
-        </div>
-        <div class="product-info">
-          <div class="product-name">${product.ten_hoa}</div>
-          <div class="product-price">${formattedPrice}</div>
-          <div class="product-rating">
-            <div class="rating-stars">
-              <i class="fas fa-star"></i>
-              <i class="fas fa-star"></i>
-              <i class="fas fa-star"></i>
-              <i class="fas fa-star"></i>
-              <i class="fas fa-star"></i>
-            </div>
-            <span class="rating-number">4.8</span>
-          </div>
-          <button class="add-to-cart-btn" onclick="event.stopPropagation(); addToCartFromList(${
-            product.id_sanpham
-          })">
-            Thêm vào giỏ
-          </button>
-        </div>
-      </div>
-    `;
+               <div class="product-image">
+                 ${
+                   product.hinh_anh
+                     ? `<img src="/NHAFLOWER/assets/img/products/${product.hinh_anh}" alt="${product.ten_hoa}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.parentElement.innerHTML='<div class=\'placeholder-image\'><i class=\'fas fa-image\' style=\'font-size: 48px; color: #ddd;\'></i><p style=\'margin: 10px 0 0 0; color: #999; font-size: 14px;\'>Hình ảnh sản phẩm</p></div>'">`
+                     : `<div class="placeholder-image"><i class="fas fa-image" style="font-size: 48px; color: #ddd;"></i><p style="margin: 10px 0 0 0; color: #999; font-size: 14px;">Hình ảnh sản phẩm</p></div>`
+                 }
+               </div>
+               <div class="product-info">
+                 <div class="product-name">${product.ten_hoa}</div>
+                 <div class="product-price">${formattedPrice}</div>
+                 <div class="product-rating">
+                   <div class="rating-stars">${starsHtml}</div>
+                   <span class="rating-number">${(
+                     product.avgRating || 0
+                   ).toFixed(1)}</span>
+                 </div>
+                 <button class="add-to-cart-btn" onclick="event.stopPropagation(); addToCartFromList(${
+                   product.id_sanpham
+                 })">
+                   Thêm vào giỏ
+                 </button>
+               </div>
+             </div>
+           `;
   }
 
   renderProducts() {
