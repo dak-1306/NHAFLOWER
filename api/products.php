@@ -24,8 +24,13 @@ function sendResponse($success, $message, $data = null) {
 // Function to validate required fields
 function validateRequired($data, $fields) {
     foreach ($fields as $field) {
-        if (!isset($data[$field]) || empty(trim($data[$field]))) {
-            return "Trường {$field} không được để trống";
+        if (!isset($data[$field])) {
+            return "Trường {$field} không được để trống (không tồn tại)";
+        }
+        
+        $value = $data[$field];
+        if ($value === null || $value === '' || (is_string($value) && trim($value) === '')) {
+            return "Trường {$field} không được để trống (giá trị rỗng)";
         }
     }
     return null;
@@ -141,9 +146,8 @@ try {
             if (isset($_POST['id_sanpham']) && !empty($_POST['id_sanpham'])) {
                 // UPDATE PRODUCT
                 $id = intval($_POST['id_sanpham']);
-                
-                // Validate required fields
-                $requiredFields = ['ten_sanpham', 'gia', 'so_luong_ton_kho'];
+                  // Validate required fields
+                $requiredFields = ['ten_hoa', 'gia', 'so_luong'];
                 $error = validateRequired($_POST, $requiredFields);
                 if ($error) {
                     sendResponse(false, $error);
@@ -189,28 +193,29 @@ try {
                             id_loaihoa = ?, 
                             hinh_anh = ?
                         WHERE id_sanpham = ?";
-                
-                $stmt = $conn->prepare($sql);
-                $ten_sanpham = trim($_POST['ten_sanpham']);
+                  $stmt = $conn->prepare($sql);
+                $ten_hoa = trim($_POST['ten_hoa']);
                 $gia = floatval($_POST['gia']);
                 $mo_ta = trim($_POST['mo_ta'] ?? '');
-                $so_luong = intval($_POST['so_luong_ton_kho']);
-                $id_danhmuc = !empty($_POST['id_danhmuc']) ? intval($_POST['id_danhmuc']) : null;
+                $so_luong = intval($_POST['so_luong']);
+                $id_loaihoa = !empty($_POST['id_loaihoa']) ? intval($_POST['id_loaihoa']) : null;
                 
-                $stmt->bind_param("sdsiisi", $ten_sanpham, $gia, $mo_ta, $so_luong, $id_danhmuc, $newImage, $id);
+                $stmt->bind_param("sdsiisi", $ten_hoa, $gia, $mo_ta, $so_luong, $id_loaihoa, $newImage, $id);
                 
                 if ($stmt->execute()) {
                     sendResponse(true, 'Cập nhật sản phẩm thành công');
                 } else {
                     sendResponse(false, 'Lỗi cập nhật sản phẩm: ' . $conn->error);
                 }
-                
-            } else {
+                  } else {
                 // CREATE PRODUCT
-                // Validate required fields
-                $requiredFields = ['ten_sanpham', 'gia', 'so_luong_ton_kho'];
+                // Debug: Log received POST data
+                error_log("DEBUG: Received POST data: " . print_r($_POST, true));
+                error_log("DEBUG: Received FILES data: " . print_r($_FILES, true));                // Validate required fields
+                $requiredFields = ['ten_hoa', 'gia', 'so_luong'];
                 $error = validateRequired($_POST, $requiredFields);
                 if ($error) {
+                    error_log("DEBUG: Validation error: " . $error);
                     sendResponse(false, $error);
                 }
                 
@@ -227,16 +232,15 @@ try {
                   // Insert product
                 $sql = "INSERT INTO sanpham (ten_hoa, gia, mo_ta, so_luong, id_loaihoa, hinh_anh) 
                         VALUES (?, ?, ?, ?, ?, ?)";
-                
-                $stmt = $conn->prepare($sql);
-                $ten_sanpham = trim($_POST['ten_sanpham']);
+                  $stmt = $conn->prepare($sql);
+                $ten_hoa = trim($_POST['ten_hoa']);
                 $gia = floatval($_POST['gia']);
                 $mo_ta = trim($_POST['mo_ta'] ?? '');
-                $so_luong = intval($_POST['so_luong_ton_kho']);
-                $id_danhmuc = !empty($_POST['id_danhmuc']) ? intval($_POST['id_danhmuc']) : null;
+                $so_luong = intval($_POST['so_luong']);
+                $id_loaihoa = !empty($_POST['id_loaihoa']) ? intval($_POST['id_loaihoa']) : null;
                 $hinh_anh = $uploadResult['filename'];
                 
-                $stmt->bind_param("sdsiss", $ten_sanpham, $gia, $mo_ta, $so_luong, $id_danhmuc, $hinh_anh);
+                $stmt->bind_param("sdsiss", $ten_hoa, $gia, $mo_ta, $so_luong, $id_loaihoa, $hinh_anh);
                 
                 if ($stmt->execute()) {
                     sendResponse(true, 'Thêm sản phẩm thành công');
