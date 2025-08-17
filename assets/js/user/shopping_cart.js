@@ -649,9 +649,79 @@ function goToProductDetail(productId) {
   window.location.href = `detail_product.html?id=${productId}`;
 }
 
-function addToCartFromRelated(productId) {
-  // TODO: Implement add to cart from related products
-  cartManager.showNotification("Tính năng đang được phát triển!", "info");
+async function addToCartFromRelated(productId) {
+  // Kiểm tra đăng nhập
+  if (!localStorage.getItem("nhaflower_user")) {
+    if (confirm("Bạn cần đăng nhập để mua hàng. Đăng nhập ngay?")) {
+      window.location.href = "login.html";
+    }
+    return;
+  }
+  try {
+    // Lấy thông tin sản phẩm từ API
+    const response = await fetch(
+      `../api/products.php?action=get_sanpham&id=${productId}`
+    );
+    const result = await response.json();
+    if (result && result.success && result.data) {
+      const product = result.data;
+      let cart = [];
+      try {
+        cart = JSON.parse(localStorage.getItem("nhaflower_cart")) || [];
+      } catch (e) {
+        cart = [];
+      }
+      const existing = cart.find((item) => item.id == productId);
+      if (existing) {
+        // Nếu đã có trong giỏ, tăng số lượng nhưng không vượt quá tồn kho
+        if (
+          existing.quantity < (product.so_luong ?? product.stockQuantity ?? 1)
+        ) {
+          existing.quantity += 1;
+        } else {
+          cartManager.showNotification(
+            "Đã đạt số lượng tối đa có thể mua!",
+            "warning"
+          );
+          return;
+        }
+      } else {
+        cart.push({
+          id: productId,
+          name: product.ten_hoa ?? product.name,
+          price: Number(product.gia ?? product.price ?? 0),
+          originalPrice: Number(
+            product.gia_goc ?? product.originalPrice ?? product.gia ?? 0
+          ),
+          quantity: 1,
+          image: product.hinh_anh
+            ? `../assets/img/products/${product.hinh_anh}`
+            : "../assets/img/products/default-flower.svg",
+          inStock: (product.so_luong ?? product.stockQuantity ?? 0) > 0,
+          stockQuantity: Number(product.so_luong ?? product.stockQuantity ?? 0),
+        });
+      }
+      localStorage.setItem("nhaflower_cart", JSON.stringify(cart));
+      cartManager.showNotification(
+        `Đã thêm \"${product.ten_hoa ?? product.name}\" vào giỏ hàng!`,
+        "success"
+      );
+      // Đồng bộ lại giỏ hàng trên giao diện
+      await cartManager.loadCartItems();
+      cartManager.updateCartDisplay();
+    } else {
+      cartManager.showNotification(
+        "Không tìm thấy thông tin sản phẩm!",
+        "danger"
+      );
+    }
+  } catch (error) {
+    cartManager.showNotification(
+      "Lỗi khi thêm sản phẩm vào giỏ hàng!",
+      "danger"
+    );
+    console.error(error);
+  }
 }
 
 // Common navigation functions (if not already defined)

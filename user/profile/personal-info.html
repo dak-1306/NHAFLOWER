@@ -32,13 +32,14 @@
     <link rel="stylesheet" href="../../assets/css/user/common.css" />
   </head>
   <body>
-    <!-- NAVIGATION -->
+    <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-custom fixed-top">
       <div class="container">
         <div class="navbar-nav mr-auto">
           <a class="nav-link-custom" href="../home.html">Home</a>
           <a class="nav-link-custom" href="../list_product.html">Danh sách</a>
         </div>
+
         <div class="navbar-brand-logo">
           <img
             src="../../assets/img/user/logo_NHAFLOWER.png"
@@ -46,12 +47,23 @@
             class="brand-circle-logo"
           />
         </div>
+
         <div class="navbar-nav ml-auto">
-          <div class="nav-icon-wrapper user-avatar" title="Trang cá nhân">
-            <i class="fas fa-user"></i>
+          <div class="nav-icon-wrapper">
+            <div
+              class="user-avatar"
+              title="Trang cá nhân"
+              onclick="window.location.href='dashboard.html'"
+            >
+              <i class="fas fa-user"></i>
+            </div>
           </div>
           <div class="nav-icon-wrapper">
-            <i class="fas fa-shopping-bag nav-icon" title="Giỏ hàng"></i>
+            <i
+              class="fas fa-shopping-bag nav-icon"
+              title="Giỏ hàng"
+              onclick="window.location.href='../shopping_cart.html'"
+            ></i>
           </div>
         </div>
       </div>
