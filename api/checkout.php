@@ -32,15 +32,24 @@ try {
     $stmt->execute();
     $id_donhang = $conn->insert_id;
 
-    // Insert vào chitietdonhang
+    // Insert vào chitietdonhang và cập nhật tồn kho sản phẩm
     $item_sql = "INSERT INTO chitietdonhang (id_donhang, id_sanpham, so_luong, don_gia) VALUES (?, ?, ?, ?)";
     $item_stmt = $conn->prepare($item_sql);
+    $update_stock_sql = "UPDATE sanpham SET so_luong = so_luong - ? WHERE id_sanpham = ? AND so_luong >= ?";
+    $update_stock_stmt = $conn->prepare($update_stock_sql);
     foreach ($products as $item) {
         $id_sanpham = $item['id'];
         $so_luong = $item['quantity'];
         $don_gia = $item['price'];
         $item_stmt->bind_param('iiid', $id_donhang, $id_sanpham, $so_luong, $don_gia);
         $item_stmt->execute();
+        // Cập nhật tồn kho sản phẩm
+        $update_stock_stmt->bind_param('iii', $so_luong, $id_sanpham, $so_luong);
+        $update_stock_stmt->execute();
+        // Kiểm tra nếu không cập nhật được tồn kho (số lượng không đủ)
+        if ($update_stock_stmt->affected_rows === 0) {
+            throw new Exception("Sản phẩm ID $id_sanpham không đủ số lượng tồn kho");
+        }
     }
     $conn->commit();
     $response['success'] = true;
