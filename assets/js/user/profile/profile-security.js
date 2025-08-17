@@ -17,11 +17,6 @@ class ProfileSecurity extends BaseProfileManager {
    */
   bindEvents() {
     $(document).ready(() => {
-      // TEST: Hiển thị alert mẫu khi trang vừa load
-      this.showAlert(
-        "Test alert: Nếu bạn thấy thông báo này, JS và DOM hoạt động đúng.",
-        "success"
-      );
       $("#securityForm").on("submit", (e) => {
         e.preventDefault();
         this.handleChangePassword();
@@ -38,7 +33,6 @@ class ProfileSecurity extends BaseProfileManager {
     $alert.removeClass("alert-success alert-danger");
     $alert.addClass(type === "success" ? "alert-success" : "alert-danger");
     $alert.text(message);
-    console.log("ALERT DEBUG:", $alert[0], $alert.attr("class"), $alert.text());
     setTimeout(() => {
       $alert.addClass("d-none");
     }, 4000);

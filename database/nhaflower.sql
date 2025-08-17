@@ -2,10 +2,10 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Host: 127.0.0.1
--- Generation Time: Aug 12, 2025 at 10:16 AM
--- Server version: 10.4.32-MariaDB
--- PHP Version: 8.2.12
+-- Máy chủ: 127.0.0.1
+-- Thời gian đã tạo: Th8 17, 2025 lúc 10:30 AM
+-- Phiên bản máy phục vụ: 10.4.32-MariaDB
+-- Phiên bản PHP: 8.0.30
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,13 +18,13 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `nhaflower`
+-- Cơ sở dữ liệu: `nhaflower`
 --
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `admin`
+-- Cấu trúc bảng cho bảng `admin`
 --
 
 CREATE TABLE `admin` (
@@ -34,7 +34,7 @@ CREATE TABLE `admin` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `admin`
+-- Đang đổ dữ liệu cho bảng `admin`
 --
 
 INSERT INTO `admin` (`id_admin`, `id_taikhoan`, `ho_ten`) VALUES
@@ -43,7 +43,7 @@ INSERT INTO `admin` (`id_admin`, `id_taikhoan`, `ho_ten`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `chitietdonhang`
+-- Cấu trúc bảng cho bảng `chitietdonhang`
 --
 
 CREATE TABLE `chitietdonhang` (
@@ -54,17 +54,20 @@ CREATE TABLE `chitietdonhang` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `chitietdonhang`
+-- Đang đổ dữ liệu cho bảng `chitietdonhang`
 --
 
 INSERT INTO `chitietdonhang` (`id_donhang`, `id_sanpham`, `so_luong`, `don_gia`) VALUES
 (1, 1, 1, 250000.00),
-(2, 2, 2, 150000.00);
+(2, 2, 2, 150000.00),
+(6, 1, 1, 250000.00),
+(6, 2, 1, 150000.00),
+(7, 2, 1, 150000.00);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `danhgia`
+-- Cấu trúc bảng cho bảng `danhgia`
 --
 
 CREATE TABLE `danhgia` (
@@ -77,17 +80,18 @@ CREATE TABLE `danhgia` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `danhgia`
+-- Đang đổ dữ liệu cho bảng `danhgia`
 --
 
 INSERT INTO `danhgia` (`id_danhgia`, `id_khachhang`, `id_sanpham`, `sao`, `noi_dung`, `ngay_danhgia`) VALUES
 (1, 1, 1, 5, 'Hoa rất đẹp, giao đúng giờ!', '2025-07-22 15:00:00'),
-(2, 2, 2, 4, 'Tươi và thơm, rất hài lòng.', '2025-07-23 16:00:00');
+(2, 2, 2, 4, 'Tươi và thơm, rất hài lòng.', '2025-07-23 16:00:00'),
+(3, 20, 2, 5, 'đẹp quá', '2025-08-16 16:30:10');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `donhang`
+-- Cấu trúc bảng cho bảng `donhang`
 --
 
 CREATE TABLE `donhang` (
@@ -95,11 +99,11 @@ CREATE TABLE `donhang` (
   `id_khachhang` int(11) NOT NULL,
   `ngay_dat` datetime DEFAULT NULL,
   `dia_chi_giao` text DEFAULT NULL,
-  `trang_thai` enum('cho','dang_giao','hoan_tat') DEFAULT 'cho'
+  `trang_thai` enum('cho','dang_giao','hoan_tat','huy') DEFAULT 'cho'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `donhang`
+-- Đang đổ dữ liệu cho bảng `donhang`
 --
 
 INSERT INTO `donhang` (`id_donhang`, `id_khachhang`, `ngay_dat`, `dia_chi_giao`, `trang_thai`) VALUES
@@ -107,12 +111,14 @@ INSERT INTO `donhang` (`id_donhang`, `id_khachhang`, `ngay_dat`, `dia_chi_giao`,
 (2, 2, '2025-07-23 14:00:00', '456 Cách Mạng, Quận 3', ''),
 (3, 1, '2025-08-08 21:14:39', '123 Đường ABC, Phường XYZ, Quận 1, TP.HCM', 'hoan_tat'),
 (4, 1, '2025-08-08 21:14:39', '456 Đường DEF, Phường UVW, Quận 3, TP.HCM', 'dang_giao'),
-(5, 1, '2025-08-08 21:14:39', '789 Đường GHI, Phường RST, Quận 7, TP.HCM', 'cho');
+(5, 1, '2025-08-08 21:14:39', '789 Đường GHI, Phường RST, Quận 7, TP.HCM', 'cho'),
+(6, 20, '2025-08-14 15:36:00', 'Bình Thạnh, tpHCM', 'cho'),
+(7, 20, '2025-08-16 20:35:41', 'Bình Thạnh, tpHCM', 'huy');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `khachhang`
+-- Cấu trúc bảng cho bảng `khachhang`
 --
 
 CREATE TABLE `khachhang` (
@@ -125,7 +131,7 @@ CREATE TABLE `khachhang` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `khachhang`
+-- Đang đổ dữ liệu cho bảng `khachhang`
 --
 
 INSERT INTO `khachhang` (`id_khachhang`, `id_taikhoan`, `ten`, `sdt`, `dia_chi`, `ngay_sinh`) VALUES
@@ -136,12 +142,14 @@ INSERT INTO `khachhang` (`id_khachhang`, `id_taikhoan`, `ten`, `sdt`, `dia_chi`,
 (16, 20, 'Trần Văn B', '0919315800', 'HCM', NULL),
 (17, 21, 'Trần Hải Đăng', '0839479444', 'HCM', '2000-06-13'),
 (18, 22, 'Sample User', '0987654321', 'Test Address', '1995-05-05'),
-(19, 23, 'Hồ Tấn Đạt', '0911526555', 'tp hcm', '2004-01-14');
+(19, 23, 'Hồ Tấn Đạt', '0911526555', 'tp hcm', '2004-01-14'),
+(20, 24, 'Trần Hải Đăng', '0839479444', 'Bình thạnh, HCM', NULL),
+(21, 25, 'Trần Đăng', '0839479999', 'Bình thạnh, tpHCM', '2000-01-01');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `khuyenmai`
+-- Cấu trúc bảng cho bảng `khuyenmai`
 --
 
 CREATE TABLE `khuyenmai` (
@@ -153,7 +161,7 @@ CREATE TABLE `khuyenmai` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `khuyenmai`
+-- Đang đổ dữ liệu cho bảng `khuyenmai`
 --
 
 INSERT INTO `khuyenmai` (`id_khuyenmai`, `ten_km`, `phan_tram`, `ngay_batdau`, `ngay_kt`) VALUES
@@ -162,7 +170,7 @@ INSERT INTO `khuyenmai` (`id_khuyenmai`, `ten_km`, `phan_tram`, `ngay_batdau`, `
 -- --------------------------------------------------------
 
 --
--- Table structure for table `loaihoa`
+-- Cấu trúc bảng cho bảng `loaihoa`
 --
 
 CREATE TABLE `loaihoa` (
@@ -171,7 +179,7 @@ CREATE TABLE `loaihoa` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `loaihoa`
+-- Đang đổ dữ liệu cho bảng `loaihoa`
 --
 
 INSERT INTO `loaihoa` (`id_loaihoa`, `ten_loai`) VALUES
@@ -186,7 +194,7 @@ INSERT INTO `loaihoa` (`id_loaihoa`, `ten_loai`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `sanpham`
+-- Cấu trúc bảng cho bảng `sanpham`
 --
 
 CREATE TABLE `sanpham` (
@@ -204,7 +212,7 @@ CREATE TABLE `sanpham` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `sanpham`
+-- Đang đổ dữ liệu cho bảng `sanpham`
 --
 
 INSERT INTO `sanpham` (`id_sanpham`, `ten_hoa`, `gia`, `mo_ta`, `so_luong`, `id_loaihoa`, `id_khuyenmai`, `hinh_anh`, `trang_thai`, `ngay_tao`, `ngay_capnhat`) VALUES
@@ -214,7 +222,7 @@ INSERT INTO `sanpham` (`id_sanpham`, `ten_hoa`, `gia`, `mo_ta`, `so_luong`, `id_
 -- --------------------------------------------------------
 
 --
--- Table structure for table `taikhoan`
+-- Cấu trúc bảng cho bảng `taikhoan`
 --
 
 CREATE TABLE `taikhoan` (
@@ -226,7 +234,7 @@ CREATE TABLE `taikhoan` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `taikhoan`
+-- Đang đổ dữ liệu cho bảng `taikhoan`
 --
 
 INSERT INTO `taikhoan` (`id_taikhoan`, `email`, `mat_khau`, `vai_tro`, `trang_thai`) VALUES
@@ -246,12 +254,14 @@ INSERT INTO `taikhoan` (`id_taikhoan`, `email`, `mat_khau`, `vai_tro`, `trang_th
 (20, 'thd123@gmail.com', '$2y$10$x6QiPVHIWhrsJrU/V6mcvOscfmB1KuwH7mKJCV9Q69Sc/0I2.wiAe', 'khach', 1),
 (21, 'thd1234@gmail.com', '$2y$10$vd4eSi6I.ubNeovUlILjGOFyT3znFftQvXVP.a9ClZtvpPnSKn4rW', 'khach', 1),
 (22, 'newuser@test.com', '$2y$10$98OMctxyAHOaDYME4jfUjeqO.Dt9p3UGArGWWijBWrlC8Q//cIqWW', 'khach', 1),
-(23, 'ngmuahoa@gmail.com', '$2y$10$RLx10Fc7kes6RJoEEklt7eYQ50NOrXYG8ReSwTmUSTfpNXBAnqKi2', 'khach', 1);
+(23, 'ngmuahoa@gmail.com', '$2y$10$RLx10Fc7kes6RJoEEklt7eYQ50NOrXYG8ReSwTmUSTfpNXBAnqKi2', 'khach', 1),
+(24, 'dang1234@gmail.com', '$2y$10$m5rRsQ51nJ9STPAqBoEPGe7SWQ7m9SgAkoUvrY.U.1l.DlvBFanB.', 'khach', 1),
+(25, 'dang123456@gmail.com', '$2y$10$OipLQR2ZsjE3aOKggY/lIeHSPtwXFg/cRMBuF0cykwCdMZjxlYy5e', 'khach', 1);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `thongbao`
+-- Cấu trúc bảng cho bảng `thongbao`
 --
 
 CREATE TABLE `thongbao` (
@@ -263,32 +273,32 @@ CREATE TABLE `thongbao` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `thongbao`
+-- Đang đổ dữ liệu cho bảng `thongbao`
 --
 
 INSERT INTO `thongbao` (`id_thongbao`, `id_admin`, `tieu_de`, `noi_dung`, `ngay_gui`) VALUES
 (1, 1, 'Khuyến mãi Valentine!', 'Giảm giá 20% các loại hoa hồng', '2025-02-09 08:00:00');
 
 --
--- Indexes for dumped tables
+-- Chỉ mục cho các bảng đã đổ
 --
 
 --
--- Indexes for table `admin`
+-- Chỉ mục cho bảng `admin`
 --
 ALTER TABLE `admin`
   ADD PRIMARY KEY (`id_admin`),
   ADD UNIQUE KEY `id_taikhoan` (`id_taikhoan`);
 
 --
--- Indexes for table `chitietdonhang`
+-- Chỉ mục cho bảng `chitietdonhang`
 --
 ALTER TABLE `chitietdonhang`
   ADD PRIMARY KEY (`id_donhang`,`id_sanpham`),
   ADD KEY `id_sanpham` (`id_sanpham`);
 
 --
--- Indexes for table `danhgia`
+-- Chỉ mục cho bảng `danhgia`
 --
 ALTER TABLE `danhgia`
   ADD PRIMARY KEY (`id_danhgia`),
@@ -296,33 +306,33 @@ ALTER TABLE `danhgia`
   ADD KEY `id_sanpham` (`id_sanpham`);
 
 --
--- Indexes for table `donhang`
+-- Chỉ mục cho bảng `donhang`
 --
 ALTER TABLE `donhang`
   ADD PRIMARY KEY (`id_donhang`),
   ADD KEY `id_khachhang` (`id_khachhang`);
 
 --
--- Indexes for table `khachhang`
+-- Chỉ mục cho bảng `khachhang`
 --
 ALTER TABLE `khachhang`
   ADD PRIMARY KEY (`id_khachhang`),
   ADD UNIQUE KEY `id_taikhoan` (`id_taikhoan`);
 
 --
--- Indexes for table `khuyenmai`
+-- Chỉ mục cho bảng `khuyenmai`
 --
 ALTER TABLE `khuyenmai`
   ADD PRIMARY KEY (`id_khuyenmai`);
 
 --
--- Indexes for table `loaihoa`
+-- Chỉ mục cho bảng `loaihoa`
 --
 ALTER TABLE `loaihoa`
   ADD PRIMARY KEY (`id_loaihoa`);
 
 --
--- Indexes for table `sanpham`
+-- Chỉ mục cho bảng `sanpham`
 --
 ALTER TABLE `sanpham`
   ADD PRIMARY KEY (`id_sanpham`),
@@ -330,122 +340,122 @@ ALTER TABLE `sanpham`
   ADD KEY `id_khuyenmai` (`id_khuyenmai`);
 
 --
--- Indexes for table `taikhoan`
+-- Chỉ mục cho bảng `taikhoan`
 --
 ALTER TABLE `taikhoan`
   ADD PRIMARY KEY (`id_taikhoan`),
   ADD UNIQUE KEY `email` (`email`);
 
 --
--- Indexes for table `thongbao`
+-- Chỉ mục cho bảng `thongbao`
 --
 ALTER TABLE `thongbao`
   ADD PRIMARY KEY (`id_thongbao`),
   ADD KEY `id_admin` (`id_admin`);
 
 --
--- AUTO_INCREMENT for dumped tables
+-- AUTO_INCREMENT cho các bảng đã đổ
 --
 
 --
--- AUTO_INCREMENT for table `admin`
+-- AUTO_INCREMENT cho bảng `admin`
 --
 ALTER TABLE `admin`
   MODIFY `id_admin` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
--- AUTO_INCREMENT for table `danhgia`
+-- AUTO_INCREMENT cho bảng `danhgia`
 --
 ALTER TABLE `danhgia`
-  MODIFY `id_danhgia` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id_danhgia` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
--- AUTO_INCREMENT for table `donhang`
+-- AUTO_INCREMENT cho bảng `donhang`
 --
 ALTER TABLE `donhang`
-  MODIFY `id_donhang` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id_donhang` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
--- AUTO_INCREMENT for table `khachhang`
+-- AUTO_INCREMENT cho bảng `khachhang`
 --
 ALTER TABLE `khachhang`
-  MODIFY `id_khachhang` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `id_khachhang` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
--- AUTO_INCREMENT for table `khuyenmai`
+-- AUTO_INCREMENT cho bảng `khuyenmai`
 --
 ALTER TABLE `khuyenmai`
   MODIFY `id_khuyenmai` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
--- AUTO_INCREMENT for table `loaihoa`
+-- AUTO_INCREMENT cho bảng `loaihoa`
 --
 ALTER TABLE `loaihoa`
   MODIFY `id_loaihoa` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
--- AUTO_INCREMENT for table `sanpham`
+-- AUTO_INCREMENT cho bảng `sanpham`
 --
 ALTER TABLE `sanpham`
   MODIFY `id_sanpham` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
--- AUTO_INCREMENT for table `taikhoan`
+-- AUTO_INCREMENT cho bảng `taikhoan`
 --
 ALTER TABLE `taikhoan`
-  MODIFY `id_taikhoan` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
+  MODIFY `id_taikhoan` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
 
 --
--- AUTO_INCREMENT for table `thongbao`
+-- AUTO_INCREMENT cho bảng `thongbao`
 --
 ALTER TABLE `thongbao`
   MODIFY `id_thongbao` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
--- Constraints for dumped tables
+-- Các ràng buộc cho các bảng đã đổ
 --
 
 --
--- Constraints for table `admin`
+-- Các ràng buộc cho bảng `admin`
 --
 ALTER TABLE `admin`
   ADD CONSTRAINT `admin_ibfk_1` FOREIGN KEY (`id_taikhoan`) REFERENCES `taikhoan` (`id_taikhoan`);
 
 --
--- Constraints for table `chitietdonhang`
+-- Các ràng buộc cho bảng `chitietdonhang`
 --
 ALTER TABLE `chitietdonhang`
   ADD CONSTRAINT `chitietdonhang_ibfk_1` FOREIGN KEY (`id_donhang`) REFERENCES `donhang` (`id_donhang`),
   ADD CONSTRAINT `chitietdonhang_ibfk_2` FOREIGN KEY (`id_sanpham`) REFERENCES `sanpham` (`id_sanpham`);
 
 --
--- Constraints for table `danhgia`
+-- Các ràng buộc cho bảng `danhgia`
 --
 ALTER TABLE `danhgia`
   ADD CONSTRAINT `danhgia_ibfk_1` FOREIGN KEY (`id_khachhang`) REFERENCES `khachhang` (`id_khachhang`),
   ADD CONSTRAINT `danhgia_ibfk_2` FOREIGN KEY (`id_sanpham`) REFERENCES `sanpham` (`id_sanpham`);
 
 --
--- Constraints for table `donhang`
+-- Các ràng buộc cho bảng `donhang`
 --
 ALTER TABLE `donhang`
   ADD CONSTRAINT `donhang_ibfk_1` FOREIGN KEY (`id_khachhang`) REFERENCES `khachhang` (`id_khachhang`);
 
 --
--- Constraints for table `khachhang`
+-- Các ràng buộc cho bảng `khachhang`
 --
 ALTER TABLE `khachhang`
   ADD CONSTRAINT `khachhang_ibfk_1` FOREIGN KEY (`id_taikhoan`) REFERENCES `taikhoan` (`id_taikhoan`);
 
 --
--- Constraints for table `sanpham`
+-- Các ràng buộc cho bảng `sanpham`
 --
 ALTER TABLE `sanpham`
   ADD CONSTRAINT `sanpham_ibfk_1` FOREIGN KEY (`id_loaihoa`) REFERENCES `loaihoa` (`id_loaihoa`),
   ADD CONSTRAINT `sanpham_ibfk_2` FOREIGN KEY (`id_khuyenmai`) REFERENCES `khuyenmai` (`id_khuyenmai`);
 
 --
--- Constraints for table `thongbao`
+-- Các ràng buộc cho bảng `thongbao`
 --
 ALTER TABLE `thongbao`
   ADD CONSTRAINT `thongbao_ibfk_1` FOREIGN KEY (`id_admin`) REFERENCES `admin` (`id_admin`);

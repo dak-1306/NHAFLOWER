@@ -325,14 +325,19 @@ class ShoppingCartManager {
 
   // Load sản phẩm liên quan
   loadRelatedProducts() {
-    // Lấy sản phẩm liên quan từ API thật
-    fetch("../api/products.php?action=get_all")
-      .then((res) => res.json())
-      .then((result) => {
-        if (result && result.success && Array.isArray(result.data)) {
-          // Lọc sản phẩm liên quan: loại trừ sản phẩm đã có trong giỏ
+    // Lấy sản phẩm liên quan từ API thật và lấy đánh giá
+    Promise.all([
+      fetch("../api/products.php?action=get_all").then((res) => res.json()),
+      fetch("../api/danh_gia.php?action=get_all").then((res) => res.json()),
+    ])
+      .then(([productsRes, reviewsRes]) => {
+        if (
+          productsRes &&
+          productsRes.success &&
+          Array.isArray(productsRes.data)
+        ) {
           const cartIds = this.cartItems.map((item) => item.id);
-          let related = result.data.filter(
+          let related = productsRes.data.filter(
             (p) => !cartIds.includes(p.id_sanpham)
           );
           // Nếu có loại hoa, ưu tiên cùng loại với sản phẩm đầu tiên trong giỏ
@@ -342,44 +347,67 @@ class ShoppingCartManager {
             );
           }
           related = related.slice(0, 3);
+
+          // Tính số sao trung bình cho từng sản phẩm
+          let reviews = [];
+          if (reviewsRes.success && Array.isArray(reviewsRes.data)) {
+            reviews = reviewsRes.data;
+          }
+          related.forEach((product) => {
+            const productReviews = reviews.filter(
+              (r) => String(r.id_sanpham) === String(product.id_sanpham)
+            );
+            product.reviewCount = productReviews.length;
+            product.avgRating = product.reviewCount
+              ? productReviews.reduce((sum, r) => sum + Number(r.sao || 0), 0) /
+                product.reviewCount
+              : 0;
+          });
+
           const productsHtml = related
             .map(
               (product) => `
-            <div class="col-md-4 mb-4">
-              <div class="card product-card">
-                <img src="../assets/img/products/${
-                  product.hinh_anh || "default-flower.svg"
-                }" class="card-img-top" alt="${
+          <div class="col-md-4 mb-4">
+            <div class="card product-card" style="cursor:pointer" onclick="goToProductDetail(${
+              product.id_sanpham || product.id
+            })">
+              <img src="../assets/img/products/${
+                product.hinh_anh || "default-flower.svg"
+              }" class="card-img-top" alt="${
                 product.ten_hoa || product.name
               }" onerror="this.src='../assets/img/products/default-flower.svg';">
-                <div class="card-body">
-                  <h6 class="card-title">${product.ten_hoa || product.name}</h6>
-                  <div class="product-price">
-                    <span class="current-price">${this.formatPrice(
-                      product.gia || product.price
-                    )}</span>
-                    ${
-                      product.gia_goc
-                        ? `<del class="original-price">${this.formatPrice(
-                            product.gia_goc
-                          )}</del>`
-                        : ""
-                    }
-                  </div>
-                  <div class="product-rating">
-                    ${this.generateStars(
-                      product.danh_gia || product.rating || 4.8
-                    )} ${(product.danh_gia || product.rating || 4.8).toFixed(1)}
-                  </div>
-                  <button class="btn btn-sm btn-outline-primary" onclick="addToCartFromRelated(${
-                    product.id_sanpham || product.id
-                  })">
-                    Thêm vào giỏ
-                  </button>
+              <div class="card-body">
+                <h6 class="card-title" style="cursor:pointer" onclick="event.stopPropagation();goToProductDetail(${
+                  product.id_sanpham || product.id
+                })">
+                  ${product.ten_hoa || product.name}
+                </h6>
+                <div class="product-price">
+                  <span class="current-price">${this.formatPrice(
+                    product.gia || product.price
+                  )}</span>
+                  ${
+                    product.gia_goc
+                      ? `<del class="original-price">${this.formatPrice(
+                          product.gia_goc
+                        )}</del>`
+                      : ""
+                  }
                 </div>
+                <div class="product-rating">
+                  ${this.generateStars(product.avgRating || 0)} ${(
+                product.avgRating || 0
+              ).toFixed(1)}
+                </div>
+                <button class="btn btn-sm btn-outline-primary" onclick="event.stopPropagation();addToCartFromRelated(${
+                  product.id_sanpham || product.id
+                })">
+                  Thêm vào giỏ
+                </button>
               </div>
             </div>
-          `
+          </div>
+        `
             )
             .join("");
           $("#relatedProducts").html(productsHtml);
@@ -423,7 +451,7 @@ class ShoppingCartManager {
       .map(
         (product) => `
       <div class="col-md-4 mb-4">
-        <div class="card product-card">
+        <div class="card product-card" onclick="goToProductDetail(product.id)">
           <img src="${product.image}" class="card-img-top" alt="${
           product.name
         }" onerror="this.src='../assets/img/products/default-flower.svg';">
