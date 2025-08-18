@@ -1,13 +1,25 @@
 <?php
+// Enable error reporting for debugging
+error_reporting(E_ALL);
+ini_set('display_errors', 0); // Don't display errors to avoid breaking JSON
+ini_set('log_errors', 1);
+
+// Set JSON header first
 header('Content-Type: application/json; charset=utf-8');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE');
 header('Access-Control-Allow-Headers: Content-Type, Authorization');
 
+// Capture any output that might break JSON
+ob_start();
+
 include_once __DIR__ . '/config/connection.php';
 
 // Function to send JSON response
 function sendResponse($success, $message, $data = null) {
+    // Clear any output that might break JSON
+    ob_clean();
+    
     $response = [
         'success' => $success,
         'message' => $message
@@ -17,7 +29,8 @@ function sendResponse($success, $message, $data = null) {
         $response['data'] = $data;
     }
     
-    echo json_encode($response, JSON_UNESCAPED_UNICODE);
+    // Ensure clean JSON output
+    echo json_encode($response, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
     exit;
 }
 
@@ -42,7 +55,29 @@ function handleFileUpload($file) {
     
     // Create upload directory if it doesn't exist
     if (!is_dir($uploadDir)) {
-        mkdir($uploadDir, 0777, true);
+        if (!mkdir($uploadDir, 0777, true)) {
+            return ['error' => 'Không thể tạo thư mục upload'];
+        }
+    }
+    
+    // Check basic upload error first
+    if ($file['error'] !== UPLOAD_ERR_OK) {
+        $errorMessages = [
+            UPLOAD_ERR_INI_SIZE => 'File vượt quá upload_max_filesize',
+            UPLOAD_ERR_FORM_SIZE => 'File vượt quá MAX_FILE_SIZE',
+            UPLOAD_ERR_PARTIAL => 'File chỉ upload một phần',
+            UPLOAD_ERR_NO_FILE => 'Không có file nào được upload',
+            UPLOAD_ERR_NO_TMP_DIR => 'Không có thư mục tạm',
+            UPLOAD_ERR_CANT_WRITE => 'Không thể ghi vào đĩa',
+            UPLOAD_ERR_EXTENSION => 'Upload bị dừng bởi extension'
+        ];
+        $errorMsg = $errorMessages[$file['error']] ?? 'Lỗi upload không xác định';
+        return ['error' => $errorMsg];
+    }
+    
+    // Check if temp file exists
+    if (!file_exists($file['tmp_name'])) {
+        return ['error' => 'File tạm không tồn tại'];
     }
     
     $allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
@@ -64,7 +99,7 @@ function handleFileUpload($file) {
     if (move_uploaded_file($file['tmp_name'], $targetPath)) {
         return ['success' => true, 'filename' => $filename];
     } else {
-        return ['error' => 'Không thể upload file'];
+        return ['error' => 'Không thể di chuyển file upload. Kiểm tra quyền thư mục.'];
     }
 }
 
@@ -206,12 +241,9 @@ try {
                     sendResponse(true, 'Cập nhật sản phẩm thành công');
                 } else {
                     sendResponse(false, 'Lỗi cập nhật sản phẩm: ' . $conn->error);
-                }
-                  } else {
+                }            } else {
                 // CREATE PRODUCT
-                // Debug: Log received POST data
-                error_log("DEBUG: Received POST data: " . print_r($_POST, true));
-                error_log("DEBUG: Received FILES data: " . print_r($_FILES, true));                // Validate required fields
+                // Validate required fields
                 $requiredFields = ['ten_hoa', 'gia', 'so_luong'];
                 $error = validateRequired($_POST, $requiredFields);
                 if ($error) {
@@ -249,7 +281,7 @@ try {
                 }
             }
             break;
-            
+
         case 'DELETE':
             // Delete product
             $input = json_decode(file_get_contents('php://input'), true);
@@ -296,14 +328,28 @@ try {
                 sendResponse(false, 'Lỗi xóa sản phẩm: ' . $conn->error);
             }
             break;
-            
-        default:
+              default:
             sendResponse(false, 'Phương thức không được hỗ trợ');
     }
     
 } catch (Exception $e) {
+    error_log("PRODUCTS API ERROR: " . $e->getMessage());
+    error_log("Stack trace: " . $e->getTraceAsString());
     sendResponse(false, 'Lỗi server: ' . $e->getMessage());
+} catch (Error $e) {
+    error_log("PRODUCTS API FATAL ERROR: " . $e->getMessage());
+    error_log("Stack trace: " . $e->getTraceAsString());
+    sendResponse(false, 'Lỗi nghiêm trọng: ' . $e->getMessage());
 }
 
-$conn->close();
+// Close connection if it exists
+if (isset($conn) && $conn) {
+    $conn->close();
+}
+
+// Final safety net - if we get here without sending response, send error
+if (ob_get_length()) {
+    ob_clean();
+}
+sendResponse(false, 'Phản hồi API không hợp lệ');
 ?>
