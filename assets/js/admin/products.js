@@ -60,32 +60,18 @@ function initializeEventHandlers() {
     $(document).on('click.products', '#updateProductBtn', function(e) {
         e.preventDefault();
         e.stopPropagation();
-        updateProduct();
-    });
-
-    // Image upload area clicks - prevent trigger loops
-    $(document).on('click.products', '#imageUploadArea', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        // Use direct access instead of trigger to avoid loops
-        document.getElementById('productImageInput').click();
-    });
-
-    $(document).on('click.products', '#editImageUploadArea', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        document.getElementById('editProductImageInput').click();
-    });
-
-    // File input changes - no triggers, direct handling only
+        updateProduct();    });    // Initialize enhanced drag and drop functionality
+    initializeDragDropUpload();
+    
+    // File input changes - enhanced with better handling
     $(document).on('change.products', '#productImageInput', function(e) {
         e.stopPropagation();
-        handleImagePreview(this, '#imagePreview', '#previewImg');
+        handleImageFiles(this.files, '#imagePreview', '#previewImg', this.id);
     });
 
     $(document).on('change.products', '#editProductImageInput', function(e) {
         e.stopPropagation();
-        handleImagePreview(this, '#editImagePreview', '#editPreviewImg');
+        handleImageFiles(this.files, '#editImagePreview', '#editPreviewImg', this.id);
     });
 
     // Remove image button
@@ -94,9 +80,7 @@ function initializeEventHandlers() {
         e.stopPropagation();
         $('#imagePreview').addClass('d-none');
         $('#productImageInput').val('');
-    });
-
-    // Modal events with namespace
+    });    // Modal events with namespace
     $('#addProductModal').on('hidden.bs.modal.products', function() {
         resetProductForm('#addProductForm');
     });
@@ -104,37 +88,6 @@ function initializeEventHandlers() {
     $('#editProductModal').on('hidden.bs.modal.products', function() {
         resetProductForm('#editProductForm');
         $('#editImagePreview').empty();
-    });
-
-    // Drag and drop with namespace
-    $(document).on('dragover.products', '.image-upload-area', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        $(this).addClass('dragover');
-    });
-
-    $(document).on('dragleave.products', '.image-upload-area', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        $(this).removeClass('dragover');
-    });
-
-    $(document).on('drop.products', '.image-upload-area', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        $(this).removeClass('dragover');
-        
-        var files = e.originalEvent.dataTransfer.files;
-        if (files.length > 0) {
-            var targetInput = $(this).find('input[type="file"]')[0];
-            if (targetInput) {
-                // Directly set files without triggering events
-                targetInput.files = files;
-                var previewContainer = targetInput.id.includes('edit') ? '#editImagePreview' : '#imagePreview';
-                var previewImg = targetInput.id.includes('edit') ? '#editPreviewImg' : '#previewImg';
-                handleImagePreview(targetInput, previewContainer, previewImg);
-            }
-        }
     });
 }
 
@@ -483,41 +436,169 @@ function deleteProduct(productId, productName) {
     });
 }
 
-// Handle image preview
-function handleImagePreview(input, previewContainer, previewImg) {
-    if (input.files && input.files[0]) {
-        var file = input.files[0];
+// Initialize enhanced drag and drop functionality
+function initializeDragDropUpload() {
+    // Remove any existing event listeners to prevent duplicates
+    $(document).off('.dragdrop');
+    
+    // ENHANCED CLICK functionality with multiple fallbacks
+    // Method 1: jQuery event delegation (primary)
+    $(document).on('click.dragdrop', '#imageUploadArea', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        console.log('Click detected on imageUploadArea via jQuery');
+        const fileInput = document.getElementById('productImageInput');
+        if (fileInput) {
+            fileInput.click();
+        }
+    });
+    
+    $(document).on('click.dragdrop', '#editImageUploadArea', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        console.log('Click detected on editImageUploadArea via jQuery');
+        const fileInput = document.getElementById('editProductImageInput');
+        if (fileInput) {
+            fileInput.click();
+        }
+    });
+    
+    // Method 2: Direct event listeners (fallback)
+    const addClickHandler = (uploadAreaId, inputId) => {
+        const uploadArea = document.getElementById(uploadAreaId);
+        if (uploadArea) {
+            uploadArea.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log(`Direct click on ${uploadAreaId}`);
+                const fileInput = document.getElementById(inputId);
+                if (fileInput) {
+                    fileInput.click();
+                }
+            });
+        }
+    };
+    
+    // Add direct handlers as fallback
+    setTimeout(() => {
+        addClickHandler('imageUploadArea', 'productImageInput');
+        addClickHandler('editImageUploadArea', 'editProductImageInput');
+    }, 100);
+
+    // Drag and drop events
+    const uploadAreas = ['#imageUploadArea', '#editImageUploadArea'];
+    
+    uploadAreas.forEach(areaSelector => {
+        // Prevent default drag behaviors
+        $(document).on('dragenter.dragdrop dragover.dragdrop dragleave.dragdrop drop.dragdrop', areaSelector, function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        });
+
+        // Highlight upload area when dragging over
+        $(document).on('dragenter.dragdrop dragover.dragdrop', areaSelector, function(e) {
+            $(this).addClass('dragover');
+        });
+
+        // Remove highlight when leaving or dropping
+        $(document).on('dragleave.dragdrop drop.dragdrop', areaSelector, function(e) {
+            $(this).removeClass('dragover');
+        });
+
+        // Handle file drop
+        $(document).on('drop.dragdrop', areaSelector, function(e) {
+            const files = e.originalEvent.dataTransfer.files;
+            if (files.length > 0) {
+                // Determine which input to use based on the upload area
+                const isEditArea = $(this).attr('id') === 'editImageUploadArea';
+                const inputId = isEditArea ? 'editProductImageInput' : 'productImageInput';
+                const previewContainer = isEditArea ? '#editImagePreview' : '#imagePreview';
+                const previewImg = isEditArea ? '#editPreviewImg' : '#previewImg';
+                
+                // Set the files to the input and handle preview
+                const fileInput = document.getElementById(inputId);
+                if (fileInput) {
+                    // Create a new FileList object (workaround for read-only files property)
+                    const dt = new DataTransfer();
+                    dt.items.add(files[0]);
+                    fileInput.files = dt.files;
+                    
+                    // Handle the file preview
+                    handleImageFiles(files, previewContainer, previewImg, inputId);
+                }
+            }
+        });
+    });
+}
+
+// Enhanced file handling function
+function handleImageFiles(files, previewContainer, previewImg, inputId) {
+    if (files && files.length > 0) {
+        const file = files[0];
         
         // Validate file type
-        if (!file.type.match('image.*')) {
-            showAlert('error', 'Vui lòng chọn file hình ảnh hợp lệ');
-            $(input).val('');
+        if (!file.type.startsWith('image/')) {
+            showAlert('error', 'Vui lòng chọn đúng định dạng hình ảnh (JPEG, PNG, GIF, WebP)');
+            // Clear the input
+            if (inputId) {
+                document.getElementById(inputId).value = '';
+            }
             return;
         }
         
         // Validate file size (5MB max)
         if (file.size > 5 * 1024 * 1024) {
             showAlert('error', 'File hình ảnh không được vượt quá 5MB');
-            $(input).val('');
+            // Clear the input
+            if (inputId) {
+                document.getElementById(inputId).value = '';
+            }
             return;
         }
 
-        var reader = new FileReader();
+        // Create image preview
+        const reader = new FileReader();
         reader.onload = function(e) {
-            $(previewContainer).removeClass('d-none');
+            $(previewContainer).removeClass('d-none').html(`
+                <div class="image-preview-container">
+                    <img id="${previewImg.substring(1)}" 
+                         src="${e.target.result}" 
+                         class="img-thumbnail" 
+                         style="max-width: 200px; max-height: 200px;">
+                    <div class="mt-2">
+                        <small class="text-muted d-block">
+                            <i class="fas fa-file-image mr-1"></i>${file.name}
+                        </small>
+                        <small class="text-muted d-block">
+                            <i class="fas fa-weight mr-1"></i>${(file.size / 1024).toFixed(1)} KB
+                        </small>
+                        <button type="button" class="btn btn-sm btn-danger mt-2" onclick="removeSelectedImage('${inputId}', '${previewContainer}')">
+                            <i class="fas fa-times"></i> Xóa ảnh
+                        </button>
+                    </div>
+                </div>
+            `);
             
-            if (!$(previewImg).length) {
-                $(previewContainer).html(`
-                    <img id="${previewImg.substring(1)}" class="img-thumbnail" style="max-width: 200px;">
-                    <button type="button" class="btn btn-sm btn-danger ml-2" id="removeImageBtn">
-                        <i class="fas fa-times"></i> Xóa
-                    </button>
-                `);
-            }
-            $(previewImg).attr('src', e.target.result);
+            // Remove any error styling from upload area
+            $(previewContainer).closest('.form-group').find('.image-upload-area').removeClass('border-danger');
         };
         reader.readAsDataURL(file);
+        
+        console.log('Ảnh được chọn:', file.name, 'Size:', (file.size / 1024).toFixed(1) + ' KB');
     }
+}
+
+// Remove selected image function
+function removeSelectedImage(inputId, previewContainer) {
+    // Clear the file input
+    if (inputId) {
+        document.getElementById(inputId).value = '';
+    }
+    
+    // Hide preview
+    $(previewContainer).addClass('d-none').empty();
+    
+    showAlert('success', 'Đã xóa ảnh đã chọn');
 }
 
 // Validate product form
@@ -631,3 +712,4 @@ window.editProduct = editProduct;
 window.updateProduct = updateProduct;
 window.deleteProduct = deleteProduct;
 window.removeCurrentImage = removeCurrentImage;
+window.removeSelectedImage = removeSelectedImage;

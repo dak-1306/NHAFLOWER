@@ -64,18 +64,21 @@ function bindEvents() {
       categoriesTable.search(this.value).draw();
     }
   });
-
-  // Modal events
+  // Modal events - improved accessibility
   $("#categoryModal").on("show.bs.modal", function () {
+    // Remove aria-hidden when modal is showing
+    $(this).removeAttr('aria-hidden');
+  });
+  
+  $("#categoryModal").on("shown.bs.modal", function () {
     // Focus on name input when modal opens
-    setTimeout(function () {
-      $("#categoryName").focus();
-    }, 500);
+    $("#categoryName").focus();
   });
 
   $("#categoryModal").on("hidden.bs.modal", function () {
-    // Reset form when modal closes
+    // Reset form when modal closes and restore aria-hidden
     resetCategoryForm();
+    $(this).attr('aria-hidden', 'true');
   });
 }
 
@@ -124,38 +127,57 @@ function displayCategories(categories) {
   if (!categories || categories.length === 0) {
     categoriesTable.draw();
     return;
-  } // Add rows to DataTable - sử dụng field names từ loai_hoa API
+  }
+  
+  // Add rows to DataTable - sử dụng field names từ loai_hoa API
   categories.forEach(function (category) {
+    // Ensure we have valid category data
+    if (!category.id_loaihoa) {
+      console.warn('Invalid category data:', category);
+      return;
+    }
+    
+    // Escape data to prevent XSS
+    const categoryId = parseInt(category.id_loaihoa);
+    const categoryName = escapeHtml(category.ten_loai || 'N/A');
+    const categoryDesc = escapeHtml(category.mo_ta || 'Không có mô tả');
+    
     const actions = `
-            <div class="btn-group" role="group">
-                <button type="button" class="btn btn-info btn-sm" onclick="editCategory(${
-                  category.id_loaihoa
-                }, '${escapeHtml(category.ten_loai)}', '${escapeHtml(
-      category.mo_ta || ""
-    )}')" data-toggle="tooltip" title="Sửa danh mục">
-                    <i class="fas fa-edit"></i>
-                </button>
-                <button type="button" class="btn btn-danger btn-sm" onclick="deleteCategory(${
-                  category.id_loaihoa
-                })" data-toggle="tooltip" title="Xóa danh mục">
-                    <i class="fas fa-trash"></i>
-                </button>
-            </div>
-        `;
+      <div class="btn-group" role="group">
+        <button type="button" 
+                class="btn btn-info btn-sm" 
+                onclick="editCategory(${categoryId}, '${categoryName.replace(/'/g, "\\'")}', '${categoryDesc.replace(/'/g, "\\'")}')" 
+                data-toggle="tooltip" 
+                data-placement="top"
+                title="Sửa danh mục">
+          <i class="fas fa-edit"></i>
+        </button>
+        <button type="button" 
+                class="btn btn-danger btn-sm" 
+                onclick="deleteCategory(${categoryId})" 
+                data-toggle="tooltip" 
+                data-placement="top"
+                title="Xóa danh mục">
+          <i class="fas fa-trash"></i>
+        </button>
+      </div>
+    `;
 
     categoriesTable.row.add([
-      category.id_loaihoa,
-      category.ten_loai || "N/A",
-      category.mo_ta || "Không có mô tả",
-      "0", // Will need to count products later
+      categoryId,
+      categoryName,
+      categoryDesc,
+      "0", // Will need to count products later - placeholder
       actions,
     ]);
   });
 
   categoriesTable.draw();
 
-  // Initialize tooltips
-  $('[data-toggle="tooltip"]').tooltip();
+  // Re-initialize tooltips after table is drawn
+  setTimeout(() => {
+    $('[data-toggle="tooltip"]').tooltip();
+  }, 100);
 }
 
 /**
@@ -165,7 +187,12 @@ function showAddCategoryModal() {
   isEditMode = false;
   $("#modalTitle").text("Thêm danh mục mới");
   $("#categoryId").val("");
-  $("#categoryModal").modal("show");
+  // Properly handle modal show to avoid aria-hidden conflicts
+  $("#categoryModal").modal({
+    backdrop: true,
+    keyboard: true,
+    focus: true
+  });
 }
 
 /**
@@ -177,7 +204,12 @@ function editCategory(id, name, description) {
   $("#categoryId").val(id);
   $("#categoryName").val(name);
   $("#categoryDescription").val(description);
-  $("#categoryModal").modal("show");
+  // Properly handle modal show to avoid aria-hidden conflicts
+  $("#categoryModal").modal({
+    backdrop: true,
+    keyboard: true,
+    focus: true
+  });
 }
 
 /**
@@ -191,10 +223,9 @@ function saveCategory() {
   if (!validateCategoryName(categoryName)) {
     return;
   }
-
   const formData = {
-    ten_loai: categoryName,
-    mo_ta: categoryDescription
+    ten_loai: categoryName
+    // Note: mo_ta field doesn't exist in database schema, so we don't send it
   };
 
   let apiUrl, method;
@@ -260,34 +291,114 @@ function saveCategory() {
  * Delete category
  */
 function deleteCategory(categoryId) {
+    console.log('Attempting to delete category ID:', categoryId); // Debug log
+    
+    // Validate categoryId
+    if (!categoryId || categoryId <= 0) {
+        Swal.fire({
+            title: 'Lỗi!',
+            text: 'ID danh mục không hợp lệ',
+            icon: 'error',
+            confirmButtonColor: '#e91e63'
+        });
+        return;
+    }
+    
     Swal.fire({
         title: 'Xác nhận xóa',
-        text: 'Bạn có chắc chắn muốn xóa danh mục này?',
+        text: 'Bạn có chắc chắn muốn xóa danh mục này? Hành động này không thể hoàn tác.',
         icon: 'warning',
         showCancelButton: true,
-        confirmButtonColor: '#e91e63',
+        confirmButtonColor: '#dc3545',
         cancelButtonColor: '#6c757d',
-        confirmButtonText: 'Xóa',
-        cancelButtonText: 'Hủy'
+        confirmButtonText: 'Có, xóa ngay!',
+        cancelButtonText: 'Hủy bỏ',
+        reverseButtons: true
     }).then((result) => {
-        if (result.isConfirmed) {            $.ajax({
-                url: '../api/loai_hoa.php?action=delete&id=' + categoryId,
+        if (result.isConfirmed) {
+            // Show loading
+            Swal.fire({
+                title: 'Đang xóa...',
+                text: 'Vui lòng đợi trong giây lát',
+                icon: 'info',
+                allowOutsideClick: false,
+                showConfirmButton: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+            
+            $.ajax({
+                url: '../api/loai_hoa.php?action=delete',
                 type: 'POST',
-                dataType: 'json',
-                data: { id: categoryId },
+                data: { 
+                    id_loaihoa: parseInt(categoryId),
+                    id: parseInt(categoryId)  // Send both for compatibility
+                },
+                timeout: 10000, // 10 second timeout
                 success: function(response) {
-                    if (response.message && (response.message.includes('thành công') || response.message.includes('success'))) {
-                        showSuccess('Xóa danh mục thành công!');
-                        loadCategories(); // Reload the table
-                    } else if (response.error) {
-                        showError('Lỗi xóa danh mục: ' + response.error);
+                    console.log('Delete response:', response); // Debug log
+                    
+                    // Handle different response types
+                    let parsedResponse;
+                    if (typeof response === 'string') {
+                        try {
+                            parsedResponse = JSON.parse(response);
+                        } catch (e) {
+                            parsedResponse = { success: false, message: response };
+                        }
                     } else {
-                        showError('Có lỗi xảy ra khi xóa danh mục');
+                        parsedResponse = response;
+                    }
+                    
+                    if (parsedResponse.success) {
+                        Swal.fire({
+                            title: 'Thành công!',
+                            text: parsedResponse.message || 'Danh mục đã được xóa thành công',
+                            icon: 'success',
+                            confirmButtonColor: '#28a745',
+                            timer: 2000,
+                            showConfirmButton: false
+                        }).then(() => {
+                            loadCategories(); // Reload the table
+                        });
+                    } else {
+                        Swal.fire({
+                            title: 'Lỗi!',
+                            text: parsedResponse.message || 'Có lỗi xảy ra khi xóa danh mục',
+                            icon: 'error',
+                            confirmButtonColor: '#dc3545'
+                        });
                     }
                 },
                 error: function(xhr, status, error) {
-                    console.error('Error deleting category:', error);
-                    showError('Không thể xóa danh mục.');
+                    console.error('Error deleting category:', {
+                        status: status,
+                        error: error,
+                        responseText: xhr.responseText
+                    });
+                    
+                    let errorMessage = 'Không thể xóa danh mục. ';
+                    
+                    if (status === 'timeout') {
+                        errorMessage = 'Yêu cầu bị hết thời gian chờ. Vui lòng thử lại.';
+                    } else if (xhr.responseText) {
+                        try {
+                            const errorResponse = JSON.parse(xhr.responseText);
+                            errorMessage += errorResponse.message || xhr.responseText;
+                        } catch (e) {
+                            errorMessage += xhr.responseText;
+                        }
+                    } else {
+                        errorMessage += 'Vui lòng kiểm tra kết nối mạng và thử lại.';
+                    }
+                    
+                    Swal.fire({
+                        title: 'Lỗi kết nối!',
+                        text: errorMessage,
+                        icon: 'error',
+                        confirmButtonColor: '#dc3545'
+                    });
                 }
             });
         }

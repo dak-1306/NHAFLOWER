@@ -468,18 +468,16 @@
       </div>
       <!-- End of Content Wrapper -->
     </div>
-    <!-- End of Page Wrapper -->
-
-    <!-- Add/Edit Category Modal -->
-    <div class="modal fade" id="categoryModal" tabindex="-1" role="dialog">
+    <!-- End of Page Wrapper -->    <!-- Add/Edit Category Modal -->
+    <div class="modal fade" id="categoryModal" tabindex="-1" role="dialog" aria-labelledby="categoryModalLabel" aria-hidden="true">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title">
+            <h5 class="modal-title" id="categoryModalLabel">
               <i class="fas fa-plus mr-2"></i><span id="modalTitle">Thêm danh mục mới</span>
             </h5>
-            <button type="button" class="close text-white" data-dismiss="modal">
-              <span>&times;</span>
+            <button type="button" class="close text-white" data-dismiss="modal" aria-label="Đóng">
+              <span aria-hidden="true">&times;</span>
             </button>
           </div>
           <div class="modal-body">

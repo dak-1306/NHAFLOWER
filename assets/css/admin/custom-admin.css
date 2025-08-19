@@ -205,3 +205,145 @@
     background: var(--primary-color) !important;
   }
 }
+
+/* Image Upload Area Styling - Enhanced for Click */
+.image-upload-area {
+  border: 2px dashed #dee2e6;
+  border-radius: 8px;
+  padding: 40px 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background-color: #f8f9fa;
+  min-height: 150px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  user-select: none;
+}
+
+.image-upload-area:hover {
+  border-color: var(--primary-color);
+  background-color: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(233, 30, 99, 0.1);
+}
+
+.image-upload-area.border-danger {
+  border-color: var(--danger-color) !important;
+  background-color: rgba(244, 67, 54, 0.05);
+}
+
+.image-upload-area .fas {
+  color: #6c757d;
+  transition: color 0.3s ease;
+}
+
+.image-upload-area:hover .fas {
+  color: var(--primary-color);
+}
+
+.image-upload-area p {
+  margin: 0;
+  color: #6c757d;
+  font-size: 14px;
+}
+
+.image-upload-area:hover p {
+  color: var(--primary-color);
+}
+
+/* Remove problematic overlay - clicks should work naturally */
+/* All elements inside upload area are clickable by default */
+
+/* Enhanced drag and drop styling */
+.image-upload-area.dragover {
+  border-color: var(--primary-color) !important;
+  background-color: rgba(233, 30, 99, 0.1) !important;
+  transform: scale(1.02);
+  box-shadow: 0 8px 25px rgba(233, 30, 99, 0.3);
+}
+
+.image-upload-area .fas.fa-cloud-upload-alt {
+  transition: transform 0.3s ease, color 0.3s ease;
+}
+
+.image-upload-area:hover .fas.fa-cloud-upload-alt,
+.image-upload-area.dragover .fas.fa-cloud-upload-alt {
+  transform: scale(1.1);
+  color: var(--primary-color);
+}
+
+.image-preview-container {
+  text-align: center;
+  padding: 10px;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  background-color: #f8f9fa;
+}
+
+.image-preview-container img {
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.image-preview-container .text-muted {
+  font-size: 0.8rem;
+}
+
+/* Animation for smooth transitions */
+.image-upload-area {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.image-upload-area:hover {
+  transform: translateY(-1px);
+}
+
+.image-upload-area.dragover {
+  animation: dragPulse 0.6s ease-in-out infinite alternate;
+}
+
+@keyframes dragPulse {
+  from {
+    box-shadow: 0 4px 15px rgba(233, 30, 99, 0.2);
+  }
+  to {
+    box-shadow: 0 8px 25px rgba(233, 30, 99, 0.4);
+  }
+}
+
+/* Image Preview Styling */
+#imagePreview, #editImagePreview {
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  padding: 10px;
+  background-color: #fff;
+  text-align: center;
+}
+
+#imagePreview img, #editImagePreview img {
+  border-radius: 4px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+/* Remove Image Button */
+#removeImageBtn, #editRemoveImageBtn {
+  position: relative;
+  top: -5px;
+}
+
+/* File Input Hidden */
+.image-upload-area input[type="file"] {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  white-space: nowrap;
+  border: 0;
+}
