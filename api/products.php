@@ -95,8 +95,21 @@ function handleFileUpload($file) {
     $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
     $filename = 'product_' . time() . '_' . rand(1000, 9999) . '.' . $extension;
     $targetPath = $uploadDir . $filename;
-    
-    if (move_uploaded_file($file['tmp_name'], $targetPath)) {
+      if (move_uploaded_file($file['tmp_name'], $targetPath)) {
+        // Also copy to assets folder for frontend display
+        $assetsPath = '../assets/img/products/' . $filename;
+        $assetsDir = '../assets/img/products/';
+        
+        // Create assets directory if it doesn't exist
+        if (!is_dir($assetsDir)) {
+            mkdir($assetsDir, 0777, true);
+        }
+        
+        // Copy file to assets
+        if (!copy($targetPath, $assetsPath)) {
+            error_log("Failed to copy image to assets folder: $assetsPath");
+        }
+        
         return ['success' => true, 'filename' => $filename];
     } else {
         return ['error' => 'Không thể di chuyển file upload. Kiểm tra quyền thư mục.'];
@@ -105,8 +118,16 @@ function handleFileUpload($file) {
 
 // Function to delete file
 function deleteFile($filename) {
-    if ($filename && file_exists('../uploads/products/' . $filename)) {
-        unlink('../uploads/products/' . $filename);
+    if ($filename) {
+        // Delete from uploads folder
+        if (file_exists('../uploads/products/' . $filename)) {
+            unlink('../uploads/products/' . $filename);
+        }
+        
+        // Delete from assets folder
+        if (file_exists('../assets/img/products/' . $filename)) {
+            unlink('../assets/img/products/' . $filename);
+        }
     }
 }
 

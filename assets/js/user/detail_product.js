@@ -262,8 +262,7 @@ class ProductDetailManager {
         reviewCount: Number(
           productRaw.so_danh_gia ?? productRaw.reviewCount ?? 0
         ),
-        category: productRaw.id_loaihoa ?? productRaw.category ?? "",
-        images:
+        category: productRaw.id_loaihoa ?? productRaw.category ?? "",        images:
           productRaw.hinh_anh && productRaw.hinh_anh.trim()
             ? [`../assets/img/products/${productRaw.hinh_anh}`]
             : ["../assets/img/products/default-flower.svg"],
@@ -344,8 +343,7 @@ class ProductDetailManager {
         <div class="col-lg-4 col-md-6 mb-4">
           <div class="product-card" onclick="productDetailManager.goToProduct(${
             product.id_sanpham ?? product.id
-          })" style="cursor:pointer;">
-            <div class="product-image">
+          })" style="cursor:pointer;">            <div class="product-image">
               <img src="../assets/img/products/${
                 product.hinh_anh || "default-flower.svg"
               }" alt="${product.ten_hoa ?? product.name}"
@@ -497,9 +495,7 @@ class ProductDetailManager {
           `<span class='text-danger'>Hết hàng</span>`
         );
       }
-    }
-
-    // DEBUG: Log đường dẫn ảnh và dữ liệu images
+    }    // DEBUG: Log đường dẫn ảnh và dữ liệu images
     console.log("[DEBUG] product.images:", product.images);
     if (product.images && product.images.length) {
       product.images.forEach((img, idx) => {
@@ -507,16 +503,19 @@ class ProductDetailManager {
       });
     }
 
-    // Hiển thị ảnh sản phẩm chính
+    // Hiển thị ảnh sản phẩm chính với đường dẫn đúng
     const mainImg =
       product.images && product.images.length
         ? product.images[0]
         : "../assets/img/products/default-flower.svg";
+        
+    console.log("[DEBUG] Final main image path:", mainImg);
+    
     if ($("#mainProductImage").length) {
       $("#mainProductImage").attr("src", mainImg);
       $("#mainProductImage").attr(
         "onerror",
-        "this.src='../assets/img/products/default-flower.svg';"
+        "console.log('Image load failed, using fallback'); this.src='../assets/img/products/default-flower.svg';"
       );
     }
 
