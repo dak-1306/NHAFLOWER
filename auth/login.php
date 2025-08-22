@@ -93,7 +93,18 @@ try {
     
     // Return success response (không trả về mật khẩu)
     unset($user['mat_khau']);
-    
+
+    // Chuyển hướng theo vai_tro nếu dùng trong form truyền thống
+    if (php_sapi_name() !== 'cli' && empty($_SERVER['HTTP_X_REQUESTED_WITH'])) {
+        if ($user['vai_tro'] === 'admin') {
+            header('Location: ../admin/index.html');
+            exit;
+        } else {
+            header('Location: ../user/home.html');
+            exit;
+        }
+    }
+
     echo json_encode([
         "success" => true,
         "message" => "Đăng nhập thành công",

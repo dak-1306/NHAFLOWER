@@ -196,7 +196,12 @@ function submitLogin() {
 
       if (response.success) {
         // Sử dụng AuthManager để đăng nhập
-        window.authManager.login(response.data.token, response.data);
+        // Đảm bảo truyền đầy đủ vai_tro vào nhaflower_user
+        const userData = Object.assign({}, response.data); // clone object
+        if (response.data.vai_tro) {
+          userData.vai_tro = response.data.vai_tro;
+        }
+        window.authManager.login(response.data.token, userData);
 
         // Gọi API lấy thông tin khách hàng theo id_taikhoan
         $.ajax({
@@ -216,7 +221,10 @@ function submitLogin() {
             );
             // Nếu tìm thấy id_khachhang thì cập nhật vào object
             if (khach && khach.id_khachhang) {
-              nhaflowerUser.id_khachhang = khach.id_khachhang;
+              nhaflowerUser = {
+                ...userData, // luôn lấy lại từ userData (có vai_tro)
+                id_khachhang: khach.id_khachhang,
+              };
               localStorage.setItem(
                 "nhaflower_user",
                 JSON.stringify(nhaflowerUser)

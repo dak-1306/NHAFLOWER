@@ -45,6 +45,7 @@ class AuthManager {
         sdt: userData.sdt || "",
         dia_chi: userData.dia_chi || "",
         ngay_sinh: userData.ngay_sinh || "",
+        vai_tro: userData.vai_tro || "",
       })
     );
     this.userToken = token;
@@ -163,6 +164,12 @@ class AuthManager {
   // Xử lý redirect sau khi đăng nhập thành công
   handlePostLoginRedirect() {
     const redirectUrl = localStorage.getItem("redirect_after_login");
+    const user = this.getCurrentUser();
+
+    if (user && user.vai_tro === "admin") {
+      window.location.href = "http://localhost/NHAFLOWER/admin/index.html";
+      return;
+    }
 
     if (redirectUrl) {
       localStorage.removeItem("redirect_after_login");
