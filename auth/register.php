@@ -140,23 +140,26 @@ try {
     $sqlKhachHang = "INSERT INTO khachhang (id_taikhoan, ten, sdt, dia_chi, ngay_sinh) VALUES (?, ?, ?, ?, ?)";
     $stmtKhachHang = $conn->prepare($sqlKhachHang);
     $stmtKhachHang->bind_param("issss", $id_taikhoan, $ten, $sdt, $dia_chi, $ngay_sinh);
-    
+
     if (!$stmtKhachHang->execute()) {
         throw new Exception("Lỗi tạo thông tin khách hàng: " . $stmtKhachHang->error);
     }
-    
+
+    $id_khachhang = $conn->insert_id;
+
     // Commit transaction
     $conn->commit();
-    
+
     // Generate auth token
     $token = bin2hex(random_bytes(32));
-    
+
     // Return success response
     echo json_encode([
         "success" => true,
         "message" => "Đăng ký thành công",
         "data" => [
             "id_taikhoan" => $id_taikhoan,
+            "id_khachhang" => $id_khachhang,
             "email" => $email,
             "ten" => $ten,
             "vai_tro" => "khach",

@@ -59,7 +59,7 @@ if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
 try {
     // Query to get user info with customer details
     $sql = "SELECT t.id_taikhoan, t.email, t.mat_khau, t.vai_tro, t.trang_thai, 
-                   k.ten, k.sdt, k.dia_chi, k.ngay_sinh
+                   k.id_khachhang, k.ten, k.sdt, k.dia_chi, k.ngay_sinh
             FROM taikhoan t 
             LEFT JOIN khachhang k ON t.id_taikhoan = k.id_taikhoan 
             WHERE t.email = ? AND t.trang_thai = 1";
@@ -99,6 +99,7 @@ try {
         "message" => "Đăng nhập thành công",
         "data" => [
             "id_taikhoan" => $user['id_taikhoan'],
+            "id_khachhang" => $user['id_khachhang'],
             "email" => $user['email'],
             "ten" => $user['ten'],
             "sdt" => $user['sdt'],
