@@ -9,6 +9,9 @@ $dbname = "nhaflower";
 // Create connection with error handling
 $conn = new mysqli($host, $user, $password, $dbname, $port);
 
+// Set charset to utf8mb4 for proper unicode support
+$conn->set_charset("utf8mb4");
+
 // Check connection
 if ($conn->connect_error) {
     error_log("Database connection failed: " . $conn->connect_error);

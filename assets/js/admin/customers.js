@@ -295,23 +295,29 @@ class CustomerManager {
       }
 
       const accountResult = await accountResponse.json();
-      console.log("Account creation result:", accountResult);
-
-      if (!accountResult.success) {
+      console.log("Account creation result:", accountResult);      if (!accountResult.success) {
         this.showAlert(
-          "Lỗi tạo tài khoản: " + (accountResult.error || "Unknown error"),
+          "Lỗi tạo tài khoản: " + (accountResult.message || accountResult.error || "Unknown error"),
           "danger"
         );
         return;
       }
 
-      // Bước 2: Tạo khách hàng với ID tài khoản vừa tạo
+      // Kiểm tra xem có trả về data với id không
+      if (!accountResult.data || !accountResult.data.id) {
+        console.error("Account result missing data.id:", accountResult);
+        this.showAlert(
+          "Lỗi: Không nhận được ID tài khoản từ server",
+          "danger"
+        );
+        return;
+      }// Bước 2: Tạo khách hàng với ID tài khoản vừa tạo
       const finalCustomerData = {
         ten_khachhang: customerData.ten_khachhang,
         so_dien_thoai: customerData.so_dien_thoai,
         dia_chi: customerData.dia_chi,
         ngay_sinh: customerData.ngay_sinh || null, // Thêm ngày sinh (có thể null)
-        id_taikhoan: accountResult.id,
+        id_taikhoan: accountResult.data.id, // Sửa cách truy cập id
       };
 
       console.log("Creating customer with data:", finalCustomerData);
@@ -364,9 +370,7 @@ class CustomerManager {
         );
       }
 
-      console.log("Customer creation result:", result);
-
-      if (result.success) {
+      console.log("Customer creation result:", result);      if (result.success) {
         this.showAlert(
           `Thêm khách hàng thành công! Tài khoản: ${customerData.email_taikhoan}`,
           "success"
@@ -375,8 +379,9 @@ class CustomerManager {
         form.reset();
         this.loadCustomers();
       } else {
+        console.error("Customer creation failed:", result);
         this.showAlert(
-          "Lỗi tạo khách hàng: " + (result.error || "Unknown error"),
+          "Lỗi tạo khách hàng: " + (result.message || result.error || "Unknown error"),
           "danger"
         );
       }
@@ -398,12 +403,11 @@ class CustomerManager {
         addBtn.innerHTML = '<i class="fas fa-save mr-1"></i>Lưu';
       }
     }
-  }
-  // Chỉnh sửa khách hàng
+  }  // Chỉnh sửa khách hàng
   async editCustomer(id) {
     try {
       const response = await fetch(
-        this.API_BASE_URL + `khach_hang.php?action=get_by_id&id=${id}`
+        this.API_BASE_URL + `?action=get_by_id&id=${id}`
       );
       const result = await response.json();
 
@@ -442,11 +446,9 @@ class CustomerManager {
       so_dien_thoai: formData.get("so_dien_thoai"),
       dia_chi: formData.get("dia_chi"),
       ngay_sinh: formData.get("ngay_sinh"),
-    };
-
-    try {
+    };    try {
       const response = await fetch(
-        this.API_BASE_URL + `khach_hang.php?action=update&id=${customerId}`,
+        this.API_BASE_URL + `?action=update&id=${customerId}`,
         {
           method: "POST",
           headers: {
@@ -475,11 +477,9 @@ class CustomerManager {
   async deleteCustomer(id) {
     if (!confirm("Bạn có chắc chắn muốn xóa khách hàng này?")) {
       return;
-    }
-
-    try {
+    }    try {
       const response = await fetch(
-        this.API_BASE_URL + `khach_hang.php?action=delete&id=${id}`
+        this.API_BASE_URL + `?action=delete&id=${id}`
       );
       const result = await response.json();
 

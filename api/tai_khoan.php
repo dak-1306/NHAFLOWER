@@ -47,10 +47,10 @@ if ($action === 'add' || $action === 'post') {
     $checkEmail = $conn->query("SELECT id_taikhoan FROM taikhoan WHERE email = '$email'");
     if ($checkEmail->num_rows > 0) {
         sendResponse(false, 'Email đã được sử dụng');
-    }
-    $sql = "INSERT INTO taikhoan (email, mat_khau, vai_tro, trang_thai) VALUES ('$email', '$mat_khau', '$vai_tro', $trang_thai)";
+    }    $sql = "INSERT INTO taikhoan (email, mat_khau, vai_tro, trang_thai) VALUES ('$email', '$mat_khau', '$vai_tro', $trang_thai)";
     if ($conn->query($sql)) {
-        sendResponse(true, 'Thêm tài khoản thành công');
+        $insertedId = $conn->insert_id;
+        sendResponse(true, 'Thêm tài khoản thành công', ['id' => $insertedId]);
     } else {
         sendResponse(false, $conn->error);
     }

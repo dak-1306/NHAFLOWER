@@ -42,19 +42,30 @@ if ($action === 'get_by_id') {
 
 if ($action === 'add' || $action === 'post') {
     $data = json_decode(file_get_contents("php://input"), true);
+    
+    // Debug: Log received data
+    error_log("Customer API - Received data: " . json_encode($data));
+    
     if (!$data) sendResponse(false, 'Dữ liệu không hợp lệ');
     if (empty($data['ten_khachhang']) || empty($data['so_dien_thoai']) || empty($data['dia_chi']) || empty($data['id_taikhoan'])) {
+        error_log("Customer API - Missing required fields: " . json_encode($data));
         sendResponse(false, 'Vui lòng điền đầy đủ thông tin');
     }
     $ten = $conn->real_escape_string($data['ten_khachhang']);
     $sdt = $conn->real_escape_string($data['so_dien_thoai']);
     $diachi = $conn->real_escape_string($data['dia_chi']);
-    $id_taikhoan = intval($data['id_taikhoan']);
-    $ngay_sinh = isset($data['ngay_sinh']) && !empty($data['ngay_sinh']) ? "'" . $conn->real_escape_string($data['ngay_sinh']) . "'" : "NULL";
+    $id_taikhoan = intval($data['id_taikhoan']);    $ngay_sinh = isset($data['ngay_sinh']) && !empty($data['ngay_sinh']) ? "'" . $conn->real_escape_string($data['ngay_sinh']) . "'" : "NULL";
+    
     $sql = "INSERT INTO khachhang (ten, sdt, dia_chi, id_taikhoan, ngay_sinh) VALUES ('$ten', '$sdt', '$diachi', $id_taikhoan, $ngay_sinh)";
-    if ($conn->query($sql)) {
-        sendResponse(true, 'Tạo khách hàng thành công');
+    
+    // Debug: Log SQL query
+    error_log("Customer API - SQL Query: " . $sql);
+      if ($conn->query($sql)) {
+        $insertedId = $conn->insert_id;
+        error_log("Customer API - Successfully created customer with ID: " . $insertedId);
+        sendResponse(true, 'Tạo khách hàng thành công', ['id' => $insertedId]);
     } else {
+        error_log("Customer API - SQL Error: " . $conn->error);
         sendResponse(false, $conn->error);
     }
 }
