@@ -75,8 +75,8 @@ class AuthManager {
 
     // PRIORITY 1: Xử lý login/register pages TRƯỚC
     if (
-      currentPage.includes("login.html") ||
-      currentPage.includes("register.html")
+      currentPage.endsWith("/login.html") ||
+      currentPage.endsWith("/register.html")
     ) {
       if (isAuthenticated) {
         console.log("Redirect: login/register -> home (already authenticated)");
@@ -84,18 +84,18 @@ class AuthManager {
         return;
       } else {
         console.log("Stay on login/register page (not authenticated)");
-        return; // ← Quan trọng: ở lại trang login/register
+        return;
       }
     }
 
     // PRIORITY 2: Xử lý index và home
-    if (currentPage.includes("index.html") && isAuthenticated) {
+    if (currentPage.endsWith("/index.html") && isAuthenticated) {
       console.log("Redirect: index -> home");
       window.location.href = "home.html";
       return;
     }
 
-    if (currentPage.includes("home.html") && !isAuthenticated) {
+    if (currentPage.endsWith("/home.html") && !isAuthenticated) {
       console.log("Redirect: home -> index");
       window.location.href = "index.html";
       return;
