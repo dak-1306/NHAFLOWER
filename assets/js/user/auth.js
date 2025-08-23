@@ -57,11 +57,12 @@ class AuthManager {
     localStorage.removeItem("user_token");
     localStorage.removeItem("user_data");
     localStorage.removeItem("pending_search");
+    localStorage.removeItem("nhaflower_user");
     this.userToken = null;
     this.userData = null;
 
-    // Redirect về trang login
-    window.location.href = "login.html";
+    // Redirect về trang login - CORRECTED PATH
+    window.location.href = "./user/login.html";
   }
 
   // Chuyển hướng dựa trên trạng thái đăng nhập
@@ -89,16 +90,27 @@ class AuthManager {
     }
 
     // PRIORITY 2: Xử lý index và home
-    if (currentPage.includes("index.html") && isAuthenticated) {
-      console.log("Redirect: index -> home");
-      window.location.href = "home.html";
-      return;
+    // Nếu đang ở index.html ngoài thư mục user, cần chuyển hướng đúng
+    if (currentPage.endsWith("/index.html") || currentPage === "/") {
+      if (isAuthenticated) {
+        console.log("Redirect: index -> home");
+        window.location.href = "./user/home.html";
+        return;
+      } else {
+        console.log("Stay on index (not authenticated)");
+        return;
+      }
     }
 
-    if (currentPage.includes("home.html") && !isAuthenticated) {
-      console.log("Redirect: home -> index");
-      window.location.href = "index.html";
-      return;
+    if (currentPage.includes("/user/home.html")) {
+      if (!isAuthenticated) {
+        console.log("Redirect: home -> index");
+        window.location.href = "../index.html";
+        return;
+      } else {
+        console.log("Stay on home (authenticated)");
+        return;
+      }
     }
 
     // PRIORITY 3: Xử lý protected pages
@@ -167,7 +179,7 @@ class AuthManager {
     const user = this.getCurrentUser();
 
     if (user && user.vai_tro === "admin") {
-      window.location.href = "http://localhost/NHAFLOWER/admin/index.html";
+      window.location.href = "../admin/index.html";
       return;
     }
 
@@ -243,7 +255,7 @@ function logout() {
     }
 
     setTimeout(() => {
-      window.location.href = "index.html";
+      window.location.href = "../index.html";
     }, 1500);
   }
 }

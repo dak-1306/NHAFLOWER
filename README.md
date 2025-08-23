@@ -18,21 +18,21 @@ NHAFLOWER/
 │   ├── index.html
 │   ├── notifications.html
 │   ├── orders.html
+│   ├── orders-simple.html
 │   ├── products.html
 │   ├── reports.html
 │   ├── settings-general.html
 │   ├── settings-payment.html
 │   ├── settings-shipping.html
+│   ├── system-test.html
 │   ├── tables.html
 │   ├── update-notifications.html
-│   └── ... (các trang quản trị khác)
+│   └── categories.html
 │
 ├── api/                    # REST API backend
 │   ├── api_thongke.php
 │   ├── categories.php
 │   ├── checkout.php
-│   ├── config/
-│   │   └── connection.php
 │   ├── danh_gia.php
 │   ├── export_reports.php
 │   ├── khach_hang.php
@@ -43,16 +43,17 @@ NHAFLOWER/
 │   ├── settings.php
 │   ├── tai_khoan.php
 │   ├── thong_bao.php
-│   └── ... (các endpoint khác)
+│   └── config/
+│       └── connection.php
 │
 ├── assets/                 # Tài nguyên tĩnh
 │   ├── css/
 │   │   ├── admin/
-│   │   │   ├── css/
 │   │   │   ├── custom-admin.css
 │   │   │   ├── notifications.css
 │   │   │   ├── sb-admin-2.css
 │   │   │   ├── sb-admin-2.min.css
+│   │   │   ├── css/
 │   │   │   └── scss/
 │   │   └── user/
 │   │       ├── common.css
@@ -60,34 +61,50 @@ NHAFLOWER/
 │   │       ├── home.css
 │   │       ├── list_product.css
 │   │       ├── login.css
-│   │       ├── profile/
-│   │       │   ├── addresses.css
-│   │       │   ├── notifications.css
-│   │       │   ├── orders.css
-│   │       │   ├── personal-info.css
-│   │       │   ├── profile-base.css
-│   │       │   └── profile.css
 │   │       ├── register.css
-│   │       └── shopping_cart.css
+│   │       ├── shopping_cart.css
+│   │       └── profile/
+│   │           ├── addresses.css
+│   │           ├── notifications.css
+│   │           ├── orders.css
+│   │           ├── personal-info.css
+│   │           ├── profile-base.css
+│   │           └── profile.css
 │   ├── img/
 │   │   ├── admin/
+│   │   │   ├── undraw_posting_photo.svg
+│   │   │   ├── undraw_profile_1.svg
+│   │   │   ├── undraw_profile_2.svg
+│   │   │   ├── undraw_profile_3.svg
+│   │   │   ├── undraw_profile.svg
+│   │   │   └── undraw_rocket.svg
 │   │   ├── products/
+│   │   │   ├── cam_tu_cau.jpg
+│   │   │   ├── cat_tuong.jpg
+│   │   │   ├── default-flower.svg
+│   │   │   ├── dong_tien.jpg
+│   │   │   ├── hoa_cuc_trang.jpg
+│   │   │   ├── hoa_hong_do.jpg
+│   │   │   ├── hong_vang.jpg
+│   │   │   ├── hong_xanh.jpg
+│   │   │   ├── huong_duong.jpg
+│   │   │   ├── lan_ho_diep.jpg
+│   │   │   ├── lily_vang.jpg
+│   │   │   ├── mau_don_trang.jpg
+│   │   │   └── tulip_vang.jpg
 │   │   └── user/
+│   │       ├── default-avatar.png
+│   │       └── logo_NHAFLOWER.png
 │   ├── js/
 │   │   ├── admin/
 │   │   │   ├── categories.js
 │   │   │   ├── charts.js
 │   │   │   ├── customers.js
-│   │   │   ├── demo/
 │   │   │   ├── notifications.js
 │   │   │   ├── orders.js
 │   │   │   ├── products.js
 │   │   │   ├── reports.js
-│   │   │   ├── sb-admin-2.js
-│   │   │   ├── sb-admin-2.min.js
-│   │   │   ├── settings-general.js
-│   │   │   ├── settings-payment.js
-│   │   │   └── settings-shipping.js
+│   │   │   ...
 │   │   └── user/
 │   │       ├── auth.js
 │   │       ├── detail_product.js
@@ -95,17 +112,17 @@ NHAFLOWER/
 │   │       ├── index.js
 │   │       ├── list_product.js
 │   │       ├── login.js
-│   │       ├── profile/
-│   │       │   ├── profile-addresses.js
-│   │       │   ├── profile-base.js
-│   │       │   ├── profile-dashboard.js
-│   │       │   ├── profile-notifications.js
-│   │       │   ├── profile-orders.js
-│   │       │   ├── profile-personal-info.js
-│   │       │   ├── profile-security.js
-│   │       │   └── sidebar-loader.js
 │   │       ├── register.js
-│   │       └── shopping_cart.js
+│   │       ├── shopping_cart.js
+│   │       └── profile/
+│   │           ├── profile-addresses.js
+│   │           ├── profile-base.js
+│   │           ├── profile-dashboard.js
+│   │           ├── profile-notifications.js
+│   │           ├── profile-orders.js
+│   │           ├── profile-personal-info.js
+│   │           ├── profile-security.js
+│   │           └── sidebar-loader.js
 │   └── vendor/
 │       ├── bootstrap/
 │       ├── chart.js/
@@ -122,7 +139,9 @@ NHAFLOWER/
 │   └── register.php
 │
 ├── database/               # Cơ sở dữ liệu
-│   └── nhaflower.sql
+│   ├── nhaflower.sql
+│   └── migrations/
+│       └── 20250812_add_avatar_to_khachhang.sql
 │
 ├── includes/               # Chỉ còn dùng config.php
 │   └── config.php
@@ -131,21 +150,21 @@ NHAFLOWER/
 │   ├── checkout.html
 │   ├── detail_product.html
 │   ├── home.html
-│   ├── index.html
 │   ├── list_product.html
 │   ├── login.html
-│   ├── profile/
-│   │   ├── addresses.html
-│   │   ├── dashboard.html
-│   │   ├── notification-preferences.html
-│   │   ├── notifications.html
-│   │   ├── orders.html
-│   │   ├── personal-info.html
-│   │   ├── security.html
-│   │   └── sidebar-profile.html
 │   ├── register.html
-│   └── shopping_cart.html
+│   ├── shopping_cart.html
+│   └── profile/
+│       ├── addresses.html
+│       ├── dashboard.html
+│       ├── notification-preferences.html
+│       ├── notifications.html
+│       ├── orders.html
+│       ├── personal-info.html
+│       ├── security.html
+│       └── sidebar-profile.html
 │
+├── index.html              # Trang chủ người dùng (đã dời ra ngoài user/)
 ├── README.md               # Tài liệu dự án
 └── .gitignore              # Git ignore file
 ```

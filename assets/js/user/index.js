@@ -36,7 +36,7 @@ function checkAuthenticationStatus() {
 function showCategories() {
   showNotification("Vui lòng đăng nhập để xem danh sách sản phẩm", "warning");
   setTimeout(() => {
-    window.location.href = "login.html";
+    window.location.href = "./user/login.html";
   }, 2000);
 }
 
@@ -44,7 +44,7 @@ function showCategories() {
 function viewMoreDeals() {
   showNotification("Vui lòng đăng nhập để xem thêm ưu đãi", "warning");
   setTimeout(() => {
-    window.location.href = "login.html";
+    window.location.href = "./user/login.html";
   }, 2000);
 }
 
@@ -62,19 +62,19 @@ const promoSlides = [
     title: "Ưu đãi tháng 8",
     subtitle: "Giảm đến 50%",
     description: "Đến hẹn lại lên cho những khách hàng thân thiết",
-    image: "../assets/img/user/promo1.jpg",
+    image: "./assets/img/user/promo1.jpg",
   },
   {
     title: "Flash Sale cuối tuần",
     subtitle: "Giảm đến 70%",
     description: "Săn sale ngay hôm nay để nhận ưu đãi tốt nhất",
-    image: "../assets/img/user/promo2.jpg",
+    image: "./assets/img/user/promo2.jpg",
   },
   {
     title: "Khuyến mãi sinh nhật",
     subtitle: "Giảm đến 60%",
     description: "Chúc mừng sinh nhật NHAFLOWER với nhiều ưu đãi hấp dẫn",
-    image: "../assets/img/user/promo3.jpg",
+    image: "./assets/img/user/promo3.jpg",
   },
 ];
 
@@ -190,7 +190,7 @@ function handleSearch() {
   localStorage.setItem("pending_search", searchTerm);
 
   setTimeout(() => {
-    window.location.href = "login.html";
+    window.location.href = "./user/login.html";
   }, 2000);
 }
 
@@ -198,7 +198,7 @@ function handleSearch() {
 function showSearchModal() {
   showNotification("Vui lòng đăng nhập để tìm kiếm", "info");
   setTimeout(() => {
-    window.location.href = "login.html";
+    window.location.href = "./user/login.html";
   }, 2000);
 }
 
