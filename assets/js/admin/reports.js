@@ -1261,7 +1261,7 @@ window.exportToExcel = function(reportType) {
         }
         
         // Create download link
-        const url = `/NHAFLOWER/api/export_reports.php?action=export&format=excel&report=${reportType}`;
+        const url = `/api/export_reports.php?action=export&format=excel&report=${reportType}`;
         const link = document.createElement('a');
         link.href = url;
         link.download = `NHAFLOWER_${reportType}_${new Date().toISOString().slice(0, 10)}.xls`;
@@ -1294,7 +1294,7 @@ window.exportToPDF = function(reportType) {
         }
         
         // Open PDF in new window for printing
-        const url = `/NHAFLOWER/api/export_reports.php?action=export&format=pdf&report=${reportType}`;
+        const url = `/api/export_reports.php?action=export&format=pdf&report=${reportType}`;
         window.open(url, '_blank');
         
         // Reset button after delay

@@ -184,7 +184,7 @@ function submitLogin() {
 
   // Call login API
   $.ajax({
-    url: "../auth/login.php",
+    url: "/auth/login.php",
     method: "POST",
     contentType: "application/json",
     data: JSON.stringify({
@@ -205,7 +205,7 @@ function submitLogin() {
 
         // Gọi API lấy thông tin khách hàng theo id_taikhoan
         $.ajax({
-          url: "/NHAFLOWER/api/khach_hang.php?action=get",
+          url: "/api/khach_hang.php?action=get",
           method: "GET",
           dataType: "json",
           success: function (res) {

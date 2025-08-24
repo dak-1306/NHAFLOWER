@@ -47,7 +47,7 @@ class ProductList {
     try {
       console.log("Loading categories from API...");
       const response = await $.ajax({
-        url: "/NHAFLOWER/api/loai_hoa.php?action=get_all",
+        url: "/api/loai_hoa.php?action=get_all",
         method: "GET",
         dataType: "json",
       });
@@ -128,14 +128,14 @@ class ProductList {
 
       // Lấy sản phẩm
       const response = await $.ajax({
-        url: "/NHAFLOWER/api/products.php?action=get_all",
+        url: "/api/products.php?action=get_all",
         method: "GET",
         dataType: "json",
       });
 
       // Lấy toàn bộ đánh giá
       const reviewsRes = await $.ajax({
-        url: "/NHAFLOWER/api/danh_gia.php?action=get_all",
+        url: "/api/danh_gia.php?action=get_all",
         method: "GET",
         dataType: "json",
       });
@@ -224,7 +224,7 @@ class ProductList {
                <div class="product-image">
                  ${
                    product.hinh_anh
-                     ? `<img src="/NHAFLOWER/assets/img/products/${product.hinh_anh}" alt="${product.ten_hoa}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.parentElement.innerHTML='<div class=\'placeholder-image\'><i class=\'fas fa-image\' style=\'font-size: 48px; color: #ddd;\'></i><p style=\'margin: 10px 0 0 0; color: #999; font-size: 14px;\'>Hình ảnh sản phẩm</p></div>'">`
+                     ? `<img src="/assets/img/products/${product.hinh_anh}" alt="${product.ten_hoa}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.parentElement.innerHTML='<div class=\\'placeholder-image\\'><i class=\\'fas fa-image\\' style=\\'font-size: 48px; color: #ddd;\\'></i><p style=\\'margin: 10px 0 0 0; color: #999; font-size: 14px;\\'>Hình ảnh sản phẩm</p></div>'">` // Đã bỏ /NHAFLOWER/
                      : `<div class="placeholder-image"><i class="fas fa-image" style="font-size: 48px; color: #ddd;"></i><p style="margin: 10px 0 0 0; color: #999; font-size: 14px;">Hình ảnh sản phẩm</p></div>`
                  }
                </div>
@@ -371,7 +371,7 @@ class ProductList {
   logout() {
     localStorage.removeItem("userToken");
     localStorage.removeItem("userData");
-    window.location.href = "/NHAFLOWER/user/login.html";
+    window.location.href = "/user/login.html"; // Đã bỏ /NHAFLOWER/
   }
 
   handlePendingSearch() {
@@ -495,7 +495,7 @@ class ProductList {
 // Global functions for product interactions
 function goToProductDetail(productId) {
   // Navigate to product detail page
-  window.location.href = `/NHAFLOWER/user/detail_product.html?id=${productId}`;
+  window.location.href = `/user/detail_product.html?id=${productId}`; // Đã bỏ /NHAFLOWER/
 }
 
 function addToCartFromList(productId) {
@@ -532,10 +532,10 @@ function addToCartFromList(productId) {
         // Đảm bảo đường dẫn ảnh đúng
         let imagePath = "../assets/img/products/default-flower.svg";
         if (product.hinh_anh) {
-          if (product.hinh_anh.startsWith("/NHAFLOWER/assets/img/products/")) {
+          if (product.hinh_anh.startsWith("/assets/img/products/")) {
             imagePath = product.hinh_anh;
           } else {
-            imagePath = `/NHAFLOWER/assets/img/products/${product.hinh_anh}`;
+            imagePath = `/assets/img/products/${product.hinh_anh}`;
           }
         }
         cart.push({

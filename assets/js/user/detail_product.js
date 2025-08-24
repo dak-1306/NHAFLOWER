@@ -262,7 +262,8 @@ class ProductDetailManager {
         reviewCount: Number(
           productRaw.so_danh_gia ?? productRaw.reviewCount ?? 0
         ),
-        category: productRaw.id_loaihoa ?? productRaw.category ?? "",        images:
+        category: productRaw.id_loaihoa ?? productRaw.category ?? "",
+        images:
           productRaw.hinh_anh && productRaw.hinh_anh.trim()
             ? [`../assets/img/products/${productRaw.hinh_anh}`]
             : ["../assets/img/products/default-flower.svg"],
@@ -377,21 +378,21 @@ class ProductDetailManager {
         id: 2,
         name: "Hoa tulip vàng",
         price: 320000,
-        image: "../assets/img/products/hoa_cuc_trang.jpg",
+        image: "/assets/img/products/hoa_cuc_trang.jpg",
         rating: 4.8,
       },
       {
         id: 3,
         name: "Hoa lan tím",
         price: 450000,
-        image: "../assets/img/products/hoa_hong_do.jpg",
+        image: "/assets/img/products/hoa_hong_do.jpg",
         rating: 4.9,
       },
       {
         id: 4,
         name: "Hoa cúc họa mi",
         price: 180000,
-        image: "../assets/img/products/default-flower.svg",
+        image: "/assets/img/products/default-flower.svg",
         rating: 4.7,
       },
     ];
@@ -406,7 +407,7 @@ class ProductDetailManager {
             <div class="product-image">
               <img src="${p.image}" alt="${p.name}"
                style="width:100%;height:200px;object-fit:cover;border-radius:10px;"
-               onerror="this.src='../assets/img/products/default-flower.svg';">
+               onerror="this.src='/assets/img/products/default-flower.svg';">
             </div>
             <div class="product-info" style="padding:15px;text-align:center;">
               <div class="product-name" style="font-weight:600;margin-bottom:10px;">${
@@ -495,7 +496,7 @@ class ProductDetailManager {
           `<span class='text-danger'>Hết hàng</span>`
         );
       }
-    }    // DEBUG: Log đường dẫn ảnh và dữ liệu images
+    } // DEBUG: Log đường dẫn ảnh và dữ liệu images
     console.log("[DEBUG] product.images:", product.images);
     if (product.images && product.images.length) {
       product.images.forEach((img, idx) => {
@@ -508,9 +509,9 @@ class ProductDetailManager {
       product.images && product.images.length
         ? product.images[0]
         : "../assets/img/products/default-flower.svg";
-        
+
     console.log("[DEBUG] Final main image path:", mainImg);
-    
+
     if ($("#mainProductImage").length) {
       $("#mainProductImage").attr("src", mainImg);
       $("#mainProductImage").attr(
